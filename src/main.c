@@ -50,7 +50,6 @@ main (int argc, char *argv[])
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 #endif
-
 	
 	gtk_set_locale ();
 	
@@ -123,8 +122,8 @@ main (int argc, char *argv[])
 	
 	window2 = create_window2();
 	window3 = create_window3();
+
 	menu1 = glade_xml_get_widget (gladexml, "menu1");
-	
 	
 	init();
 	

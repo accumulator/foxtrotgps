@@ -165,7 +165,6 @@
                 </child>
                 <child>
                   <widget class="Custom" id="drawingarea1">
-                    <property name="visible">True</property>
                     <property name="creation_function">OsmGpsMap</property>
                   </widget>
                   <packing>

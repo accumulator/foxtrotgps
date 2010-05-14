@@ -1,7 +1,3 @@
-
-
-
-
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -17,6 +13,33 @@
 #include "init.h"
 #include "callbacks.h"
 #include "globals.h"
+#include <osm-gps-map.h>
+
+#define OSMGPSMAP_CLASS "OsmGpsMap"
+
+GtkWidget * custom_widget_handler (
+		GladeXML *xml,
+		gchar *func_name,
+		gchar *name,
+		gchar *string1,
+		gchar *string2,
+		gint int1,
+		gint int2,
+		gpointer user_data)
+{
+	GtkWidget *widget = NULL;
+
+	if (g_str_equal(func_name, OSMGPSMAP_CLASS))
+	{
+		widget = g_object_new (OSM_TYPE_GPS_MAP,
+				"map-source", OSM_GPS_MAP_SOURCE_OPENSTREETMAP,
+				"tile-cache", OSM_GPS_MAP_CACHE_AUTO,
+				"proxy-uri", g_getenv("http_proxy"),
+				NULL);
+	}
+
+	return widget;
+}
 
 int
 main (int argc, char *argv[])
@@ -31,22 +54,24 @@ main (int argc, char *argv[])
 	
 	gtk_set_locale ();
 	
-	if (!g_thread_supported ()) g_thread_init (NULL);
-	gdk_threads_init ();
-	gdk_threads_enter ();
+	if (!g_thread_supported())
+		g_thread_init (NULL);
 	
+	gdk_threads_init();
+	gdk_threads_enter();
 	
-	gtk_init (&argc, &argv);
+	gtk_init(&argc, &argv);
 	
-	setlocale (LC_NUMERIC, "C");
+	setlocale(LC_NUMERIC, "C");
 	
-	add_pixmap_directory (PACKAGE_DATA_DIR "/" PACKAGE "/pixmaps");
+	add_pixmap_directory(PACKAGE_DATA_DIR "/" PACKAGE "/pixmaps");
 	
-	
-        glade_init ();
-        
-        gladexml = glade_xml_new (PACKAGE_DATA_DIR "/" PACKAGE "/" PACKAGE ".glade", NULL, GETTEXT_PACKAGE);
-        glade_xml_signal_autoconnect (gladexml);
+	glade_init ();
+
+	glade_set_custom_handler(custom_widget_handler, NULL);
+
+	gladexml = glade_xml_new (PACKAGE_DATA_DIR "/" PACKAGE "/" PACKAGE ".glade", NULL, GETTEXT_PACKAGE);
+	glade_xml_signal_autoconnect (gladexml);
 
 	pre_init();
 	window1 = glade_xml_get_widget (gladexml, "window1");

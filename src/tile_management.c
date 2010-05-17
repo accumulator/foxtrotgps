@@ -96,8 +96,8 @@ cb_download_maps(GtkWidget *dialog)
 	
 	coord_t c1,c2;
 	osm_gps_map_get_bbox(OSM_GPS_MAP(mapwidget), &c1, &c2);
-	osm_gps_map_download_maps(OSM_GPS_MAP(mapwidget), &c1, &c2, global_zoom+1, zoom_end);
-
+	//osm_gps_map_download_maps(OSM_GPS_MAP(mapwidget), &c1, &c2, global_zoom+1, zoom_end);
+	printf("*** bbox=%f,%f-%f,%f zoom=%d-%d\n", c1.rlat, c1.rlon, c2.rlat, c2.rlon, global_zoom+1, zoom_end);
 	gtk_widget_hide(dialog);
 }
 

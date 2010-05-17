@@ -1387,7 +1387,7 @@ on_button20_clicked                    (GtkButton       *button,
 	GtkWidget *dialog3, *entry;
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 
-	dialog3 = create_dialog3();
+	dialog3 = glade_xml_get_widget (gladexml, "dialog3");
 	entry = lookup_widget(dialog3, "entry12");
 	gtk_entry_set_text(GTK_ENTRY(entry), global_track_dir);
 	
@@ -1402,7 +1402,7 @@ on_cancelbutton2_clicked               (GtkButton       *button,
 
 	dialog3 = lookup_widget(GTK_WIDGET(button), "dialog3");
 	
-	gtk_widget_destroy(dialog3);
+	gtk_widget_hide(dialog3);
 
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 }
@@ -1457,7 +1457,7 @@ on_okbutton2_clicked                   (GtkButton       *button,
 	
 	dialog3 = lookup_widget(GTK_WIDGET(button), "dialog3");
 	
-	gtk_widget_destroy(dialog3);
+	gtk_widget_hide(dialog3);
 }
 
 
@@ -1500,7 +1500,7 @@ on_item8_activate                      (GtkMenuItem     *menuitem,
 {
 	GtkWidget *dialog4;
 	
-	dialog4 = create_dialog4();
+	dialog4 = glade_xml_get_widget (gladexml, "dialog4");
 	gtk_widget_show(dialog4);
 }
 
@@ -1511,7 +1511,7 @@ on_cancelbutton3_clicked               (GtkButton       *button,
 	GtkWidget	*dialog;
 
 	dialog = lookup_widget(GTK_WIDGET(button), "dialog4");
-	gtk_widget_destroy(dialog);
+	gtk_widget_hide(dialog);
 }
 
 
@@ -1811,7 +1811,7 @@ on_item14_activate                     (GtkWidget       *widget,
 	GtkWidget *dialog, *combobox;
 
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-	dialog = create_dialog6();
+	dialog = glade_xml_get_widget (gladexml, "dialog6");
 	gtk_widget_show(dialog);
 	
 	combobox = lookup_widget(dialog, "combobox4");
@@ -1855,7 +1855,7 @@ on_cancelbutton5_clicked               (GtkButton       *button,
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 	
 	dialog = lookup_widget(GTK_WIDGET(button), "dialog6");
-	gtk_widget_destroy(dialog);
+	gtk_widget_hide(dialog);
 
 }
 
@@ -1874,7 +1874,7 @@ on_okbutton5_clicked                   (GtkButton       *button,
 	combobox = lookup_widget(GTK_WIDGET(button), "combobox4");
 	global_poi_cat = gtk_combo_box_get_active(GTK_COMBO_BOX(combobox));
 
-	gtk_widget_destroy(dialog);
+	gtk_widget_hide(dialog);
 	
 	widget = lookup_widget(menu1, "item20");
 	pois_shown = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
@@ -1893,7 +1893,8 @@ on_dialog6_delete_event                (GtkWidget       *widget,
 {
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 
-  return FALSE;
+  gtk_widget_hide (widget);
+  return TRUE;
 }
 
 
@@ -2268,6 +2269,8 @@ void
 on_button33_clicked                    (GtkButton       *button,
                                         gpointer         user_data)
 {
+	GladeXML *gladexml;
+
 	GtkWidget *widget;
 	GtkTextBuffer *tbuffer;
 	GtkWidget *window;
@@ -2281,7 +2284,12 @@ on_button33_clicked                    (GtkButton       *button,
 	
 	
 	
-	window = create_window10();
+        
+	gladexml = glade_xml_new (gladefile, "window10", GETTEXT_PACKAGE);
+	glade_xml_signal_autoconnect (gladexml);
+	window = glade_xml_get_widget (gladexml, "window10");
+	g_signal_connect_swapped (window, "destroy",
+				  G_CALLBACK (g_object_unref), gladexml);
 	gtk_widget_show(window);
 	
 	
@@ -2454,13 +2462,20 @@ void
 on_button34_clicked                    (GtkButton       *button,
                                         gpointer         user_data)
 {
+	GladeXML *gladexml;
 	GtkWidget *widget, *widget2;
 	poi_t *p;
 
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 	
 	p = user_data;
-	widget = create_dialog7();
+	gladexml = glade_xml_new (gladefile,
+				  "dialog7",
+				  GETTEXT_PACKAGE);
+	glade_xml_signal_autoconnect (gladexml);
+	widget = glade_xml_get_widget (gladexml, "dialog7");
+	g_signal_connect_swapped (widget, "destroy",
+				  G_CALLBACK (g_object_unref), gladexml);
 	gtk_widget_show(widget);
 	
 	widget2 = lookup_widget(widget, "okbutton6");
@@ -2578,24 +2593,34 @@ on_window12_delete_event               (GtkWidget       *widget,
                                         GdkEvent        *event,
                                         gpointer         user_data)
 {
-	GtkWidget *window;
+	GtkWidget *window, *vbox;
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 
 	window = lookup_widget(widget, "window12");
-	gtk_widget_destroy(window);
-	
-	return FALSE;
+	gtk_widget_hide(window);
+
+	vbox = lookup_widget(window, "vbox39");		
+	gtk_container_foreach (GTK_CONTAINER (vbox),
+			       (GtkCallback) gtk_widget_destroy,
+			       NULL);
+
+	return TRUE;
 }
 
 void
 on_button37_clicked                    (GtkButton       *button,
                                         gpointer         user_data)
 {
-	GtkWidget *widget;
+	GtkWidget *widget, *vbox;
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 
 	widget = lookup_widget(GTK_WIDGET(button), "window12");
-	gtk_widget_destroy(widget);
+	gtk_widget_hide(widget);
+
+	vbox = lookup_widget(widget, "vbox39");		
+	gtk_container_foreach (GTK_CONTAINER (vbox),
+			       (GtkCallback) gtk_widget_destroy,
+			       NULL);
 }
 
 void

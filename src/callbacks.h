@@ -780,3 +780,6 @@ activate_more_map_details (GtkMenuItem *menu_item, gpointer user_data);
 
 void
 activate_larger_map_details (GtkMenuItem *larger_item, GtkMenuItem *more_item);
+
+void
+on_tiles_queued_changed (GtkWidget *widget, GParamSpec *paramSpec);

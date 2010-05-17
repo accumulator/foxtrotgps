@@ -3803,3 +3803,10 @@ activate_larger_map_details (GtkMenuItem *larger_item, GtkMenuItem *more_item)
 
 	repaint_all ();
 }
+
+void
+on_tiles_queued_changed (GtkWidget *widget, GParamSpec *paramSpec)
+{
+	int *tiles_queued = g_object_get_data(G_OBJECT(widget), "tiles-queued");
+	printf("* TILES QUEUED: %d\n", *tiles_queued);
+}

@@ -1108,9 +1108,11 @@ create_mapwidget(void)
     g_object_unref(G_OBJECT(osd));
 
     g_signal_connect (G_OBJECT (widget), "button-press-event",
-                      G_CALLBACK (on_map_button_press_event), NULL);
+						G_CALLBACK (on_map_button_press_event), NULL);
     g_signal_connect (G_OBJECT (widget), "button-release-event",
-                      G_CALLBACK (on_map_button_release_event), NULL);
+						G_CALLBACK (on_map_button_release_event), NULL);
+    g_signal_connect (G_OBJECT (widget), "notify::tiles-queued",
+						G_CALLBACK(on_tiles_queued_changed), NULL);
 
     osm_gps_map_set_keyboard_shortcut(map, OSM_GPS_MAP_KEY_FULLSCREEN, GDK_F11);
     osm_gps_map_set_keyboard_shortcut(map, OSM_GPS_MAP_KEY_UP, GDK_Up);

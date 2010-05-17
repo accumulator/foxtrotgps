@@ -21,6 +21,8 @@
 #include <libexif/exif-data.h>
 #include <time.h>
 
+#include <osm-gps-map.h>
+
 #define PHOTO_DB "geophoto.db"
 
 GList *geocode_photo_list;

@@ -21,6 +21,8 @@
 #include <string.h>
 #include <math.h>
 
+#include <osm-gps-map.h>
+
 #define POI_DB "poi.db"
 
 GtkListStore *list_store;

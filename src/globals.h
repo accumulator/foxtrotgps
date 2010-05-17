@@ -98,6 +98,7 @@ extern GladeXML		*gladexml;
 
 extern GtkWidget	*window1, *window2;
 extern GtkWidget	*map_drawable;
+extern GtkWidget	*mapwidget;
 extern GtkWidget	*dialog1;
 extern GtkWidget	*dialog8;
 extern GtkWidget	*window3;

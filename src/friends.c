@@ -16,6 +16,8 @@
 #include <glib/gprintf.h>
 #include <gtk/gtk.h>
 
+#include <osm-gps-map.h>
+
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>
@@ -990,6 +992,6 @@ on_goto_friend2_clicked(GtkButton *button, gpointer user_data)
 	
 	set_current_wp(deg2rad(m->lat), deg2rad(m->lon));
 	
-	set_mapcenter(m->lat,m->lon, global_zoom);
-
+	osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
+			m->lat,m->lon, global_zoom);
 }

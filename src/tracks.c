@@ -17,6 +17,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
+#include <osm-gps-map.h>
 
 #include "globals.h"
 #include "tracks.h"
@@ -437,7 +438,8 @@ tracks_on_file_button_release_event   (	GtkWidget       *widget,
 	
 	
 	if(loaded_track)
-		set_mapcenter(rad2deg((bbox.lat1+bbox.lat2)/2), rad2deg((bbox.lon1+bbox.lon2)/2), track_zoom);
+		osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
+			rad2deg((bbox.lat1+bbox.lat2)/2), rad2deg((bbox.lon1+bbox.lon2)/2), track_zoom);
 
 	
 	range = lookup_widget(window1, "vscale1");
@@ -680,7 +682,8 @@ fetch_track_thread(void *ptr)
 		{
 			
 			if(loaded_track)
-				set_mapcenter(rad2deg((bbox.lat1+bbox.lat2)/2), rad2deg((bbox.lon1+bbox.lon2)/2), track_zoom);
+				osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
+					rad2deg((bbox.lat1+bbox.lat2)/2), rad2deg((bbox.lon1+bbox.lon2)/2), track_zoom);
 		
 			paint_loaded_track();
 			gtk_widget_hide(dialog10);

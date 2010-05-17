@@ -12,6 +12,7 @@
 #include <glib/gprintf.h>
 
 #include <gdk/gdkkeysyms.h>
+#include <osm-gps-map.h>
 
 #include "callbacks.h"
 #include "interface.h"
@@ -425,12 +426,12 @@ on_button3_clicked                     (GtkButton       *button,
 {
 	global_autocenter = TRUE;
 	
-	if(gpsdata) {
-		if(isnan(gpsdata->fix.latitude) == 0	&&
-		   isnan(gpsdata->fix.longitude)== 0	&&
-		   gpsdata->fix.latitude !=0		&&
-		   gpsdata->fix.longitude!=0) {
-			set_mapcenter(gpsdata->fix.latitude, gpsdata->fix.longitude, global_zoom);
+	if (gpsdata) {
+		if (isnan(gpsdata->fix.latitude) == 0 && isnan(gpsdata->fix.longitude)== 0 &&
+		    gpsdata->fix.latitude != 0 && gpsdata->fix.longitude != 0)
+		{
+			osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
+					gpsdata->fix.latitude, gpsdata->fix.longitude, global_zoom);
 		}
 	}
 	else

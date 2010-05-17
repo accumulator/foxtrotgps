@@ -13,6 +13,7 @@ GladeXML *gladexml = NULL;
 GtkWidget *window1 = NULL;
 GtkWidget *window2 = NULL;
 GtkWidget *map_drawable = NULL;
+GtkWidget *mapwidget = NULL;
 
 GtkWidget *dialog1 = NULL;
 GtkWidget *dialog8 = NULL;

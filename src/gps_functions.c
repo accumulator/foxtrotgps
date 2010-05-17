@@ -15,6 +15,7 @@
 #include <math.h>
 
 #include <gps.h>
+#include <osm-gps-map.h>
 
 #include "gps_functions.h"
 #include "globals.h"
@@ -237,7 +238,8 @@ cb_gps_timer()
 				gpsdata->fix.longitude !=0
 				)
 			{
-				set_mapcenter(gpsdata->fix.latitude, gpsdata->fix.longitude, global_zoom);
+				osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
+						gpsdata->fix.latitude, gpsdata->fix.longitude, global_zoom);
 			}
 		}
 		

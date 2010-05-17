@@ -99,8 +99,6 @@ cb_gps_timer()
 		{
 			trip_delta = get_distance(gpsdata->fix.latitude, gpsdata->fix.longitude, lat_tmp, lon_tmp);
 			
-			printf("* TRIP DELTA = %f\n", trip_delta);
-
 			if(isnan(trip_delta))
 				trip_delta = 0;
 			

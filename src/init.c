@@ -267,6 +267,35 @@ init()
 	paint_myposition();
 }
 
+/*
+ * quit the application
+ */
+void
+quit()
+{
+	gboolean success = FALSE;
+	GError **error = NULL;
+
+	success = gconf_client_set_int(
+				global_gconfclient,
+				GCONF"/global_x",
+				global_x,
+				error);
+	success = gconf_client_set_int(
+				global_gconfclient,
+				GCONF"/global_y",
+				global_y,
+				error);
+	success = gconf_client_set_int(
+				global_gconfclient,
+				GCONF"/global_zoom",
+				global_zoom,
+				error);
+
+	gtk_main_quit();
+}
+
+
 GSList *
 gconf_get_repolist()
 {

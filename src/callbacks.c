@@ -444,8 +444,7 @@ on_window1_delete_event                (GtkWidget       *widget,
                                         gpointer         user_data)
 {
 	printf("%s()\n",__PRETTY_FUNCTION__);
-	gtk_main_quit();
-	
+	quit();
 	return FALSE; 
 }
 
@@ -456,7 +455,7 @@ on_window1_destroy_event               (GtkWidget       *widget,
                                         gpointer         user_data)
 {
 	printf("%s()\n",__PRETTY_FUNCTION__);
-	gtk_main_quit();
+	quit();
 	return FALSE;
 }
 

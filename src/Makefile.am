@@ -25,8 +25,6 @@ foxtrotgps_SOURCES = \
 	interface.c\
 	callbacks.h\
 	callbacks.c\
-	map_management.c\
-	map_management.h\
 	globals.c\
 	globals.h\
 	converter.c\

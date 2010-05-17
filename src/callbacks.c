@@ -510,8 +510,8 @@ on_button3_clicked                     (GtkButton       *button,
 		if (isnan(gpsdata->fix.latitude) == 0 && isnan(gpsdata->fix.longitude)== 0 &&
 		    gpsdata->fix.latitude != 0 && gpsdata->fix.longitude != 0)
 		{
-			osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
-					gpsdata->fix.latitude, gpsdata->fix.longitude, global_zoom);
+			osm_gps_map_set_center(OSM_GPS_MAP(mapwidget),
+					gpsdata->fix.latitude, gpsdata->fix.longitude);
 		}
 	}
 	else

@@ -991,6 +991,5 @@ on_goto_friend2_clicked(GtkButton *button, gpointer user_data)
 	
 	set_current_wp(deg2rad(m->lat), deg2rad(m->lon));
 	
-	osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
-			m->lat,m->lon, global_zoom);
+	osm_gps_map_set_center(OSM_GPS_MAP(mapwidget), m->lat, m->lon);
 }

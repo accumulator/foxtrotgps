@@ -14,7 +14,7 @@ on_button1_clicked                     (GtkButton       *button,
                                         gpointer         user_data);
 
 void
-on_button3_clicked                     (GtkButton       *button,
+on_toolbar_button_autocenter_clicked   (GtkToggleToolButton *button,
                                         gpointer         user_data);
 
 gboolean
@@ -28,11 +28,11 @@ on_window1_destroy_event               (GtkWidget       *widget,
                                         gpointer         user_data);
 
 void
-on_toolbar_button_zoom_in_clicked                     (GtkButton       *button,
+on_toolbar_button_zoom_in_clicked      (GtkButton       *button,
                                         gpointer         user_data);
 
 void
-on_toolbar_button_zoom_out_clicked                     (GtkButton       *button,
+on_toolbar_button_zoom_out_clicked     (GtkButton       *button,
                                         gpointer         user_data);
 
 gboolean

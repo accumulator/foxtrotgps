@@ -55,10 +55,10 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkToolButton" id="button3">
+              <widget class="GtkToggleToolButton" id="button3">
                 <property name="visible">True</property>
                 <property name="stock_id">gtk-jump-to</property>
-                <signal name="clicked" handler="on_button3_clicked"/>
+                <signal name="clicked" handler="on_toolbar_button_autocenter_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -125,11 +125,11 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkToolButton" id="button56">
+                      <widget class="GtkToggleToolButton" id="button56">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Autocenter On</property>
                         <property name="stock_id">gtk-jump-to</property>
-                        <signal name="clicked" handler="on_button3_clicked"/>
+                        <signal name="clicked" handler="on_toolbar_button_autocenter_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>

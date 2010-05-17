@@ -198,7 +198,7 @@ on_button1_clicked                     (GtkButton       *button,
 }
 
 void
-on_toolbar_button_zoom_in_clicked                     (GtkButton       *button,
+on_toolbar_button_zoom_in_clicked      (GtkButton       *button,
                                         gpointer         user_data)
 {
 	osm_gps_map_zoom_in(OSM_GPS_MAP(mapwidget));
@@ -210,11 +210,16 @@ on_toolbar_button_zoom_in_clicked                     (GtkButton       *button,
 
 
 void
-on_button3_clicked                     (GtkButton       *button,
+on_toolbar_button_autocenter_clicked   (GtkToggleToolButton *button,
                                         gpointer         user_data)
 {
-	global_autocenter = TRUE;
+	printf("* %s()\n", __PRETTY_FUNCTION__);
+
+	global_autocenter = gtk_toggle_tool_button_get_active(button);
 	
+	if (!global_autocenter)
+		return;
+
 	if (gpsdata) {
 		if (isnan(gpsdata->fix.latitude) == 0 && isnan(gpsdata->fix.longitude)== 0 &&
 		    gpsdata->fix.latitude != 0 && gpsdata->fix.longitude != 0)
@@ -250,7 +255,7 @@ on_window1_destroy_event               (GtkWidget       *widget,
 
 
 void
-on_toolbar_button_zoom_out_clicked                     (GtkButton       *button,
+on_toolbar_button_zoom_out_clicked     (GtkButton       *button,
                                         gpointer         user_data)
 {
 	osm_gps_map_zoom_out(OSM_GPS_MAP(mapwidget));
@@ -2005,7 +2010,7 @@ on_drawingarea1_key_press_event        (GtkWidget       *widget,
 	else if(event->keyval == GDK_Up)
 		move_map(4);
 	else if(event->keyval == GDK_a)
-		on_button3_clicked(GTK_BUTTON(lookup_widget(window1,"button3")), NULL);
+		on_toolbar_button_autocenter_clicked(GTK_TOGGLE_TOOL_BUTTON(lookup_widget(window1,"button3")), NULL);
 	else if(event->keyval == GDK_r)
 		on_item23_button_release_event(NULL, NULL, NULL);
 	else if(event->keyval == GDK_1)

@@ -160,7 +160,7 @@ main (int argc, char *argv[])
 	pre_init();
 	window1 = glade_xml_get_widget (gladexml, "window1");
 	
-	GtkWidget *mapwidget = glade_xml_get_widget(gladexml, "mapwidget");
+	mapwidget = glade_xml_get_widget(gladexml, "mapwidget");
 	gtk_widget_show(mapwidget);
   	
 	int screen_height, screen_width;

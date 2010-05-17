@@ -1,5 +1,3 @@
-
-
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -53,31 +51,10 @@ pre_init()
 	gconf_get_repolist();	
 	repoconfig__set_current_list_pointer();
 	
-	global_x = gconf_client_get_int(
-				global_gconfclient, 
-				GCONF"/global_x",
-				err);
-	global_y = gconf_client_get_int(
-				global_gconfclient, 
-				GCONF"/global_y",
-				err);
-	global_zoom = gconf_client_get_int(
-				global_gconfclient, 
-				GCONF"/global_zoom",
-				err);
 	global_detail_zoom = gconf_client_get_int (
 				global_gconfclient,
 				GCONF"/global_detail_zoom",
 				err);
-
-
-	if(global_zoom <= 2) 
-	{
-		global_x = 890;
-		global_y = 515;
-		global_zoom = 3;
-	}
-
 
 	global_server = gconf_client_get_string (global_gconfclient,
 						 GCONF "/gpsd_host",
@@ -122,7 +99,6 @@ init()
 	gchar buffer[128];
 	gboolean gconf_fftimer_running;
 	char *str = NULL;
-	
 	
 	foxtrotgps_dir = g_strconcat(global_home_dir, "/.foxtrotgps", NULL);
 	g_mkdir(foxtrotgps_dir, 0700);
@@ -264,6 +240,23 @@ init()
 	global_myposition.lat = gconf_client_get_float(global_gconfclient, GCONF"/myposition_lat", NULL);
 	global_myposition.lon = gconf_client_get_float(global_gconfclient, GCONF"/myposition_lon", NULL);
 	paint_myposition();
+
+	float view_lat, view_lon;
+	int view_zoom;
+	view_lat = gconf_client_get_float(
+				global_gconfclient,
+				GCONF"/view_lat",
+				&err);
+	view_lon = gconf_client_get_float(
+				global_gconfclient,
+				GCONF"/view_lon",
+				&err);
+	view_zoom = gconf_client_get_int(
+				global_gconfclient,
+				GCONF"/view_zoom",
+				&err);
+
+	osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget), view_lat, view_lon, view_zoom);
 }
 
 /*
@@ -275,20 +268,25 @@ quit()
 	gboolean success = FALSE;
 	GError **error = NULL;
 
-	success = gconf_client_set_int(
+	coord_t c1,c2;
+	int zoom;
+	osm_gps_map_get_bbox(OSM_GPS_MAP(mapwidget), &c1, &c2);
+	g_object_get(G_OBJECT(mapwidget), "zoom", &zoom, NULL);
+
+	success = gconf_client_set_float(
 				global_gconfclient,
-				GCONF"/global_x",
-				global_x,
+				GCONF"/view_lat",
+				RAD2DEG((c1.rlat + c2.rlat)/2),
+				error);
+	success = gconf_client_set_float(
+				global_gconfclient,
+				GCONF"/view_lon",
+				RAD2DEG((c1.rlon + c2.rlon)/2),
 				error);
 	success = gconf_client_set_int(
 				global_gconfclient,
-				GCONF"/global_y",
-				global_y,
-				error);
-	success = gconf_client_set_int(
-				global_gconfclient,
-				GCONF"/global_zoom",
-				global_zoom,
+				GCONF"/view_zoom",
+				zoom,
 				error);
 
 	gtk_main_quit();

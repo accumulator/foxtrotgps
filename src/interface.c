@@ -1099,7 +1099,7 @@ create_mapwidget(void)
                         "show-coordinates",TRUE,
                         "show-crosshair",TRUE,
                         "show-dpad",TRUE,
-                        "show-zoom",TRUE,
+                        "show-zoom",FALSE,
                         "show-gps-in-dpad",TRUE,
                         "show-gps-in-zoom",FALSE,
                         "dpad-radius", 30,

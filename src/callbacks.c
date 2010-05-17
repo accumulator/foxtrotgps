@@ -198,43 +198,14 @@ on_button1_clicked                     (GtkButton       *button,
 }
 
 void
-on_vscale1_value_changed               (GtkRange        *range,
-                                        gpointer         user_data)
-{
-
-
-}
-
-void
 on_button4_clicked                     (GtkButton       *button,
                                         gpointer         user_data)
 {
-	GtkWidget *range;
-	
-	
-	int zoom_old;
-	double factor;
-	int width_center, height_center;
-
-	if(global_zoom<global_zoom_max)
-	{	
-		range = lookup_widget(window1, "vscale1");
-		
-		width_center  = map_drawable->allocation.width 	/ 2;
-		height_center = map_drawable->allocation.height / 2;
-				
-		zoom_old = global_zoom;
-	
-		global_zoom++;
-		gtk_range_set_value(GTK_RANGE(range), (double) global_zoom);
-		factor = exp(global_zoom * M_LN2)/exp2(zoom_old);
-		
-		global_x = ((global_x + width_center) * factor) - width_center;
-		global_y = ((global_y + height_center) * factor) - height_center;
-		
-		
-		repaint_all();
-	}
+	osm_gps_map_zoom_in(OSM_GPS_MAP(mapwidget));
+	int zoom;
+	g_object_get(G_OBJECT(mapwidget), "zoom", &zoom, NULL);
+	GtkWidget *range = lookup_widget(window1, "vscale1");
+	gtk_range_set_value(GTK_RANGE(range), (double)zoom);
 }
 
 
@@ -282,76 +253,23 @@ void
 on_button5_clicked                     (GtkButton       *button,
                                         gpointer         user_data)
 {
-	int zoom_old;
-	float factor;
-	int width_center, height_center;
-		GtkWidget *range;
-	if(global_zoom>2)
-	{
-		range = lookup_widget(window1, "vscale1");
-	
-		width_center  = map_drawable->allocation.width 	/ 2;
-		height_center = map_drawable->allocation.height / 2;
-				
-		zoom_old = global_zoom;
-	
-		global_zoom--;
-		gtk_range_set_value(GTK_RANGE(range), (double) global_zoom);
-	
-		factor = exp(global_zoom * M_LN2)/exp(zoom_old * M_LN2);
-		
-		global_x = ((global_x + width_center) * factor) - width_center;
-		global_y = ((global_y + height_center) * factor) - height_center;
-		
-		repaint_all();
-	}
+	osm_gps_map_zoom_out(OSM_GPS_MAP(mapwidget));
+	int zoom;
+	g_object_get(G_OBJECT(mapwidget), "zoom", &zoom, NULL);
+	GtkWidget *range = lookup_widget(window1, "vscale1");
+	gtk_range_set_value(GTK_RANGE(range), (double)zoom);
 }
-
-gboolean
-on_vscale1_change_value                (GtkRange        *range,
-                                        GtkScrollType    scroll,
-                                        gdouble          value,
-                                        gpointer         user_data)
-{
-
-  return FALSE;
-}
-
-gboolean
-on_vscale1_button_press_event          (GtkWidget       *widget,
-                                        GdkEventButton  *event,
-                                        gpointer         user_data)
-{
-
-  return FALSE;
-}
-
 
 gboolean
 on_vscale1_button_release_event        (GtkWidget       *widget,
                                         GdkEventButton  *event,
                                         gpointer         user_data)
 {	
-	int zoom_old;
-	float factor;
-	int width_center, height_center;
-	
-	width_center  = map_drawable->allocation.width 	/ 2;
-	height_center = map_drawable->allocation.height / 2;
-		
-	zoom_old = global_zoom;
-
-	global_zoom = gtk_range_get_value(GTK_RANGE(widget));
-	factor = exp(global_zoom * M_LN2)/exp(zoom_old * M_LN2);
-	
-	global_x = ((global_x + width_center) * factor) - width_center;
-	global_y = ((global_y + height_center) * factor) - height_center;
-	
-	repaint_all();
-	
+	int zoom;
+	zoom = gtk_range_get_value(GTK_RANGE(widget));
+	osm_gps_map_set_zoom(OSM_GPS_MAP(mapwidget), zoom);
 	return FALSE;
 }
-
 
 void
 on_combobox1_changed                   (GtkComboBox     *combobox,

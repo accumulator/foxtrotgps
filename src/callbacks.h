@@ -14,10 +14,6 @@ on_button1_clicked                     (GtkButton       *button,
                                         gpointer         user_data);
 
 void
-on_vscale1_value_changed               (GtkRange        *range,
-                                        gpointer         user_data);
-
-void
 on_button3_clicked                     (GtkButton       *button,
                                         gpointer         user_data);
 
@@ -37,17 +33,6 @@ on_button4_clicked                     (GtkButton       *button,
 
 void
 on_button5_clicked                     (GtkButton       *button,
-                                        gpointer         user_data);
-
-gboolean
-on_vscale1_change_value                (GtkRange        *range,
-                                        GtkScrollType    scroll,
-                                        gdouble          value,
-                                        gpointer         user_data);
-
-gboolean
-on_vscale1_button_press_event          (GtkWidget       *widget,
-                                        GdkEventButton  *event,
                                         gpointer         user_data);
 
 gboolean

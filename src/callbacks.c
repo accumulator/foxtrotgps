@@ -82,16 +82,102 @@ gboolean
 on_map_button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer user_data)
 {
 	printf("* %s()\n", __PRETTY_FUNCTION__);
+
+	mouse_x = (int) event->x;
+	mouse_y = (int) event->y;
+	local_x = global_x;
+	local_y = global_y;
+
 	return FALSE;
 }
 
 gboolean
 on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer user_data)
 {
-	float lat,lon;
 	printf("* %s()\n", __PRETTY_FUNCTION__);
-	g_object_get(widget, "latitude", &lat, "longitude", &lon, NULL);
-	printf("btnrls@ %f,%f\n",lat,lon);
+
+	if (abs(mouse_x - (int) event->x) < 10 && abs(mouse_y - (int) event->y) < 10)
+	{
+		GSList *list;
+		gboolean friend_found = FALSE;
+		gboolean photo_found = FALSE;
+		gboolean poi_found = FALSE;
+
+		if(global_show_friends)
+		{
+			for(list = friends_list; list != NULL && !friend_found; list = list->next)
+			{
+				friend_t *f = list->data;
+
+				if( abs(f->screen_x - mouse_x) < 15 &&
+					abs(f->screen_y - mouse_y) < 15)
+				{
+
+					friend_found = TRUE;
+				}
+
+			}
+		}
+
+		if(global_show_photos && !photo_found)
+		{
+			for(list = photo_list; list != NULL && !photo_found; list = list->next)
+			{
+				photo_t *p = list->data;
+
+				if( 	abs(p->screen_x - mouse_x) < 15 &&
+					abs(p->screen_y - mouse_y) < 15)
+				{
+
+					photo_found = TRUE;
+				}
+
+			}
+		}
+
+		if (global_show_pois )
+		{
+			for(list = poi_list; list != NULL && !poi_found; list = list->next)
+			{
+				poi_t *p = list->data;
+
+				if( 	abs(p->screen_x - mouse_x) < 15 &&
+					abs(p->screen_y - mouse_y) < 15)
+				{
+
+					poi_found = TRUE;
+				}
+
+			}
+		}
+
+
+		if (!friend_found && !photo_found && !poi_found &&
+			!distance_mode && !pickpoint_mode)
+		{
+
+			gtk_widget_show(menu1);
+
+			gtk_menu_popup (GTK_MENU(menu1), NULL, NULL, NULL, NULL,
+				  event->button, event->time);
+
+		}
+
+		if(distance_mode)
+			do_distance();
+		else if (pickpoint_mode)
+			do_pickpoint();
+		else
+		{
+			if (friend_found)
+				on_item3_activate(NULL, NULL);
+			if (photo_found)
+				on_item10_activate(NULL, NULL);
+			if (poi_found)
+				on_item15_activate(NULL, NULL);
+		}
+	}
+
 	return FALSE;
 }
 

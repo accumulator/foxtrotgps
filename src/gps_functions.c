@@ -75,67 +75,25 @@ cb_gps_timer()
 		
 		if(gpsdata->seen_valid)
 		{
-			int hand_x, hand_y, hand_wp_x, hand_wp_y;
-			double heading_rad, bearing;
+			int hand_wp_x, hand_wp_y;
+			double bearing;
 			
-			heading_rad = (gpsdata->fix.heading * (1.0 / 180.0)) * M_PI;
-
-			if(gpsdata->fix.speed>0.3) 
-			{
-				hand_x =  25 * sinf(heading_rad);
-				hand_y = -25 * cosf(heading_rad);
-			}
-			else
-			{
-				hand_x = 0;
-				hand_y = 0;
-			}
-
+			osm_gps_map_draw_gps(OSM_GPS_MAP(mapwidget),
+					gpsdata->fix.latitude, gpsdata->fix.longitude,
+					(gpsdata->fix.speed > 0.3 ? gpsdata->fix.heading : OSM_GPS_MAP_INVALID));
 			
-			if(mouse_dx == 0 && mouse_dy == 0)
+			if(global_wp_on && gpsdata->valid)
 			{
 				
-				if(global_wp_on && gpsdata->valid)
-				{
-					
-					bearing = get_bearing(lat, lon, global_wp.lat, global_wp.lon);
-					gpsdata->fix.bearing = bearing;
+				bearing = get_bearing(lat, lon, global_wp.lat, global_wp.lon);
+				gpsdata->fix.bearing = bearing;
 
-					hand_wp_x =  25 * sinf(bearing);
-					hand_wp_y = -25 * cosf(bearing);
+				hand_wp_x =  25 * sinf(bearing);
+				hand_wp_y = -25 * cosf(bearing);
 					
-//					gdk_draw_line(map_drawable->window,
-//							gc_5,
-//							x + mouse_dx,
-//							y + mouse_dy,
-//							x + mouse_dx + hand_wp_x,
-//							y + mouse_dy + hand_wp_y);
-//
-//					gdk_draw_line(map_drawable->window,
-//							gc_4,
-//							x + mouse_dx,
-//							y + mouse_dy,
-//							x + mouse_dx + hand_wp_x,
-//							y + mouse_dy + hand_wp_y);
+				/* TODO : draw wp bearing */
 					
-					osd_wp();
-					
-				}
-				
-				
-//				gdk_draw_line(map_drawable->window,
-//						gc_5,
-//						x + mouse_dx,
-//						y + mouse_dy,
-//						x + mouse_dx + hand_x,
-//						y + mouse_dy + hand_y);
-//
-//				gdk_draw_line(map_drawable->window,
-//						gc_3,
-//						x + mouse_dx,
-//						y + mouse_dy,
-//						x + mouse_dx + hand_x,
-//						y + mouse_dy + hand_y);
+				osd_wp();
 			}
 		}
 		
@@ -305,7 +263,7 @@ osd_speed(gboolean force_redraw)
 	
 	double unit_conv = 1;
 		
-	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
+	//printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
 	return;
 
 	if(gpsdata && mouse_dx == 0 && mouse_dy == 0) 

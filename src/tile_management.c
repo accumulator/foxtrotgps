@@ -80,6 +80,9 @@ cb_download_maps(GtkWidget *dialog)
 	GtkToggleButton *z1, *z2, *z3, *z4, *z5, *z6;
 	int zoom_end = 1;
 	
+	int zoom;
+	g_object_get(OSM_GPS_MAP(mapwidget), "zoom", &zoom, NULL);
+
 	z1 = (GtkToggleButton *)lookup_widget(dialog, "radiobutton2");
 	z2 = (GtkToggleButton *)lookup_widget(dialog, "radiobutton3");
 	z3 = (GtkToggleButton *)lookup_widget(dialog, "radiobutton4");
@@ -87,17 +90,17 @@ cb_download_maps(GtkWidget *dialog)
 	z5 = (GtkToggleButton *)lookup_widget(dialog, "radiobutton6");
 	z6 = (GtkToggleButton *)lookup_widget(dialog, "radiobutton7");
 
-	zoom_end = (gtk_toggle_button_get_active(z1)) ? global_zoom + 1 : zoom_end; 
-	zoom_end = (gtk_toggle_button_get_active(z2)) ? global_zoom + 2 : zoom_end;
-	zoom_end = (gtk_toggle_button_get_active(z3)) ? global_zoom + 3 : zoom_end;
-	zoom_end = (gtk_toggle_button_get_active(z4)) ? global_zoom + 4 : zoom_end;
-	zoom_end = (gtk_toggle_button_get_active(z5)) ? global_zoom + 5 : zoom_end;
-	zoom_end = (gtk_toggle_button_get_active(z6)) ? global_zoom + 6 : zoom_end;
+	zoom_end = (gtk_toggle_button_get_active(z1)) ? zoom + 1 : zoom_end;
+	zoom_end = (gtk_toggle_button_get_active(z2)) ? zoom + 2 : zoom_end;
+	zoom_end = (gtk_toggle_button_get_active(z3)) ? zoom + 3 : zoom_end;
+	zoom_end = (gtk_toggle_button_get_active(z4)) ? zoom + 4 : zoom_end;
+	zoom_end = (gtk_toggle_button_get_active(z5)) ? zoom + 5 : zoom_end;
+	zoom_end = (gtk_toggle_button_get_active(z6)) ? zoom + 6 : zoom_end;
 	
 	coord_t c1,c2;
 	osm_gps_map_get_bbox(OSM_GPS_MAP(mapwidget), &c1, &c2);
-	//osm_gps_map_download_maps(OSM_GPS_MAP(mapwidget), &c1, &c2, global_zoom+1, zoom_end);
-	printf("*** bbox=%f,%f-%f,%f zoom=%d-%d\n", c1.rlat, c1.rlon, c2.rlat, c2.rlon, global_zoom+1, zoom_end);
+	printf("*** downloading tiles: bbox=%f,%f-%f,%f zoom=%d-%d\n", c1.rlat, c1.rlon, c2.rlat, c2.rlon, zoom+1, zoom_end);
+	osm_gps_map_download_maps(OSM_GPS_MAP(mapwidget), &c1, &c2, global_zoom+1, zoom_end);
 	gtk_widget_hide(dialog);
 }
 

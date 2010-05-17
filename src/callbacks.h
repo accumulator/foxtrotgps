@@ -4,6 +4,12 @@ void
 print_track();
 
 gboolean
+on_map_button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer user_data);
+
+gboolean
+on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer user_data);
+
+gboolean
 on_drawingarea1_button_press_event     (GtkWidget       *widget,
                                         GdkEventButton  *event,
                                         gpointer         user_data);
@@ -11,16 +17,6 @@ on_drawingarea1_button_press_event     (GtkWidget       *widget,
 gboolean
 on_drawingarea1_motion_notify_event    (GtkWidget       *widget,
                                         GdkEventMotion  *event,
-                                        gpointer         user_data);
-
-gboolean
-on_drawingarea1_configure_event        (GtkWidget       *widget,
-                                        GdkEventConfigure *event,
-                                        gpointer         user_data);
-
-gboolean
-on_drawingarea1_expose_event           (GtkWidget       *widget,
-                                        GdkEventExpose  *event,
                                         gpointer         user_data);
 
 void

@@ -56,6 +56,9 @@ print_track()
 	GdkGC *gc;
 	gboolean is_line = FALSE;
 	
+	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
+	return;
+
 	gc = gdk_gc_new(pixmap);
 	color.green = 0;
 	color.blue = 0;
@@ -150,6 +153,9 @@ paint_loaded_track()
 	GdkGC *gc;
 	gboolean is_line = FALSE;
 	
+	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
+	return;
+
 	gc = gdk_gc_new(pixmap);
 	color.green = 50000;
 	color.blue = 0;

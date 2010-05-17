@@ -164,7 +164,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Custom" id="drawingarea1">
+                  <widget class="Custom" id="mapwidget">
                     <property name="creation_function">OsmGpsMap</property>
                   </widget>
                   <packing>

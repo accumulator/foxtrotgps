@@ -145,7 +145,8 @@ osd_wp()
 	float distance;
 	double unit_conv = 1;
 		
-	printf("** %s(): \n",__PRETTY_FUNCTION__);
+	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
+	return;
 
 	if(gpsdata && mouse_dx == 0 && mouse_dy == 0) 
 	{
@@ -249,6 +250,9 @@ do_paint_myposition()
 	GdkGC *gc;
 	GError	*error = NULL;
 	
+	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
+	return;
+
 	gc = gdk_gc_new(pixmap);
 	color.green = 60000;
 	color.blue = 0;

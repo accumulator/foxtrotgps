@@ -78,6 +78,22 @@ set_cursor(int type)
 		gdk_window_set_cursor(window1->window, cursor_default);
 }
 
+gboolean
+on_map_button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer user_data)
+{
+	printf("* %s()\n", __PRETTY_FUNCTION__);
+	return FALSE;
+}
+
+gboolean
+on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer user_data)
+{
+	float lat,lon;
+	printf("* %s()\n", __PRETTY_FUNCTION__);
+	g_object_get(widget, "latitude", &lat, "longitude", &lon, NULL);
+	printf("btnrls@ %f,%f\n",lat,lon);
+	return FALSE;
+}
 
 gboolean
 on_drawingarea1_button_press_event     (GtkWidget       *widget,
@@ -339,73 +355,6 @@ on_drawingarea1_motion_notify_event    (GtkWidget       *widget,
 	}
 	
   return FALSE;
-}
-
-
-gboolean
-on_drawingarea1_configure_event        (GtkWidget         *widget,
-                                        GdkEventConfigure *event,
-                                        gpointer           user_data)
-{
-	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-	
-	map_drawable = widget;
-	
-	global_drawingarea_width  = widget->allocation.width;
-	global_drawingarea_height = widget->allocation.height;
-	
-	
-	if (pixmap)
-		g_object_unref (pixmap);
-
-	pixmap = gdk_pixmap_new (
-			widget->window,
-			widget->allocation.width+260, 
-			widget->allocation.height+260,
-			-1);
-	
-	if(pixmap) printf("pixmap created\n");
-	else printf("aieee: pixmap NULL\n");
-
-	
-	gdk_draw_rectangle (
-		pixmap,
-		widget->style->white_gc,
-		TRUE,
-		0, 0,
-		widget->allocation.width+260,
-		widget->allocation.height+260);
-				
-	gtk_widget_queue_draw_area (
-		widget, 
-		0,0,widget->allocation.width+260,widget->allocation.height+260);
-
-	repaint_all();	
-	
-	return FALSE;
-}
-
-
-gboolean
-on_drawingarea1_expose_event           (GtkWidget       *widget,
-                                        GdkEventExpose  *event,
-                                        gpointer         user_data)
-{
-	
-	
-	
-	gdk_draw_drawable (
-		widget->window,
-		widget->style->fg_gc[GTK_WIDGET_STATE (widget)],
-		pixmap,
-		event->area.x, event->area.y,
-		event->area.x, event->area.y,
-		event->area.width, event->area.height);
-	
-	osd_speed(TRUE);
-	map_scale_indicator();
-	
-	return FALSE;
 }
 
 void
@@ -2213,17 +2162,16 @@ on_item9_activate                      (GtkMenuItem     *menuitem,
 void
 repaint_all()
 {
-	
+	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
 
-
-	fill_tiles_pixel(global_x, global_y, global_zoom, FALSE);
-	print_track();
-	paint_loaded_track();
-	paint_friends();
-	paint_photos();
-	paint_pois();
-	paint_wp();
-	paint_myposition();
+//	fill_tiles_pixel(global_x, global_y, global_zoom, FALSE);
+//	print_track();
+//	paint_loaded_track();
+//	paint_friends();
+//	paint_photos();
+//	paint_pois();
+//	paint_wp();
+//	paint_myposition();
 	
 }
 

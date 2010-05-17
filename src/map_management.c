@@ -221,6 +221,8 @@ fill_tiles_pixel(	int pixel_x,
 	GError **error = NULL;
 	repo_t *repo = g_new0(repo_t, 1);
 	
+	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
+	return;
 	
 	if (!hash_table)
 	{

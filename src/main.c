@@ -14,6 +14,7 @@
 #include "callbacks.h"
 #include "globals.h"
 #include <osm-gps-map.h>
+#include <osm-gps-map-osd.h>
 
 #define OSMGPSMAP_CLASS "OsmGpsMap"
 
@@ -36,6 +37,24 @@ GtkWidget * custom_widget_handler (
 				"tile-cache", OSM_GPS_MAP_CACHE_AUTO,
 				"proxy-uri", g_getenv("http_proxy"),
 				NULL);
+
+		OsmGpsMapLayer *osd = g_object_new (OSM_TYPE_GPS_MAP_OSD,
+	                        "show-scale",TRUE,
+	                        "show-coordinates",TRUE,
+	                        "show-crosshair",TRUE,
+	                        "show-dpad",TRUE,
+	                        "show-zoom",TRUE,
+	                        "show-gps-in-dpad",TRUE,
+	                        "show-gps-in-zoom",FALSE,
+	                        "dpad-radius", 30,
+	                        NULL);
+	    osm_gps_map_add_layer(OSM_GPS_MAP(widget), osd);
+	    g_object_unref(G_OBJECT(osd));
+
+	    g_signal_connect (G_OBJECT (widget), "button-press-event",
+	                      G_CALLBACK (on_map_button_press_event), NULL);
+	    g_signal_connect (G_OBJECT (widget), "button-release-event",
+	                      G_CALLBACK (on_map_button_release_event), NULL);
 	}
 
 	return widget;
@@ -131,7 +150,7 @@ main (int argc, char *argv[])
 	pre_init();
 	window1 = glade_xml_get_widget (gladexml, "window1");
 	
-	GtkWidget *mapwidget = glade_xml_get_widget(gladexml, "drawingarea1");
+	GtkWidget *mapwidget = glade_xml_get_widget(gladexml, "mapwidget");
 	gtk_widget_show(mapwidget);
   	
 	int screen_height, screen_width;

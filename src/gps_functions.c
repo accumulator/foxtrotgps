@@ -387,6 +387,9 @@ osd_speed(gboolean force_redraw)
 	
 	double unit_conv = 1;
 		
+	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
+	return;
+
 	if(gpsdata && mouse_dx == 0 && mouse_dy == 0) 
 	{
 		switch (global_speed_unit)
@@ -799,6 +802,9 @@ map_scale_indicator()
 	PangoLayout		*layout  = NULL;
 	PangoFontDescription	*desc    = NULL;
 	
+	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
+	return;
+
 	y = map_drawable->allocation.height - 8;
 	
 	if(gc == NULL)

@@ -39,68 +39,12 @@ guint watchdog;
 gboolean
 cb_gps_timer()
 {
-	
-	
 	int pixel_x, pixel_y, x, y, last_x, last_y;
 	static float lat, lon, lat_tmp=0, lon_tmp=0;
 	float trip_delta=0;
 
 	static double trip_time_accumulated = 0;
 	static gboolean trip_counter_got_stopped = FALSE;
-
-	GdkColor color;
-	static GdkGC *gc=NULL, *gc_2=NULL, *gc_3=NULL, *gc_4=NULL, *gc_5=NULL;
-	
-	if(gc == NULL)
-	{
-		gc   = gdk_gc_new(pixmap);
-		gc_2 = gdk_gc_new(pixmap);
-		gc_3 = gdk_gc_new(pixmap);
-		gc_4 = gdk_gc_new(pixmap);
-		gc_5 = gdk_gc_new(pixmap);
-		
-		
-		color.red = 60000;
-		color.green = 0;
-		color.blue = 0;
-		gdk_gc_set_rgb_fg_color(gc, &color);
-		gdk_gc_set_line_attributes(gc,
-				5, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
-		
-		
-		color.red = 5000;
-		color.green = 5000;
-		color.blue = 55000;
-		gdk_gc_set_rgb_fg_color(gc_2, &color);
-		gdk_gc_set_line_attributes(gc_2,
-				6, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
-	
-		
-		color.red = 25500; 
-		color.green = 35000;
-		color.blue = 65500;
-		gdk_gc_set_rgb_fg_color(gc_3, &color);
-		gdk_gc_set_line_attributes(gc_3,
-				7, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
-		
-		
-		color.red = 35500; 
-		color.green = 5000;
-		color.blue = 500;
-		gdk_gc_set_rgb_fg_color(gc_4, &color);
-		gdk_gc_set_line_attributes(gc_4,
-				7, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
-				
-		
-		color.red = 65500; 
-		color.green = 65500;
-		color.blue = 65500;
-		gdk_gc_set_rgb_fg_color(gc_5, &color);
-		gdk_gc_set_line_attributes(gc_5,
-				11, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
-				
-	}
-	
 	
 	if(!gpsdata  || global_reconnect_gpsd)
 		get_gps();
@@ -147,36 +91,9 @@ cb_gps_timer()
 				hand_y = 0;
 			}
 
-
-			
-			gdk_draw_drawable (
-				map_drawable->window,
-				map_drawable->style->fg_gc[GTK_WIDGET_STATE (map_drawable)],
-				pixmap,
-				last_x-29, last_y-29,
-				last_x-29 + mouse_dx, last_y-29 + mouse_dy,
-				58,58);
-
-		
-			if (lat_tmp && lon_tmp)
-				gdk_draw_line(pixmap, gc, last_x, last_y, x, y);
-			
-			
-			gdk_window_process_all_updates();
-
 			
 			if(mouse_dx == 0 && mouse_dy == 0)
 			{
-				
-				gdk_draw_arc (
-					map_drawable->window,
-					gc_2,
-					FALSE,		
-					x-15 + mouse_dx,
-					y-15 + mouse_dy,
-					30,30,		
-					0, 360*64);	
-				
 				
 				if(global_wp_on && gpsdata->valid)
 				{
@@ -187,38 +104,38 @@ cb_gps_timer()
 					hand_wp_x =  25 * sinf(bearing);
 					hand_wp_y = -25 * cosf(bearing);
 					
-					gdk_draw_line(map_drawable->window,
-							gc_5,
-							x + mouse_dx,
-							y + mouse_dy,
-							x + mouse_dx + hand_wp_x,
-							y + mouse_dy + hand_wp_y);
-
-					gdk_draw_line(map_drawable->window,
-							gc_4,
-							x + mouse_dx,
-							y + mouse_dy,
-							x + mouse_dx + hand_wp_x,
-							y + mouse_dy + hand_wp_y);
+//					gdk_draw_line(map_drawable->window,
+//							gc_5,
+//							x + mouse_dx,
+//							y + mouse_dy,
+//							x + mouse_dx + hand_wp_x,
+//							y + mouse_dy + hand_wp_y);
+//
+//					gdk_draw_line(map_drawable->window,
+//							gc_4,
+//							x + mouse_dx,
+//							y + mouse_dy,
+//							x + mouse_dx + hand_wp_x,
+//							y + mouse_dy + hand_wp_y);
 					
 					osd_wp();
 					
 				}
 				
 				
-				gdk_draw_line(map_drawable->window,
-						gc_5,
-						x + mouse_dx,
-						y + mouse_dy,
-						x + mouse_dx + hand_x,
-						y + mouse_dy + hand_y);
-				
-				gdk_draw_line(map_drawable->window,
-						gc_3,
-						x + mouse_dx,
-						y + mouse_dy,
-						x + mouse_dx + hand_x,
-						y + mouse_dy + hand_y);
+//				gdk_draw_line(map_drawable->window,
+//						gc_5,
+//						x + mouse_dx,
+//						y + mouse_dy,
+//						x + mouse_dx + hand_x,
+//						y + mouse_dy + hand_y);
+//
+//				gdk_draw_line(map_drawable->window,
+//						gc_3,
+//						x + mouse_dx,
+//						y + mouse_dy,
+//						x + mouse_dx + hand_x,
+//						y + mouse_dy + hand_y);
 			}
 		}
 		
@@ -237,8 +154,8 @@ cb_gps_timer()
 				gpsdata->fix.longitude !=0
 				)
 			{
-				osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
-						gpsdata->fix.latitude, gpsdata->fix.longitude, global_zoom);
+				osm_gps_map_set_center(OSM_GPS_MAP(mapwidget),
+						gpsdata->fix.latitude, gpsdata->fix.longitude);
 			}
 		}
 		

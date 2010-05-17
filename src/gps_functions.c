@@ -57,22 +57,6 @@ cb_gps_timer()
 		lat = deg2rad(gpsdata->fix.latitude);
 		lon = deg2rad(gpsdata->fix.longitude);		
 		
-		
-		pixel_x = lon2pixel(global_zoom, lon);
-		pixel_y = lat2pixel(global_zoom, lat);
-		
-		x = pixel_x - global_x;
-		y = pixel_y - global_y;
-		
-		
-		pixel_x = lon2pixel(global_zoom, lon_tmp);
-		pixel_y = lat2pixel(global_zoom, lat_tmp);
-		
-		last_x = pixel_x - global_x;
-		last_y = pixel_y - global_y;
-
-
-		
 		if(gpsdata->seen_valid)
 		{
 			int hand_wp_x, hand_wp_y;

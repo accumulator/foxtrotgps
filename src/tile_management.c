@@ -103,37 +103,3 @@ cb_download_maps(GtkWidget *dialog)
 	osm_gps_map_download_maps(OSM_GPS_MAP(mapwidget), &c1, &c2, global_zoom+1, zoom_end);
 	gtk_widget_hide(dialog);
 }
-
-bbox_t
-get_bbox()
-{
-	bbox_t bbox;
-	
-	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-
-	bbox.lat1 = pixel2lat(global_zoom, global_y);
-	bbox.lon1 = pixel2lon(global_zoom, global_x);
-	bbox.lat2 = pixel2lat(global_zoom, global_y + global_drawingarea_height);
-	bbox.lon2 = pixel2lon(global_zoom, global_x + global_drawingarea_width);
-
-	printf("BBOX: %f %f %f %f \n", bbox.lat1, bbox.lon1, bbox.lat2, bbox.lon2);
-	
-	return bbox;
-}
-
-bbox_t
-get_bbox_deg()
-{
-	bbox_t bbox;
-	
-	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-
-	bbox.lat1 = rad2deg( pixel2lat(global_zoom, global_y) );
-	bbox.lon1 = rad2deg( pixel2lon(global_zoom, global_x) );
-	bbox.lat2 = rad2deg( pixel2lat(global_zoom, global_y + global_drawingarea_height) );
-	bbox.lon2 = rad2deg( pixel2lon(global_zoom, global_x + global_drawingarea_width) );
-
-	printf("BBOX: %f %f %f %f \n", bbox.lat1, bbox.lon1, bbox.lat2, bbox.lon2);
-	
-	return bbox;
-}

@@ -189,24 +189,25 @@ void
 get_photos()
 {
 	char *sql, *db;
-	bbox_t bbox = get_bbox_deg();
+	coord_t c1,c2;
 	
 	db = g_strconcat(foxtrotgps_dir,"/", PHOTO_DB, NULL);
-	
-	
 	
 	if(photo_list)
 		g_slist_free(photo_list);
 	photo_list = NULL;
 	
+	osm_gps_map_get_bbox(OSM_GPS_MAP(mapwidget), &c1, &c2);
 	
 	sql = g_strdup_printf(	
 			"SELECT * FROM photo "
-			"WHERE lat<%f AND lat>%f AND lon>%f AND lon<%f "
+			"WHERE lat>%f AND lat<%f AND lon>%f AND lon<%f "
 			"LIMIT 500;",
-			bbox.lat1,bbox.lat2,
-			bbox.lon1, bbox.lon2	);
-	
+			c1.rlat > c2.rlat ? c2.rlat : c1.rlat,
+			c1.rlat > c2.rlat ? c1.rlat : c2.rlat,
+			c1.rlon > c2.rlon ? c2.rlon : c1.rlon,
+			c1.rlon > c2.rlon ? c1.rlon : c2.rlon
+	);
 	
 	sql_execute(db, sql, sql_cb__photo);		
 }

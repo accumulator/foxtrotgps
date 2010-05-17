@@ -579,28 +579,26 @@ get_pois()
 {
 	char sql[256];
 	char *db;
-	bbox_t bbox;
+	coord_t c1,c2;
 		
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 
-	bbox = get_bbox_deg();
-
 	db = g_strconcat(foxtrotgps_dir, "/", POI_DB, NULL);
-
 	
-	if(poi_list) g_slist_free(poi_list);
+	if(poi_list)
+		g_slist_free(poi_list);
 	poi_list = NULL;
-	
-	
 	
 	if(global_poi_cat==0)
 	{
 		g_snprintf(sql, 256, 
 				"SELECT * FROM poi "
-				"WHERE lat<%f AND lat>%f AND lon>%f AND lon<%f "
+				"WHERE lat>%f AND lat<%f AND lon>%f AND lon<%f "
 				"LIMIT 1000;",
-				bbox.lat1,bbox.lat2,
-				bbox.lon1, bbox.lon2
+				c1.rlat > c2.rlat ? c2.rlat : c1.rlat,
+				c1.rlat > c2.rlat ? c1.rlat : c2.rlat,
+				c1.rlon > c2.rlon ? c2.rlon : c1.rlon,
+				c1.rlon > c2.rlon ? c1.rlon : c2.rlon
 				);
 		printf("%s \n",sql);
 	}
@@ -609,28 +607,20 @@ get_pois()
 
 		g_snprintf(sql, 256, 
 				"SELECT * FROM poi "
-				"WHERE  cat=%d AND lat<%f AND lat>%f AND lon>%f AND lon<%f "
+				"WHERE cat=%d AND lat>%f AND lat<%f AND lon>%f AND lon<%f "
 				"LIMIT 1000;",
 				global_poi_cat,
-				bbox.lat1,bbox.lat2,
-				bbox.lon1, bbox.lon2
+				c1.rlat > c2.rlat ? c2.rlat : c1.rlat,
+				c1.rlat > c2.rlat ? c1.rlat : c2.rlat,
+				c1.rlon > c2.rlon ? c2.rlon : c1.rlon,
+				c1.rlon > c2.rlon ? c1.rlon : c2.rlon
 				);		
 		
 	}
-	
 
-
-	
-	if(poi_list)
-	{
-		g_slist_free(poi_list);
-		poi_list = NULL;
-	}
 	sql_execute(db, sql, sql_cb__poi_get);	
 	
-	
 	global_show_pois = TRUE;
-	
 }
 
 void

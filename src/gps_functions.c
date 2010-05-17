@@ -40,7 +40,7 @@ gboolean
 cb_gps_timer()
 {
 	int pixel_x, pixel_y, x, y, last_x, last_y;
-	static float lat, lon, lat_tmp=0, lon_tmp=0;
+	static float lat_tmp=0, lon_tmp=0;
 	float trip_delta=0;
 
 	static double trip_time_accumulated = 0;
@@ -48,14 +48,10 @@ cb_gps_timer()
 	
 	if(!gpsdata  || global_reconnect_gpsd)
 		get_gps();
-	
 
 	if(gpsdata)
 	{
 		trackpoint_t *tp = g_new0(trackpoint_t,1);
-		
-		lat = deg2rad(gpsdata->fix.latitude);
-		lon = deg2rad(gpsdata->fix.longitude);		
 		
 		if(gpsdata->seen_valid)
 		{
@@ -68,19 +64,17 @@ cb_gps_timer()
 			
 			if(global_wp_on && gpsdata->valid)
 			{
-				
-				bearing = get_bearing(lat, lon, global_wp.lat, global_wp.lon);
+				bearing = get_bearing(gpsdata->fix.latitude, gpsdata->fix.longitude, global_wp.lat, global_wp.lon);
 				gpsdata->fix.bearing = bearing;
 
-				hand_wp_x =  25 * sinf(bearing);
-				hand_wp_y = -25 * cosf(bearing);
+				hand_wp_x =  25 * sinf(DEG2RAD(bearing));
+				hand_wp_y = -25 * cosf(DEG2RAD(bearing));
 					
 				/* TODO : draw wp bearing */
 					
 				osd_wp();
 			}
 		}
-		
 		
 		if(global_autocenter)
 		{
@@ -101,42 +95,35 @@ cb_gps_timer()
 			}
 		}
 		
-
-		
-
-		
-		if( gpsdata->valid && lat_tmp!=0 && lon_tmp!=0)
+		if (gpsdata->valid && lat_tmp != 0 && lon_tmp != 0)
 		{
-			trip_delta = 6371.0 *  acos(sin(lat) * sin(lat_tmp) + 
-				     cos(lat) * cos(lat_tmp) * cos(lon_tmp-lon) );
+			trip_delta = get_distance(gpsdata->fix.latitude, gpsdata->fix.longitude, lat_tmp, lon_tmp);
 			
+			printf("* TRIP DELTA = %f\n", trip_delta);
+
 			if(isnan(trip_delta))
-			{
-				
 				trip_delta = 0;
-			}
 			
 			if(trip_delta > TRIP_DELTA_MIN)
 			{
-					tp->time    = gpsdata->fix.time;
-					tp->lat     = lat;
-					tp->lon     = lon;
-					tp->lat_deg = gpsdata->fix.latitude;
-					tp->lat_deg = gpsdata->fix.longitude;
-					tp->alt     = gpsdata->fix.altitude;
-					tp->speed   = gpsdata->fix.speed;
-					tp->head    = gpsdata->fix.heading;
-					tp->hdop    = gpsdata->hdop;
-					tp->heart   = 0;
-					
-					if (trip_delta > SEGMENT_DISTANCE)
-						tp->hdop = 999;
+				tp->time    = gpsdata->fix.time;
+				tp->lat     = DEG2RAD(gpsdata->fix.latitude);
+				tp->lon     = DEG2RAD(gpsdata->fix.longitude);
+				tp->lat_deg = gpsdata->fix.latitude;
+				tp->lat_deg = gpsdata->fix.longitude;
+				tp->alt     = gpsdata->fix.altitude;
+				tp->speed   = gpsdata->fix.speed;
+				tp->head    = gpsdata->fix.heading;
+				tp->hdop    = gpsdata->hdop;
+				tp->heart   = 0;
 
+				if (trip_delta > SEGMENT_DISTANCE)
+					tp->hdop = 999;
+
+				if (trackpoint_list->length > TRACKPOINT_LIST_MAX_LENGTH)
+					g_free(g_queue_pop_head(trackpoint_list));
 					
-					if (trackpoint_list->length > TRACKPOINT_LIST_MAX_LENGTH)
-						g_free(g_queue_pop_head(trackpoint_list));
-						
-					g_queue_push_tail(trackpoint_list, tp);
+				g_queue_push_tail(trackpoint_list, tp);
 			}
 		}
 			
@@ -144,12 +131,8 @@ cb_gps_timer()
 		{
 			trip_distance += trip_delta;
 
-			
 			if(gpsdata->valid && gpsdata->fix.speed > trip_maxspeed)
 				trip_maxspeed = gpsdata->fix.speed;
-			
-			
-			
 			
 			if(trip_time == 0) 
 				trip_time_accumulated = 0;
@@ -162,12 +145,10 @@ cb_gps_timer()
 				trip_starttime = 0;
 			}
 			
-			
 			if(trip_starttime == 0 && gpsdata->seen_valid)
 			{
 				trip_starttime = gpsdata->fix.time;
 			}
-			
 			
 			if(trip_starttime > 0 && gpsdata->seen_valid)
 			{
@@ -181,9 +162,7 @@ cb_gps_timer()
 				trip_distance = 0;
 				trip_maxspeed = 0;
 			}
-
 		}
-
 		else
 		{
 			printf("trip counter halted\n");
@@ -191,18 +170,15 @@ cb_gps_timer()
 			lat_tmp = lon_tmp = 0;
 		}
 		
-		
-		
 		set_label();
-		
 		
 		if(trip_logger_on && gpsdata->valid)
 			track_log();
 		
 		if(gpsdata->valid)
 		{	
-			lat_tmp = lat;
-			lon_tmp = lon;
+			lat_tmp = gpsdata->fix.latitude;
+			lon_tmp = gpsdata->fix.longitude;
 		}
 	}
 	else 
@@ -649,6 +625,7 @@ get_gps_thread(void *ptr)
 	return NULL;
 }
 
+/* deprecated */
 void
 map_scale_indicator()
 {

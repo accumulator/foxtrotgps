@@ -1,3 +1,6 @@
+#define DEG2RAD(deg) (deg * M_PI / 180.0)
+#define RAD2DEG(rad) (rad / M_PI * 180.0)
+
 char *
 latdeg2latmin(	float lat);
 

@@ -1,9 +1,9 @@
-
-
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <glib/gprintf.h>
+
+#include "converter.h"
 
 char *
 latdeg2latmin(	float lat)
@@ -91,18 +91,15 @@ londeg2lonsec(	float lon)
 float
 get_bearing(double lat1, double lon1, double lat2, double lon2)
 {
-	double bearing, tmp, tmp2;
+	double bearing, tmp;
 
-	tmp = atan2(sin(lon2-lon1) * cos(lat2),
-		    cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon2-lon1) );
+	tmp = atan2(sin(DEG2RAD(lon2)-DEG2RAD(lon1)) * cos(DEG2RAD(lat2)),
+		    cos(DEG2RAD(lat1)) * sin(DEG2RAD(lat2)) -
+		    sin(DEG2RAD(lat1)) * cos(DEG2RAD(lat2)) * cos(DEG2RAD(lon2)-DEG2RAD(lon1)) );
 
-	tmp2 = tmp;
-	
-	bearing = (tmp2<0) ? tmp2+M_PI*2 : tmp2;
+	bearing = (tmp < 0) ? tmp + M_PI*2 : tmp;
 
-        
-
-	return bearing;
+	return RAD2DEG(bearing);
 }
 
 float
@@ -111,11 +108,9 @@ get_distance(double lat1, double lon1, double lat2, double lon2)
 	float distance = 0;
 	double tmp;
 	
-	tmp = sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1);
+	tmp = sin(DEG2RAD(lat1)) * sin(DEG2RAD(lat2)) + cos(DEG2RAD(lat1)) * cos(DEG2RAD(lat2)) * cos(DEG2RAD(lon2) - DEG2RAD(lon1));
 	
-	distance = 6371.0 *  acos(tmp);
-
-	
+	distance = 6371.0 * acos(tmp);
 	
 	return distance;
 }

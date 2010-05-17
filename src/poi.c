@@ -659,37 +659,16 @@ show_poi_detail()
 	
 	if(gpsdata !=NULL && !global_myposition.lat && !global_myposition.lon)
 	{
-		distance = 	6371.0 *  
-				acos(sin(deg2rad(gpsdata->fix.latitude)) * 
-				sin(lat) +
-		
-				cos(deg2rad(gpsdata->fix.latitude)) * 
-				cos(lat) * 
-				cos(lon - deg2rad(gpsdata->fix.longitude)) );
+		distance = get_distance(gpsdata->fix.latitude, gpsdata->fix.longitude, lat_deg, lon_deg);
 	}
 	else if(global_myposition.lat && global_myposition.lon)
 	{
-		distance = 	6371.0 *  
-				acos(sin(deg2rad(global_myposition.lat)) * 
-				sin(lat) +
-		
-				cos(deg2rad(global_myposition.lat)) * 
-				cos(lat) * 
-				cos(lon - deg2rad(global_myposition.lon)) );
-				
+		distance = get_distance(global_myposition.lat, global_myposition.lon, lat_deg, lon_deg);
 	}
 	
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-
-
-
 	
 	label = lookup_widget(window,"label110");
-	
-	
-
-	
-	
 	
 	for(list = poi_list; list != NULL; list = list->next)
 	{

@@ -97,16 +97,13 @@ osd_wp()
 				g_sprintf(distunit, "%s", "NM");
 				break;		
 		}
-		
 
-		distance = get_distance(deg2rad(gpsdata->fix.latitude), 
-					deg2rad(gpsdata->fix.longitude), 
+		distance = get_distance(
+					gpsdata->fix.latitude, gpsdata->fix.longitude,
 					global_wp.lat,global_wp.lon);
 		buffer = g_strdup_printf("%.3f\n%.1f°", 
 					distance*unit_conv, 
-					
-					rad2deg(gpsdata->fix.bearing));
-		
+					gpsdata->fix.bearing);
 		
 		context = gtk_widget_get_pango_context (map_drawable);
 		layout  = pango_layout_new (context);

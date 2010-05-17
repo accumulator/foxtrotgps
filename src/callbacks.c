@@ -644,27 +644,13 @@ on_item3_activate                      (GtkMenuItem     *menuitem,
 	lon_deg = rad2deg(lon);
 	printf ("##### Lonitude: %f %f - %f %f \n", lat, lon, lat_deg, lon_deg);
 	
-	
 	if(gpsdata !=NULL && !global_myposition.lat && !global_myposition.lon)
 	{
-		distance = 	6371.0 *  
-				acos(sin(deg2rad(gpsdata->fix.latitude)) * 
-				sin(lat) +
-		
-				cos(deg2rad(gpsdata->fix.latitude)) * 
-				cos(lat) * 
-				cos(lon - deg2rad(gpsdata->fix.longitude)) );
+		distance = get_distance(gpsdata->fix.latitude, gpsdata->fix.longitude, lat_deg, lon_deg);
 	}
 	else if(global_myposition.lat && global_myposition.lon)
 	{
-		distance = 	6371.0 *  
-				acos(sin(deg2rad(global_myposition.lat)) * 
-				sin(lat) +
-		
-				cos(deg2rad(global_myposition.lat)) * 
-				cos(lat) * 
-				cos(lon - deg2rad(global_myposition.lon)) );
-				
+		distance = get_distance(global_myposition.lat, global_myposition.lon, lat_deg, lon_deg);
 	}
 	
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
@@ -716,41 +702,30 @@ on_item4_activate                      (GtkMenuItem     *menuitem,
 	double unit_conv = 1;
 	static gchar distunit[3];
 	
-	printf("screen x,y, global x,y: %d %d %d %d\n",mouse_x, mouse_y, global_x, global_y);
+	osm_gps_map_screen_to_geographic(OSM_GPS_MAP(mapwidget), mouse_x, mouse_y, &lat, &lon);
+
+	printf("screen (x,y) world (lat,lon): %d %d %f %f\n",mouse_x, mouse_y, lat, lon);
 
 	if(!distance_mode)
 		overall_distance = 0.0;
 
 	set_cursor(GDK_CROSSHAIR);
-
-	
-	
-	lat = pixel2lat(global_zoom, global_y+mouse_y);
-	lon = pixel2lon(global_zoom, global_x+mouse_x);
-
-	lat_deg = rad2deg(lat);
-	lon_deg = rad2deg(lon);
-
-	printf ("##### Lonitude: %f %f - %f %f \n", lat, lon, lat_deg, lon_deg);
-
-	
 		
 	switch (global_latlon_unit) 
 	{
 	case 0:
-		g_sprintf(latlon, "%f - %f", lat_deg, lon_deg);
+		g_sprintf(latlon, "%f - %f", lat, lon);
 		break;
 	case 1:
 		g_sprintf(latlon, "%s   %s", 
-			  latdeg2latmin(lat_deg),
-			  londeg2lonmin(lon_deg));
+			  latdeg2latmin(lat),
+			  londeg2lonmin(lon));
 		break;
 	case 2:
 		g_sprintf(latlon, "%s   %s", 
-			  latdeg2latsec(lat_deg),
-			  londeg2lonsec(lon_deg));
+			  latdeg2latsec(lat),
+			  londeg2lonsec(lon));
 	}
-
 	
 	if(global_speed_unit==1)
 	{
@@ -767,29 +742,14 @@ on_item4_activate                      (GtkMenuItem     *menuitem,
 		g_sprintf(distunit, "%s", "km");
 	}
 	
-	
-	
 	if(distance_mode)
 	{
-		distance = 	6371.0 *  
-				acos(sin(deg2rad(start_lat)) * 
-				sin(lat) +
-		
-				cos(deg2rad(start_lat)) * 
-				cos(lat) * 
-				cos(lon - deg2rad(start_lon)) );
-		
-		bearing = get_bearing(deg2rad(start_lat), deg2rad(start_lon), lat, lon);		
+		distance = get_distance(start_lat, start_lon, lat, lon);
+		bearing = get_bearing(start_lat, start_lon, lat, lon);
 	}
 	else if(gpsdata !=NULL && gpsdata->fix.latitude)
 	{
-		distance = 	6371.0 *  
-				acos(sin(deg2rad(gpsdata->fix.latitude)) * 
-				sin(lat) +
-		
-				cos(deg2rad(gpsdata->fix.latitude)) * 
-				cos(lat) * 
-				cos(lon - deg2rad(gpsdata->fix.longitude)) );
+		distance = get_distance(gpsdata->fix.latitude, gpsdata->fix.longitude, lat, lon);
 	}
 
 	if(distance_mode)
@@ -809,7 +769,7 @@ on_item4_activate                      (GtkMenuItem     *menuitem,
 				"<b>Bearing:</b>\n%.1f°\n"
 				"<b>Distance from your location:</b>\n%.2f%s\n"
 				"Click another point for distance",
-				latlon, bearing/M_PI*180, 
+				latlon, bearing,
 				distance*unit_conv, distunit);
 	}
 	else if (!distance_mode && (!gpsdata || (gpsdata && !gpsdata->fix.latitude)))
@@ -826,10 +786,9 @@ on_item4_activate                      (GtkMenuItem     *menuitem,
 				"<b>Bearing:</b>\n%.1f°\n"
 				"<b>Distance from last point:</b>\n%.2f%s\n"
 				"<b>Overall Distance:</b>\n%.2f%s",
-				latlon, bearing/M_PI*180, 
+				latlon, bearing,
 				distance*unit_conv, distunit, 
 				overall_distance*unit_conv, distunit);
-		
 	}
 	
 	gtk_label_set_label(GTK_LABEL(label),buffer);
@@ -839,45 +798,8 @@ on_item4_activate                      (GtkMenuItem     *menuitem,
 	
 	if(distance_mode)
 	{
-		
-		int pixel_x, pixel_y, x, y;
-		float lt, ln;
-		
-		
-		GdkColor color;
-		GdkGC *gc;
-	
-		gc = gdk_gc_new(pixmap);
-		color.green = 0;
-		color.blue = 50000;
-		color.red = 0;
-		gdk_gc_set_rgb_fg_color(gc, &color);
-		gdk_gc_set_line_attributes(
-		gc, 5, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
-
-
-		
-		
-		lt = deg2rad(start_lat);
-		ln = deg2rad(start_lon);
-		pixel_x = lon2pixel(global_zoom, ln);
-		pixel_y = lat2pixel(global_zoom, lt);
-		x = pixel_x - global_x;
-		y = pixel_y - global_y;
-		
-
-
-		gdk_draw_line (pixmap, gc, x, y, mouse_x, mouse_y);
-
-		gtk_widget_queue_draw_area (
-			map_drawable, 
-			((x > mouse_x) ? mouse_x : x) - 4, 
-			((y > mouse_y) ? mouse_y : y) - 4,
-			abs(mouse_x - x) + 8,
-			abs(mouse_y - y) + 8);
-			
-
-		printf("LINE x y lx ly: %d %d %d %d\n", start_x, start_y, mouse_x, mouse_y);
+		/* Original drawing code removed
+		 * TODO : draw line between (start_lat,start_lon) and last click location */
 	}
 	else
 	{
@@ -918,8 +840,8 @@ on_item4_activate                      (GtkMenuItem     *menuitem,
 	
 	start_x = mouse_x;
 	start_y = mouse_y;
-	start_lat = lat_deg;
-	start_lon = lon_deg;
+	start_lat = lat;
+	start_lon = lon;
 	
 	
 	distance_mode = TRUE;

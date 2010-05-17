@@ -1,6 +1,8 @@
 
 #include <string.h>
 #include <glib/gprintf.h>
+#include <osm-gps-map.h>
+
 #include "support.h"
 #include "converter.h"
 #include "callbacks.h"
@@ -19,112 +21,42 @@ do_paint_myposition();
 
 
 void
-set_current_wp(double lat, double lon)
+set_current_wp(coord_t *coord)
 {
-	global_wp_on = TRUE;
-	global_wp.lat = lat;
-	global_wp.lon = lon;
-	
-	
-	repaint_all();
-}
+	GError *error = NULL;
 
-
-
-
-
-void
-paint_wp()
-{
-	if(global_wp_on) do_paint_wp();	
-}
-
-void
-do_paint_wp()
-{	
-	int pixel_x, pixel_y, x,y;
-	float lat, lon;
-	GdkColor color;
-	GdkGC *gc;
-	GError	*error = NULL;
-	
-	gc = gdk_gc_new(pixmap);
-	color.green = 60000;
-	color.blue = 0;
-	color.red = 10000;
-	gdk_gc_set_rgb_fg_color(gc, &color);
-	
-
-	if(!wp_icon)
-	{
-		wp_icon = gdk_pixbuf_new_from_file_at_size (
-			PACKAGE_PIXMAPS_DIR "/foxtrotgps-wp.png", 36,36,
-			&error);
-		if (error)
-		{
-			g_print ("%s(): loading pixbuf failure. %s\n", __FUNCTION__,
-			error->message);
-			g_error_free (error);
-			
-			
+	if (coord == NULL) {
+		// unset wp
+		printf("* unset WP\n");
+		global_wp_on = FALSE;
+		if (wp_icon) {
+			osm_gps_map_remove_image(OSM_GPS_MAP(mapwidget), wp_icon);
 		}
-	}
-	if (pixmap && !gc_map)	
-		gc_map = gdk_gc_new(pixmap);
-		
-	
-
-	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-
-
-
-	lat = global_wp.lat;
-	lon = global_wp.lon;
-	
-	
-	
-	
-	pixel_x = lon2pixel(global_zoom, lon);
-	pixel_y = lat2pixel(global_zoom, lat);
-	
-	x = pixel_x - global_x;
-	y = pixel_y - global_y;
-	
-	
-	
-	if(!wp_icon)
-	{
-		gdk_draw_arc (
-			pixmap,
-			
-			gc,
-			TRUE,			
-			x-4, y-4,		
-			8,8,			
-			0,23040);		
 	}
 	else
 	{
-		gdk_draw_pixbuf (
-			pixmap,
-			gc_map,
-			wp_icon,
-			0,0,
-			x,y-36,
-			36,36,
-			GDK_RGB_DITHER_NONE, 0, 0);
-		
-		gtk_widget_queue_draw_area (
-			map_drawable, 
-			x, y-36,
-			36,36);
-	}
-	printf("WAYPOINT: lat %f - lon %f\n",lat, lon);
+		printf("* set WAYPOINT: lat %f - lon %f\n", coord->rlat, coord->rlon);
+		if (global_wp_on && wp_icon) {
+			osm_gps_map_remove_image(OSM_GPS_MAP(mapwidget), wp_icon);
+		}
+		global_wp_on = TRUE;
+		global_wp.lat = coord->rlat;
+		global_wp.lon = coord->rlon;
 	
+		if(!wp_icon)
+		{
+			wp_icon = gdk_pixbuf_new_from_file_at_size (
+				PACKAGE_PIXMAPS_DIR "/foxtrotgps-wp.png", 36, 36, &error);
+			if (error)
+			{
+				g_print ("%s(): loading pixbuf failure. %s\n", __FUNCTION__, error->message);
+				g_error_free (error);
+			}
+		}
+
+		osm_gps_map_add_image(OSM_GPS_MAP(mapwidget), coord->rlat, coord->rlon, wp_icon);
+	}
 }
-
-
-
 
 void
 osd_wp()
@@ -145,7 +77,7 @@ osd_wp()
 	float distance;
 	double unit_conv = 1;
 		
-	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
+	//printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
 	return;
 
 	if(gpsdata && mouse_dx == 0 && mouse_dy == 0) 

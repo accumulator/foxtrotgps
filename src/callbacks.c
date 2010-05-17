@@ -85,8 +85,8 @@ on_map_button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer use
 
 	mouse_x = (int) event->x;
 	mouse_y = (int) event->y;
-	local_x = global_x;
-	local_y = global_y;
+//	local_x = global_x;
+//	local_y = global_y;
 
 	return FALSE;
 }
@@ -1904,12 +1904,14 @@ on_button27_clicked                    (GtkButton       *button,
 	GtkWidget *window;
 	waypoint_t *wp;
 	
+	printf("* %s()\n", __PRETTY_FUNCTION__);
+
 	wp = user_data;
-	set_current_wp(wp->lat, wp->lon);
+	//set_current_wp(wp->lat, wp->lon);
 	
 	window = lookup_widget(GTK_WIDGET(button), "window5");
 	gtk_widget_destroy(window);
-	printf("hello, world, %f %f\n", wp->lat, wp->lon);
+	//printf("hello, world, %f %f\n", wp->lat, wp->lon);
 }
 
 
@@ -2000,8 +2002,10 @@ on_button29_clicked                    (GtkButton       *button,
 	GtkWidget *window;
 	waypoint_t *wp;
 	
+	printf("* %s()\n", __PRETTY_FUNCTION__);
+
 	wp = user_data;
-	set_current_wp(wp->lat, wp->lon);
+	//set_current_wp(wp->lat, wp->lon);
 
 	window = lookup_widget(GTK_WIDGET(button), "window3");
 	gtk_widget_hide(window);
@@ -3006,17 +3010,16 @@ on_item17_button_release_event         (GtkWidget       *widget,
                                         GdkEventButton  *event,
                                         gpointer         user_data)
 {
-	float lat, lon;
-	
-	
 	printf("screen x,y: %d %d \n",mouse_x, mouse_y);
-	lat = pixel2lat(global_zoom, global_y+mouse_y);
-	lon = pixel2lon(global_zoom, global_x+mouse_x);
+	coord_t mouse_coord;
+	osm_gps_map_screen_to_geographic(OSM_GPS_MAP(mapwidget),
+			mouse_x, mouse_y,
+			&(mouse_coord.rlat), &(mouse_coord.rlon));
 	
-	set_current_wp(lat, lon);
-  return FALSE;
+	set_current_wp(&mouse_coord);
+	
+    return FALSE;
 }
-
 
 gboolean
 on_item18_button_release_event         (GtkWidget       *widget,
@@ -3024,13 +3027,9 @@ on_item18_button_release_event         (GtkWidget       *widget,
                                         gpointer         user_data)
 {
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-	global_wp_on = FALSE;
-	repaint_all();
-  return FALSE;
+	set_current_wp(NULL);
+	return FALSE;
 }
-
-
-
 
 void
 on_button57_clicked                    (GtkButton       *button,

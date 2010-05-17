@@ -21,7 +21,6 @@
 #include "globals.h"
 #include "support.h"
 #include "tile_management.h"
-#include "map_management.h"
 #include "converter.h"
 #include "wp.h"
 #include "tracks.h"

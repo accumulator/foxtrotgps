@@ -7,7 +7,6 @@
 #include "support.h"
 #include "wp.h"
 #include "util.h"
-#include "map_management.h"
 
 #include <stdio.h>
 #include <stdlib.h>

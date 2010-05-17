@@ -18,7 +18,6 @@
 #include <errno.h>
 
 #include "globals.h"
-#include "map_management.h"
 #include "converter.h"
 #include "gps_functions.h"
 #include "support.h"

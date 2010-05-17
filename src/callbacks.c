@@ -19,7 +19,6 @@
 #include "support.h"
 
 #include "globals.h"
-#include "map_management.h"
 #include "tile_management.h"
 #include "converter.h"
 #include "gps_functions.h"
@@ -365,19 +364,14 @@ on_button1_clicked                     (GtkButton       *button,
 	if(!maximized)
 	{		
 		gtk_window_fullscreen(GTK_WINDOW(window1));
-		fill_tiles_pixel(global_x, global_y, global_zoom, FALSE);
-
 		maximized = TRUE;
 	}
 	else
 	{
 		gtk_window_unfullscreen(GTK_WINDOW(window1));
-
 		maximized = FALSE;
 	}
 }
-
-
 
 void
 on_vscale1_value_changed               (GtkRange        *range,

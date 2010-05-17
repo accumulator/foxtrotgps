@@ -9,23 +9,8 @@ on_map_button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer use
 gboolean
 on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 
-gboolean
-on_drawingarea1_button_press_event     (GtkWidget       *widget,
-                                        GdkEventButton  *event,
-                                        gpointer         user_data);
-
-gboolean
-on_drawingarea1_motion_notify_event    (GtkWidget       *widget,
-                                        GdkEventMotion  *event,
-                                        gpointer         user_data);
-
 void
 on_button1_clicked                     (GtkButton       *button,
-                                        gpointer         user_data);
-
-gboolean
-on_drawingarea1_button_release_event   (GtkWidget       *widget,
-                                        GdkEventButton  *event,
                                         gpointer         user_data);
 
 void

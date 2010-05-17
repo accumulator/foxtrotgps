@@ -394,14 +394,13 @@ tracks_on_file_button_release_event   (	GtkWidget       *widget,
                                         GdkEventButton  *event,
                                         gpointer         user_data)
 {
-	GtkWidget *drawingarea, *range, *vbox;
+	GtkWidget *range, *vbox;
 	int track_zoom, width, height;
 	char *file;
 	bbox_t bbox;
 	
-	drawingarea = lookup_widget(window1, "drawingarea1");
-	width  = drawingarea->allocation.width;
-	height = drawingarea->allocation.height;
+	width  = mapwidget->allocation.width;
+	height = mapwidget->allocation.height;
 	
 	file = (char *) user_data;
 	
@@ -624,13 +623,12 @@ fetch_track_thread(void *ptr)
 {
 	postreply_t *reply = NULL;
 	char *url;
-	GtkWidget *range, *drawingarea;
+	GtkWidget *range;
 	int track_zoom, width, height;
 	bbox_t bbox;
 	
-	drawingarea = lookup_widget(window1, "drawingarea1");
-	width  = drawingarea->allocation.width;
-	height = drawingarea->allocation.height;
+	width  = mapwidget->allocation.width;
+	height = mapwidget->allocation.height;
 	
 	url = ptr;
 	

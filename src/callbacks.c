@@ -181,268 +181,6 @@ on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer u
 	return FALSE;
 }
 
-gboolean
-on_drawingarea1_button_press_event     (GtkWidget       *widget,
-                                        GdkEventButton  *event,
-                                        gpointer         user_data)
-{
-	
-	wtfcounter = 0;
-	if ( event->type==GDK_2BUTTON_PRESS) 
-	{
-		printf("double click\n");
-		
-		
-	}
-	
-	mouse_x = (int) event->x;
-	mouse_y = (int) event->y;
-	local_x = global_x;
-	local_y = global_y;
-		
-	return FALSE;
-}
-
-gboolean
-on_drawingarea1_button_release_event   (GtkWidget       *widget,
-                                        GdkEventButton  *event,
-                                        gpointer         user_data)
-{
-	if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) {
-		
-		GtkWidget *range;
-		int zoom_old;
-		double factor;
-		int width_center, height_center;
-			
-
-			
-		if(global_zoom<global_zoom_max)
-		{	
-			range = lookup_widget(window1, "vscale1");
-			
-			width_center  = map_drawable->allocation.width 	/ 2;
-			height_center = map_drawable->allocation.height / 2;
-						
-			zoom_old = global_zoom;
-		
-			global_zoom++;
-			gtk_range_set_value(GTK_RANGE(range), (double) global_zoom);
-			
-			
-			
-			factor = 2;
-			
-			
-			global_x = 2 * global_x + (int)event->x;
-			global_y = 2 * global_y + (int)event->y;
-			
-			
-			repaint_all();
-		}
-	}
-	else {
-		
-		if ( event->type==GDK_2BUTTON_PRESS) 
-		{	
-			printf("end double click\n");
-		}
-		
-		if(wtfcounter >= WTFCOUNTER)
-		{
-			printf("* mouse drag +8events\n");
-			int mouse_dx, mouse_dy;
-			
-			global_x = local_x;
-			global_y = local_y;
-			
-			mouse_dx = mouse_x - (int) event->x;
-			mouse_dy = mouse_y - (int) event->y;
-			
-			global_x += mouse_dx;
-			global_y += mouse_dy;
-		
-			gdk_draw_rectangle (
-				pixmap,
-				widget->style->white_gc,
-				TRUE,
-				0, 0,
-				widget->allocation.width+260,
-				widget->allocation.height+260);
-						
-			gtk_widget_queue_draw_area (
-				widget, 
-				0,0,widget->allocation.width+260,widget->allocation.height+260);
-			
-		
-			repaint_all();
-		}
-		
-		if (abs(mouse_x - (int) event->x) < 10 && abs(mouse_y - (int) event->y) < 10)
-		{
-			GSList *list;
-			gboolean friend_found = FALSE;
-			gboolean photo_found = FALSE;
-			gboolean poi_found = FALSE;
-			
-			
-			if(global_show_friends)
-			{
-				for(list = friends_list; list != NULL && !friend_found; list = list->next)
-				{
-					friend_t *f = list->data;
-
-					if( 	abs(f->screen_x - mouse_x) < 15 &&
-						abs(f->screen_y - mouse_y) < 15)
-					{
-						
-						friend_found = TRUE;
-					}
-				
-				}
-			}
-			
-			if(global_show_photos && !photo_found)
-			{
-				for(list = photo_list; list != NULL && !photo_found; list = list->next)
-				{
-					photo_t *p = list->data;
-					
-					if( 	abs(p->screen_x - mouse_x) < 15 &&
-						abs(p->screen_y - mouse_y) < 15)
-					{
-						
-						photo_found = TRUE;
-					}
-				
-				}
-			}
-			
-			if (global_show_pois )
-			{	
-				for(list = poi_list; list != NULL && !poi_found; list = list->next)
-				{
-					poi_t *p = list->data;
-					
-					if( 	abs(p->screen_x - mouse_x) < 15 &&
-						abs(p->screen_y - mouse_y) < 15)
-					{
-						
-						poi_found = TRUE;
-					}
-				
-				}
-			}
-			
-			
-			if (!friend_found && !photo_found && !poi_found && 
-				!distance_mode && !pickpoint_mode)
-			{	
-	
-				gtk_widget_show(menu1);
-				
-				gtk_menu_popup (GTK_MENU(menu1), NULL, NULL, NULL, NULL, 
-					  event->button, event->time);
-				
-			}
-			
-			if(distance_mode)
-				do_distance();
-			else if (pickpoint_mode)
-				do_pickpoint();
-			else
-			{
-				if (friend_found)
-					on_item3_activate(NULL, NULL);
-				if (photo_found)
-					on_item10_activate(NULL, NULL);
-				if (poi_found)
-					on_item15_activate(NULL, NULL);
-			}
-		}
-	
-		wtfcounter = 0;
-	
-			
-		mouse_dx = mouse_dy = 0;
-		drag_started = 0;
-	}
-	return FALSE;
-}
-
-gboolean
-on_drawingarea1_motion_notify_event    (GtkWidget       *widget,
-                                        GdkEventMotion  *event,
-                                        gpointer         user_data)
-{
-	if(global_mapmode)
-	{
-		int x, y, width, height;
-		GdkModifierType state;
-		
-		width  = map_drawable->allocation.width;  
-		height = map_drawable->allocation.height; 
-		
-		if (event->is_hint)
-			gdk_window_get_pointer (event->window, &x, &y, &state);
-		else
-		{
-			x = event->x;
-			y = event->y;
-			state = event->state;
-		}
-	 
-		if (state & GDK_BUTTON1_MASK  && wtfcounter>=WTFCOUNTER) 
-		{
-			if(!drag_started)
-			{
-				mouse_x = (int) event->x;
-				mouse_y = (int) event->y;
-				local_x = global_x;
-				local_y = global_y;
-
-				drag_started = 1;				
-			}
-			global_autocenter = FALSE;
-				
-			mouse_dx = x - mouse_x;	
-			mouse_dy = y - mouse_y;
-				
-			gdk_draw_drawable (
-				widget->window,
-				widget->style->fg_gc[GTK_WIDGET_STATE (widget)],
-				pixmap,
-				0,0,
-				mouse_dx,mouse_dy,
-				-1,-1);
-	
-			if(mouse_dx>0)
-				gdk_draw_rectangle (
-					widget->window,
-					widget->style->white_gc,
-					TRUE,
-					0, 0,
-					mouse_dx,
-					widget->allocation.height);
-			
-			if (mouse_dy>0)
-				gdk_draw_rectangle (
-					widget->window,
-					widget->style->white_gc,
-					TRUE,
-					0, 0,
-					widget->allocation.width,
-					mouse_dy);
-					
-
-		}	
-		else
-			wtfcounter++;
-	}
-	
-  return FALSE;
-}
-
 void
 on_button1_clicked                     (GtkButton       *button,
                                         gpointer         user_data)
@@ -3566,7 +3304,7 @@ on_button76_clicked                    (GtkButton       *button,
 {
 	
 
-	GtkWidget *widget, *widget1, *draw_widget, *toolbar;
+	GtkWidget *widget, *widget1, *toolbar;
 
 	widget  = lookup_widget(window1, "vbox53");  
 	widget1 = lookup_widget(window1, "hbox52");
@@ -3596,11 +3334,9 @@ on_button76_clicked                    (GtkButton       *button,
 		global_infopane_visible = TRUE;
 	}
 	else {
-		draw_widget = lookup_widget(window1, "drawingarea1");
-		
 		gtk_widget_hide(widget);
 		gtk_widget_show(widget1);
-		gtk_widget_grab_focus(draw_widget);
+		gtk_widget_grab_focus(mapwidget);
 
 		if(!global_landscape) {
 			toolbar = lookup_widget(window1, "toolbar1");
@@ -3668,6 +3404,9 @@ void
 move_map(int i)
 {
 	GtkWidget *widget = NULL;
+
+	printf("* deprecated %s()\n", __PRETTY_FUNCTION__);
+	return;
 
 	widget = lookup_widget(window1, "drawingarea1");
 	
@@ -3807,6 +3546,7 @@ activate_larger_map_details (GtkMenuItem *larger_item, GtkMenuItem *more_item)
 void
 on_tiles_queued_changed (GtkWidget *widget, GParamSpec *paramSpec)
 {
-	int *tiles_queued = g_object_get_data(G_OBJECT(widget), "tiles-queued");
-	printf("* TILES QUEUED: %d\n", *tiles_queued);
+	gint tiles_queued;
+	g_object_get(G_OBJECT(widget), "tiles-queued", &tiles_queued, NULL);
+	printf("* TILES QUEUED: %d\n", tiles_queued);
 }

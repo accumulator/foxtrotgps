@@ -243,20 +243,20 @@ init()
 
 	float view_lat, view_lon;
 	int view_zoom;
-	view_lat = gconf_client_get_float(
-				global_gconfclient,
-				GCONF"/view_lat",
-				&err);
-	view_lon = gconf_client_get_float(
-				global_gconfclient,
-				GCONF"/view_lon",
-				&err);
-	view_zoom = gconf_client_get_int(
-				global_gconfclient,
-				GCONF"/view_zoom",
-				&err);
+	view_lat = gconf_client_get_float(global_gconfclient, GCONF"/view_lat", NULL);
+	view_lon = gconf_client_get_float(global_gconfclient, GCONF"/view_lon", NULL);
+	view_zoom = gconf_client_get_int(global_gconfclient, GCONF"/view_zoom", NULL);
 
 	osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget), view_lat, view_lon, view_zoom);
+
+	global_autocenter = gconf_client_get_bool(global_gconfclient, GCONF"/autocenter", NULL);
+	if (global_autocenter) {
+		GtkToggleToolButton * ttbutton;
+		ttbutton = GTK_TOGGLE_TOOL_BUTTON(lookup_widget(window1, "button3"));
+		gtk_toggle_tool_button_set_active(ttbutton, TRUE);
+		ttbutton = GTK_TOGGLE_TOOL_BUTTON(lookup_widget(window1, "button56"));
+		gtk_toggle_tool_button_set_active(ttbutton, TRUE);
+	}
 }
 
 /*
@@ -277,21 +277,11 @@ quit()
 			mapwidget->allocation.width/2, mapwidget->allocation.height/2,
 			&lat, &lon);
 
-	success = gconf_client_set_float(
-				global_gconfclient,
-				GCONF"/view_lat",
-				lat,
-				error);
-	success = gconf_client_set_float(
-				global_gconfclient,
-				GCONF"/view_lon",
-				lon,
-				error);
-	success = gconf_client_set_int(
-				global_gconfclient,
-				GCONF"/view_zoom",
-				zoom,
-				error);
+	success = gconf_client_set_float(global_gconfclient, GCONF"/view_lat", lat,	error);
+	success = gconf_client_set_float(global_gconfclient, GCONF"/view_lon", lon,	error);
+	success = gconf_client_set_int(global_gconfclient, GCONF"/view_zoom", zoom,	error);
+
+	success = gconf_client_set_bool(global_gconfclient, GCONF"/autocenter", global_autocenter, error);
 
 	gtk_main_quit();
 }

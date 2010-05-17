@@ -39,7 +39,6 @@ guint watchdog;
 gboolean
 cb_gps_timer()
 {
-	int pixel_x, pixel_y, x, y, last_x, last_y;
 	static float lat_tmp=0, lon_tmp=0;
 	float trip_delta=0;
 
@@ -78,11 +77,16 @@ cb_gps_timer()
 		
 		if(global_autocenter)
 		{
-			if(    (x < (global_drawingarea_width /2 - global_drawingarea_width /8) ||
-				x > (global_drawingarea_width /2 + global_drawingarea_width /8) ||
-				y < (global_drawingarea_height /2 - global_drawingarea_height /8) ||
-				y > (global_drawingarea_height /2 + global_drawingarea_height /8) ) &&
-			
+			int map_width = mapwidget->allocation.width;
+			int map_height = mapwidget->allocation.height;
+			int x, y;
+			osm_gps_map_geographic_to_screen(OSM_GPS_MAP(mapwidget),
+					gpsdata->fix.latitude, gpsdata->fix.longitude,
+					&x, &y);
+			if((x < (map_width / 2 - map_width / 8) ||
+				x > (map_width / 2 + map_width / 8) ||
+				y < (map_height / 2 - map_height / 8) ||
+				y > (map_height / 2 + map_height / 8) ) &&
 				
 				isnan(gpsdata->fix.latitude) ==0 &&
 				isnan(gpsdata->fix.longitude)==0 &&

@@ -5,6 +5,7 @@
 #include <locale.h>
 #include <string.h>
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 
 #include <glade/glade.h>
 
@@ -38,6 +39,8 @@ GtkWidget * custom_widget_handler (
 				"proxy-uri", g_getenv("http_proxy"),
 				NULL);
 
+		OsmGpsMap *map = OSM_GPS_MAP(widget);
+
 		OsmGpsMapLayer *osd = g_object_new (OSM_TYPE_GPS_MAP_OSD,
 	                        "show-scale",TRUE,
 	                        "show-coordinates",TRUE,
@@ -55,6 +58,13 @@ GtkWidget * custom_widget_handler (
 	                      G_CALLBACK (on_map_button_press_event), NULL);
 	    g_signal_connect (G_OBJECT (widget), "button-release-event",
 	                      G_CALLBACK (on_map_button_release_event), NULL);
+
+	    osm_gps_map_set_keyboard_shortcut(map, OSM_GPS_MAP_KEY_FULLSCREEN, GDK_F11);
+	    osm_gps_map_set_keyboard_shortcut(map, OSM_GPS_MAP_KEY_UP, GDK_Up);
+	    osm_gps_map_set_keyboard_shortcut(map, OSM_GPS_MAP_KEY_DOWN, GDK_Down);
+	    osm_gps_map_set_keyboard_shortcut(map, OSM_GPS_MAP_KEY_LEFT, GDK_Left);
+	    osm_gps_map_set_keyboard_shortcut(map, OSM_GPS_MAP_KEY_RIGHT, GDK_Right);
+
 	}
 
 	return widget;

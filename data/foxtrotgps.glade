@@ -28,7 +28,7 @@
               <widget class="GtkToolButton" id="button4">
                 <property name="visible">True</property>
                 <property name="stock_id">gtk-zoom-in</property>
-                <signal name="clicked" handler="on_button4_clicked"/>
+                <signal name="clicked" handler="on_toolbar_button_zoom_in_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -38,7 +38,7 @@
               <widget class="GtkToolButton" id="button5">
                 <property name="visible">True</property>
                 <property name="stock_id">gtk-zoom-out</property>
-                <signal name="clicked" handler="on_button5_clicked"/>
+                <signal name="clicked" handler="on_toolbar_button_zoom_out_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -107,7 +107,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Zoom in</property>
                         <property name="stock_id">gtk-zoom-in</property>
-                        <signal name="clicked" handler="on_button4_clicked"/>
+                        <signal name="clicked" handler="on_toolbar_button_zoom_in_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -118,7 +118,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Zoom out</property>
                         <property name="stock_id">gtk-zoom-out</property>
-                        <signal name="clicked" handler="on_button5_clicked"/>
+                        <signal name="clicked" handler="on_toolbar_button_zoom_out_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>

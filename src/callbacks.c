@@ -198,7 +198,7 @@ on_button1_clicked                     (GtkButton       *button,
 }
 
 void
-on_button4_clicked                     (GtkButton       *button,
+on_toolbar_button_zoom_in_clicked                     (GtkButton       *button,
                                         gpointer         user_data)
 {
 	osm_gps_map_zoom_in(OSM_GPS_MAP(mapwidget));
@@ -250,7 +250,7 @@ on_window1_destroy_event               (GtkWidget       *widget,
 
 
 void
-on_button5_clicked                     (GtkButton       *button,
+on_toolbar_button_zoom_out_clicked                     (GtkButton       *button,
                                         gpointer         user_data)
 {
 	osm_gps_map_zoom_out(OSM_GPS_MAP(mapwidget));
@@ -1985,13 +1985,13 @@ on_drawingarea1_key_press_event        (GtkWidget       *widget,
                                         gpointer         user_data)
 {
 	if (event->keyval == GDK_Page_Up || event->keyval == GDK_KP_Up || event->keyval == 'i')
-		on_button4_clicked(NULL, NULL);
+		on_toolbar_button_zoom_in_clicked(NULL, NULL);
 	else if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK && event->keyval == 'p')
 		geo_photos_open_dialog_photo_correlate();
 	else if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK && event->keyval == 't')
 		tracks_open_tracks_dialog();
 	else if(event->keyval == GDK_Page_Down || event->keyval == 'o')
-		on_button5_clicked(NULL, NULL);
+		on_toolbar_button_zoom_out_clicked(NULL, NULL);
 	else if(event->keyval == 'm')
 		on_button76_clicked(NULL, NULL);
 	else if(event->keyval == GDK_space || event->keyval == GDK_F11)

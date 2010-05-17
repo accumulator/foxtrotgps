@@ -28,11 +28,11 @@ on_window1_destroy_event               (GtkWidget       *widget,
                                         gpointer         user_data);
 
 void
-on_button4_clicked                     (GtkButton       *button,
+on_toolbar_button_zoom_in_clicked                     (GtkButton       *button,
                                         gpointer         user_data);
 
 void
-on_button5_clicked                     (GtkButton       *button,
+on_toolbar_button_zoom_out_clicked                     (GtkButton       *button,
                                         gpointer         user_data);
 
 gboolean

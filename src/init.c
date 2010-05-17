@@ -268,20 +268,24 @@ quit()
 	gboolean success = FALSE;
 	GError **error = NULL;
 
-	coord_t c1,c2;
 	int zoom;
-	osm_gps_map_get_bbox(OSM_GPS_MAP(mapwidget), &c1, &c2);
+	float lat, lon;
+
 	g_object_get(G_OBJECT(mapwidget), "zoom", &zoom, NULL);
+
+	osm_gps_map_screen_to_geographic(OSM_GPS_MAP(mapwidget),
+			mapwidget->allocation.width/2, mapwidget->allocation.height/2,
+			&lat, &lon);
 
 	success = gconf_client_set_float(
 				global_gconfclient,
 				GCONF"/view_lat",
-				RAD2DEG((c1.rlat + c2.rlat)/2),
+				lat,
 				error);
 	success = gconf_client_set_float(
 				global_gconfclient,
 				GCONF"/view_lon",
-				RAD2DEG((c1.rlon + c2.rlon)/2),
+				lon,
 				error);
 	success = gconf_client_set_int(
 				global_gconfclient,

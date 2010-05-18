@@ -15,11 +15,6 @@
 GtkWidget *Bar = NULL; 
 static GSList *tile_download_list = NULL;
 
-typedef struct  {
-	char *tile_url;
-} Repo_data_t;
-
-	
 
 int
 update_thread_number (int change)
@@ -35,30 +30,6 @@ update_thread_number (int change)
 	return ret_val;
 }
 	
-size_t 
-cb_write_func(void *ptr, size_t size, size_t nmemb, FILE *stream)
-{
-	return 
-	fwrite(ptr, size, nmemb, stream); 
-}
-
-
-size_t
-cb_read_func (void *ptr, size_t size, size_t nmemb, FILE *stream)
-{
-  return fread(ptr, size, nmemb, stream);
-}
-
-int
-cb_progress_func(GtkWidget *Bar,
-                     double t, 
-                     double d, 
-                     double ultotal,
-                     double ulnow)
-{
-  return 0;
-}
-
 void
 cb_download_maps(GtkWidget *dialog)
 {

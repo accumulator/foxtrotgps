@@ -6,6 +6,7 @@
 #include <gtk/gtk.h>
 #include <glade/glade.h>
 #include <gconf/gconf-client.h>
+#include <osm-gps-map.h>
 
 #define MSG_SEND_URL "http://tangogps.org/friends/msg_send.php"
 
@@ -37,13 +38,19 @@ typedef struct {
 	double lon;
 } waypoint_t;
 
+typedef enum {
+	REPO_TYPE_OSM_GPS_MAP,
+	REPO_TYPE_FOXTROTGPS
+} repo_type_t;
+
 typedef struct {
+	repo_type_t type;
 	char *name;
 	char *uri;
 	char *dir;
 	int inverted_zoom;
+	OsmGpsMapSource_t ogm_source;
 } repo_t;
-
 
 typedef struct {
 	char *filename;

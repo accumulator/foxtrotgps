@@ -294,92 +294,86 @@ gconf_get_repolist()
 	GSList	*list;
 	GError **error = NULL;
 	
-	
+	printf("* %s()\n", __PRETTY_FUNCTION__);
+
+	// read user defined repositories
 	repo_list = gconf_client_get_list(	global_gconfclient, 
 						GCONF"/repos",
 						GCONF_VALUE_STRING,
 						error);
 	
-	if (repo_list == NULL)
+	if (repo_list)
 	{
-		repo_t *repo1 = g_new0(repo_t, 1);
-		repo_t *repo2 = g_new0(repo_t, 1);
-		repo_t *repo3 = g_new0(repo_t, 1);
-		repo_t *repo4 = g_new0(repo_t, 1);
-		repo_t *repo5 = g_new0(repo_t, 1);
+		for(list = repo_list; list != NULL; list = list->next)
+		{
+			gchar **array;
+			gchar *str = list->data;
+			repo_t *repo = g_new0(repo_t, 1);
 
-		
-		printf("REPOLIST == NULL\n");
-		
-		repo1->name = g_strdup("OSM");
-		repo1->uri  = g_strdup("http://tile.openstreetmap.org/%d/%d/%d.png");
-		repo1->dir  = g_strdup_printf("%s/Maps/OSM",global_home_dir);
-		repo1->inverted_zoom = 0;
-		global_repo_list = g_slist_append(global_repo_list, repo1);
+			array = g_strsplit(str,"|",4);
 
-		repo2->name = g_strdup("Maps-for-free.com");
-		repo2->uri  = g_strdup("maps-for-free");
-		repo2->dir  = g_strdup_printf("%s/Maps/maps4free",global_home_dir);
-		repo2->inverted_zoom = 0;
-		global_repo_list = g_slist_append(global_repo_list, repo2);
-				
-		repo3->name = g_strdup("Opencyclemap");
-		repo3->uri  = g_strdup("http://a.andy.sandbox.cloudmade.com/tiles/cycle/%d/%d/%d.png");
-		repo3->dir  = g_strdup_printf("%s/Maps/opencyclemap",global_home_dir);
-		repo3->inverted_zoom = 0;
-		global_repo_list = g_slist_append(global_repo_list, repo3);
+			repo->type = REPO_TYPE_FOXTROTGPS;
+			repo->name = g_strdup(array[0]);
+			repo->uri  = g_strdup(array[1]);
+			repo->dir  = g_strdup(array[2]);
+			repo->inverted_zoom = (atoi(g_strdup(array[3])) == 1) ? TRUE : FALSE;
 
-		repo4->name = g_strdup("Google Maps (testing only)");
-		repo4->uri  = g_strdup("http://mt0.google.com/vt/hl=en&x=%d&y=%d&z=%d");
-		repo4->dir  = g_strdup_printf("%s/Maps/googlemaps",global_home_dir);
-		repo4->inverted_zoom = 1;
-		global_repo_list = g_slist_append(global_repo_list, repo4);
+			global_repo_list = g_slist_append(global_repo_list, repo);
 
-		repo5->name = g_strdup("Google Sat (testing only)");
-		repo5->uri  = g_strdup("http://khm.google.com/kh/v=53&x=%d&y=%d&z=%d");
-		repo5->dir  = g_strdup_printf("%s/Maps/googlesat",global_home_dir);
-		repo5->inverted_zoom = 1;
-		global_repo_list = g_slist_append(global_repo_list, repo5);
-
-
+			printf("GCONF: \n -- name: %s \n -- uri: %s \n -- dir: %s \n",
+				repo->name, repo->uri, repo->dir);
+		}
 	}
 	
+	// add OGM map providers
+	OsmGpsMapSource_t ogm_sources[] = {
+			OSM_GPS_MAP_SOURCE_OPENSTREETMAP,
+			OSM_GPS_MAP_SOURCE_OPENSTREETMAP_RENDERER,
+			OSM_GPS_MAP_SOURCE_OPENAERIALMAP,
+			OSM_GPS_MAP_SOURCE_MAPS_FOR_FREE,
+			OSM_GPS_MAP_SOURCE_OPENCYCLEMAP,
+			OSM_GPS_MAP_SOURCE_OSM_PUBLIC_TRANSPORT,
+			OSM_GPS_MAP_SOURCE_GOOGLE_STREET,
+			OSM_GPS_MAP_SOURCE_GOOGLE_SATELLITE,
+			OSM_GPS_MAP_SOURCE_GOOGLE_HYBRID,
+			OSM_GPS_MAP_SOURCE_VIRTUAL_EARTH_STREET,
+			OSM_GPS_MAP_SOURCE_VIRTUAL_EARTH_SATELLITE,
+			OSM_GPS_MAP_SOURCE_VIRTUAL_EARTH_HYBRID,
+			OSM_GPS_MAP_SOURCE_YAHOO_STREET,
+			OSM_GPS_MAP_SOURCE_YAHOO_SATELLITE,
+			OSM_GPS_MAP_SOURCE_YAHOO_HYBRID,
+			OSM_GPS_MAP_SOURCE_OSMC_TRAILS
+	};
 	
-	for(list = repo_list; list != NULL; list = list->next)
+	int i;
+	for (i = 0; i < (sizeof(ogm_sources)/sizeof(OsmGpsMapSource_t)); i++)
 	{
-		gchar **array;
-		gchar *str = list->data;
 		repo_t *repo = g_new0(repo_t, 1);
-		
-		array = g_strsplit(str,"|",4);	
-		
-		repo->name = g_strdup(array[0]);
-		repo->uri  = g_strdup(array[1]);
-		repo->dir  = g_strdup(array[2]);
-		repo->inverted_zoom = (atoi(g_strdup(array[3])) == 1) ? TRUE : FALSE;
-		
-		global_repo_list = g_slist_append(global_repo_list, repo);
 
-		printf("GCONF: \n -- name: %s \n -- uri: %s \n -- dir: %s \n",
-			repo->name, repo->uri, repo->dir);
+		repo->type = REPO_TYPE_OSM_GPS_MAP;
+		repo->ogm_source = ogm_sources[i];
+		repo->name = g_strdup(osm_gps_map_source_get_friendly_name(ogm_sources[i]));
+
+		printf("*** %d %s\n", i, repo->name);
+
+		global_repo_list = g_slist_append(global_repo_list, repo);
 	}
 	
-	
+	printf("*** global repo list length = %d\n", g_slist_length(global_repo_list));
+
 	return global_repo_list;	
-					
 }
 
 void
 gconf_set_repolist()
 {
-	
 	GSList	*list;
 	GSList	*gconf_list = NULL;
 	GError **error = NULL;
 	gboolean success = FALSE;
 	
-	
-	
+	printf("* %s()\n", __PRETTY_FUNCTION__);
+
 	for(list = global_repo_list; list != NULL; list = list->next)
 	{
 		repo_t *repo;
@@ -387,8 +381,11 @@ gconf_set_repolist()
 		
 		repo = list->data;
 		
+		// skip OGM defined sources in the list
+		if (repo->type == REPO_TYPE_OSM_GPS_MAP)
+			continue;
 		
-		g_sprintf(	gconf_str, 
+		g_sprintf(gconf_str,
 				"%s|%s|%s|%i",
 				repo->name, repo->uri, repo->dir, repo->inverted_zoom);
 		
@@ -405,7 +402,6 @@ gconf_set_repolist()
 						error);
 	
 	printf("*** %s(): %i \n",__PRETTY_FUNCTION__, success);
-
 }
 
 
@@ -413,8 +409,6 @@ gconf_set_repolist()
 void
 repoconfig__set_current_list_pointer()
 {
-	
-	
 	GSList		*list;
 	const gchar	*reponame;
 	int unused;
@@ -431,6 +425,7 @@ repoconfig__set_current_list_pointer()
 		)
 			global_curr_repo = list;
 	}
+
 	if(!global_curr_repo)
 	{
 		printf("\n#\n#\n#  ERROR: repository %s is broken \n#\n#\n", global_curr_reponame);
@@ -457,21 +452,30 @@ repoconfig__create_dropdown()
 
 	for(list = global_repo_list; list != NULL; list = list->next)
 	{
-		repo_t	*repo;
+		repo_t	*repo = list->data;
+
+		if (repo->type == REPO_TYPE_FOXTROTGPS)
+		{
+			reponame = g_strdup(repo->name);
+		}
+		else if (repo->type == REPO_TYPE_OSM_GPS_MAP)
+		{
+			reponame = g_strdup(repo->name);
+		}
+		else
+			continue;
 		
-		repo = list->data;
-		reponame = g_strdup(repo->name);
 		gtk_combo_box_append_text (GTK_COMBO_BOX(combobox), g_strdup(repo->name));
 		
 		if(	g_strrstr(reponame,global_curr_reponame) != NULL &&
-			strlen(reponame) == strlen(global_curr_reponame)	
-		)
+			strlen(reponame) == strlen(global_curr_reponame) )
 		{
 			j = i;
 			global_curr_repo = list;
 		}
 		i++;
 	}
+
 	global_repo_cnt = i;
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox), j);
 }

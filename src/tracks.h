@@ -1,7 +1,4 @@
 void
-print_track();
-
-void
 track_log();
 
 void
@@ -13,8 +10,8 @@ track_log_close();
 void
 tracks_open_tracks_dialog();
 
-void
-paint_loaded_track();
+gboolean
+load_track(char *file);
 
 gboolean
 tracks_on_file_button_release_event      (	GtkWidget       *widget,

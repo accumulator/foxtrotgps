@@ -28,9 +28,12 @@
 #include "util.h"
 
 GSList *loaded_track = NULL;
+GSList *loaded_track_ogm = NULL;
+
 GtkWidget *window12;
 GtkWidget *dialog10;
 
+FILE *fp = NULL;
 
 
 GtkWidget *	make_file_label(const char *file, char *full_file);
@@ -44,167 +47,6 @@ GSList *	parse_nodes(xmlNode *node);
 void *		fetch_track_thread(void *ptr);
 
 
-
-void
-print_track()
-{	
-	GList *list;
-	int pixel_x, pixel_y, x,y, last_x = 0, last_y = 0;
-	int counter = -1, modulo, j=0;
-	float lat, lon;
-	GdkColor color;
-	GdkGC *gc;
-	gboolean is_line = FALSE;
-	
-	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
-	return;
-
-	gc = gdk_gc_new(pixmap);
-	color.green = 0;
-	color.blue = 0;
-	color.red = 60000;
-	gdk_gc_set_rgb_fg_color(gc, &color);
-	gdk_gc_set_line_attributes(gc,
-		5, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
-
-	if (global_zoom < 16 && global_zoom > 10)
-		modulo = exp2(16-global_zoom);
-	else if (global_zoom <= 10)
-		modulo = 32;
-	else
-		modulo = 1;
-	
-	for(list = trackpoint_list->tail; list != NULL; list = list->prev)
-	{
-		counter++;
-		
-		if (counter % modulo == 0)
-		{
-			j++;
-			if (j > 300) 
-			{
-				break; 
-			}
-			
-			trackpoint_t *tp = list->data;
-		
-			lat = tp->lat;
-			lon = tp->lon;
-			
-			
-			
-			pixel_x = lon2pixel(global_zoom, lon);
-			pixel_y = lat2pixel(global_zoom, lat);
-			
-			x = pixel_x - global_x;
-			y = pixel_y - global_y;
-			
-	
-			if(is_line)
-			{
-				gdk_draw_line (pixmap, gc, x, y, last_x, last_y);
-				gtk_widget_queue_draw_area (
-					map_drawable, 
-					x-4, y-4,
-					8,8);
-			}
-			
-			last_x = x;
-			last_y = y;
-			
-			is_line = TRUE;
-		}
-	}
-	
-	
-	if(	
-		gpsdata && 7==6 &&
-		gpsdata->fix.longitude !=0 &&  
-		gpsdata->fix.latitude != 0 &&
-		last_x != 0 &&
-		last_y != 0
-		)
-	{
-		pixel_x = lon2pixel(global_zoom, deg2rad(gpsdata->fix.longitude));
-		pixel_y = lat2pixel(global_zoom, deg2rad(gpsdata->fix.latitude));
-			
-		x = pixel_x - global_x;
-		y = pixel_y - global_y;
-
-	
-		gdk_draw_line (pixmap, gc, x, y, last_x, last_y);
-		gtk_widget_queue_draw_area (
-			map_drawable, 
-			x-4, y-4,
-			8,8);		
-	}
-	
-}
-
-
-void
-paint_loaded_track()
-{
-	
-	GSList *list;
-	int pixel_x, pixel_y, x,y, last_x = 0, last_y = 0;
-	float lat, lon;
-	GdkColor color;
-	GdkGC *gc;
-	gboolean is_line = FALSE;
-	
-	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
-	return;
-
-	gc = gdk_gc_new(pixmap);
-	color.green = 50000;
-	color.blue = 0;
-	color.red = 0;
-	gdk_gc_set_rgb_fg_color(gc, &color);
-	gdk_gc_set_line_attributes(gc,
-		5, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
-
-	
-	for(list = loaded_track; list != NULL; list = list->next)
-	{
-		trackpoint_t *tp = list->data;
-	
-		lat = tp->lat;
-		lon = tp->lon;
-		
-		
-		
-		
-		pixel_x = lon2pixel(global_zoom, lon);
-		pixel_y = lat2pixel(global_zoom, lat);
-		
-		x = pixel_x - global_x;
-		y = pixel_y - global_y;
-		
-
-		if(is_line)
-		{
-			gdk_draw_line (pixmap, gc, x, y, last_x, last_y);
-			gtk_widget_queue_draw_area (
-				map_drawable, 
-				x-4, y-4,
-				8,8);
-			
-		}
-		
-		last_x = x;
-		last_y = y;
-		
-		
-		is_line = TRUE;
-	}
-}
-
-
-FILE *fp = NULL;
-
-
-
 void
 track_log()
 {
@@ -213,16 +55,12 @@ track_log()
 	time_t time_sec;
 	struct tm *ts;
 	
-	
 	if(gpsdata->valid)
 	{
-		
 		time_sec = (time_t)gpsdata->fix.time;
 		ts = localtime(&time_sec);
 		
-		
 		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", ts);
-		
 		
 		sprintf(data, "%f,%f,%.1f,%.1f,%.1f,%.1f,%s\n",
 				gpsdata->fix.latitude,
@@ -249,16 +87,10 @@ track_log_open()
 	
 	label76 = GTK_LABEL(lookup_widget(window1, "label76"));
 	
-	
 	time_epoch_sec = time(NULL);
 	tm_struct = localtime(&time_epoch_sec);
-	
-	
-	
 
 	strftime(buffer, sizeof(buffer), "%Y%m%d_%H%M%S.log", tm_struct);
-	
-
 	
 	filename = g_strconcat(global_track_dir, buffer,NULL);
 	
@@ -284,7 +116,6 @@ track_log_open()
 	g_free(filename);
 }
 
-
 void
 track_log_close()
 {
@@ -304,9 +135,6 @@ track_log_close()
 	}
 }
 
-
-
-
 void
 tracks_open_tracks_dialog()
 {
@@ -317,7 +145,6 @@ tracks_open_tracks_dialog()
 	GList *list = NULL;
 
 	GtkWidget *label, *vbox, *eventbox;
-	
 
 	dir = g_dir_open(global_track_dir, 0, &err);
 	
@@ -328,14 +155,10 @@ tracks_open_tracks_dialog()
 		return;
 	}
 	
-	
-	
 	window12 = glade_xml_get_widget(gladexml, "window12");
 	gtk_widget_show(window12);
 	
 	vbox = lookup_widget(window12, "vbox39");		
-	
-	
 	
 	file = g_dir_read_name(dir);
 
@@ -353,12 +176,10 @@ tracks_open_tracks_dialog()
 	{
 		char *file = list->data;
 		
-		
 		printf("%s \n", file);
 		eventbox = gtk_event_box_new ();
 		gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK);
 		gtk_widget_show (eventbox);
-		
 
 		gtk_box_pack_start (GTK_BOX (vbox), eventbox, FALSE, FALSE, 0);
 		
@@ -389,6 +210,75 @@ make_file_label(const char *file, char *full_file)
 	return label;
 }
 
+/*
+ * Convert the foxtrotgps track to OsmGpsMap track
+ */
+GSList *
+track_convert_to_ogm(GSList *foxtrot_track)
+{
+	GSList *ogm_track = NULL;
+	GSList *list;
+
+	for(list = foxtrot_track; list != NULL; list = list->next)
+	{
+		trackpoint_t *tp = list->data;
+
+		coord_t *coord = g_new0(coord_t,1);
+
+		coord->rlat = tp->lat;
+		coord->rlon = tp->lon;
+
+		printf("*** trackpoint (%f,%f)\n", tp->lat, tp->lon);
+
+		ogm_track = g_slist_append(ogm_track, coord);
+	}
+
+	return ogm_track;
+}
+
+gboolean
+load_track(char *file)
+{
+	GSList * old_track_ogm = NULL;
+
+	if (loaded_track)
+	{
+		g_slist_free(loaded_track);
+		loaded_track = NULL;
+	}
+
+	if (loaded_track_ogm)
+	{
+		old_track_ogm = loaded_track_ogm;
+		g_slist_free(loaded_track_ogm);
+		loaded_track_ogm = NULL;
+	}
+
+	if (g_strrstr(file,".gpx") ||
+	    g_strrstr(file,".GPX") ||
+	    g_strrstr(file,".Gpx") )
+	{
+		loaded_track = load_gpx_file_into_list(file);
+	}
+	else
+	{
+		loaded_track = load_log_file_into_list(file);
+	}
+
+	if (loaded_track)
+	{
+		loaded_track_ogm = track_convert_to_ogm(loaded_track);
+	}
+
+	if (loaded_track_ogm || old_track_ogm)
+	{
+		osm_gps_map_replace_track(OSM_GPS_MAP(mapwidget), old_track_ogm, loaded_track_ogm);
+	}
+
+	return loaded_track ? TRUE : FALSE;
+}
+
+
 gboolean
 tracks_on_file_button_release_event   (	GtkWidget       *widget,
                                         GdkEventButton  *event,
@@ -411,40 +301,19 @@ tracks_on_file_button_release_event   (	GtkWidget       *widget,
 			       (GtkCallback) gtk_widget_destroy,
 			       NULL);
 
-	if(loaded_track)
-		g_slist_free(loaded_track);
-	loaded_track = NULL;
+	load_track(file);
+	
+	if (loaded_track) {
+		bbox = get_track_bbox(loaded_track);
 
-	if (g_strrstr(file,".gpx") ||
-	    g_strrstr(file,".GPX") ||
-	    g_strrstr(file,".Gpx") )
-	{
-		loaded_track = load_gpx_file_into_list(file);
-	}
-	else
-		loaded_track = load_log_file_into_list(file);
-	
-	
-	
-	
-	
-	
-	bbox = get_track_bbox(loaded_track);
-	
-	track_zoom = get_zoom_covering(width, height, bbox.lat1, bbox.lon1, bbox.lat2, bbox.lon2);
-	track_zoom = (track_zoom > 15) ? 15 : track_zoom;
-	
-	
-	if(loaded_track)
+		track_zoom = get_zoom_covering(width, height, bbox.lat1, bbox.lon1, bbox.lat2, bbox.lon2);
+
 		osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
-			rad2deg((bbox.lat1+bbox.lat2)/2), rad2deg((bbox.lon1+bbox.lon2)/2), track_zoom);
+			RAD2DEG((bbox.lat1+bbox.lat2)/2), RAD2DEG((bbox.lon1+bbox.lon2)/2), track_zoom);
 
-	
-	range = lookup_widget(window1, "vscale1");
-	gtk_range_set_value(GTK_RANGE(range), (double) global_zoom);
-
-	paint_loaded_track();
-	
+		range = lookup_widget(window1, "vscale1");
+		gtk_range_set_value(GTK_RANGE(range), (double) track_zoom);
+	}
 	
 	return FALSE;	
 }
@@ -494,18 +363,15 @@ load_log_file_into_list(char *file)
 	{
 		trackpoint_t *tp = g_new0(trackpoint_t,1);
 		
-		
 		arr = g_strsplit(line, ",", 2);
-		
-		
-		if (arr[0] == NULL || arr[1] == NULL) continue;
-
+		if (arr[0] == NULL || arr[1] == NULL)
+			continue;
 		
 		lat = atof(arr[0]);
 		lon = atof(arr[1]);
 		
-		tp->lat = deg2rad(lat);
-		tp->lon = deg2rad(lon);		
+		tp->lat = DEG2RAD(lat);
+		tp->lon = DEG2RAD(lon);
 
 		list = g_slist_append(list, tp);
 	}
@@ -682,7 +548,7 @@ fetch_track_thread(void *ptr)
 				osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
 					rad2deg((bbox.lat1+bbox.lat2)/2), rad2deg((bbox.lon1+bbox.lon2)/2), track_zoom);
 		
-			paint_loaded_track();
+			//paint_loaded_track();
 			gtk_widget_hide(dialog10);
 			
 			

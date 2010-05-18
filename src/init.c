@@ -15,6 +15,8 @@
 #include <time.h>
 #include <errno.h>
 
+#include <osm-gps-map.h>
+
 #include "globals.h"
 #include "converter.h"
 #include "gps_functions.h"

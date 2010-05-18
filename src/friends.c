@@ -658,12 +658,7 @@ on_goto_friend_clicked(GtkButton *button, gpointer user_data)
 	
 	printf("* %s(): '%s'\n", __PRETTY_FUNCTION__, f->nick);
 
-	coord_t coord;
-	coord.rlat = f->lat;
-	coord.rlon = f->lon;
-
-	//set_current_wp(deg2rad(f->lat), deg2rad(f->lon));
-	set_current_wp(&coord);
+	set_current_wp(f->lat, f->lon);
 	
 	widget = lookup_widget(GTK_WIDGET(button), "window8");
 	gtk_widget_destroy(widget);
@@ -995,12 +990,7 @@ on_goto_friend2_clicked(GtkButton *button, gpointer user_data)
 	
 	printf("* %s(): '%s'\n", __PRETTY_FUNCTION__, m->from);
 
-	coord_t coord;
-	coord.rlat = m->lat;
-	coord.rlon = m->lon;
-
-	set_current_wp(&coord);
-	//set_current_wp(deg2rad(m->lat), deg2rad(m->lon));
+	set_current_wp(m->lat, m->lon);
 	
 	osm_gps_map_set_center(OSM_GPS_MAP(mapwidget), m->lat, m->lon);
 }

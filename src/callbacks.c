@@ -2807,13 +2807,13 @@ on_item17_button_release_event         (GtkWidget       *widget,
                                         GdkEventButton  *event,
                                         gpointer         user_data)
 {
-	printf("screen x,y: %d %d \n",mouse_x, mouse_y);
-	coord_t mouse_coord;
+	float lat, lon;
+
 	osm_gps_map_screen_to_geographic(OSM_GPS_MAP(mapwidget),
 			mouse_x, mouse_y,
-			&(mouse_coord.rlat), &(mouse_coord.rlon));
+			&lat, &lon);
 	
-	set_current_wp(&mouse_coord);
+	set_current_wp(lat, lon);
 	
     return FALSE;
 }
@@ -2823,8 +2823,7 @@ on_item18_button_release_event         (GtkWidget       *widget,
                                         GdkEventButton  *event,
                                         gpointer         user_data)
 {
-	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-	set_current_wp(NULL);
+	set_current_wp(0,0);
 	return FALSE;
 }
 

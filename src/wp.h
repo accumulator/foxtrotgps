@@ -7,19 +7,8 @@
  *  Email marcus.bauer@gmail.com
  ****************************************************************************/
 
-#include <osm-gps-map.h>
-
 void
-paint_wp();
-
-void
-paint_myposition();
-
-void
-do_paint_wp();
-
-void
-set_current_wp(coord_t *coord);
+set_current_wp(float lat, float lon);
 
 void
 set_myposition(float lat, float lon);

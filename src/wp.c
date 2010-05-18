@@ -13,12 +13,15 @@ static GdkPixbuf	*wp_icon = NULL;
 static GdkPixbuf	*myposition_icon = NULL;
 static GdkGC		*gc_map = NULL;
 
+/*
+ * pass (0,0) to unset WP
+ */
 void
-set_current_wp(coord_t *coord)
+set_current_wp(float lat, float lon)
 {
 	GError *error = NULL;
 
-	if (coord == NULL) {
+	if (lat == 0 && lon == 0) {
 		// unset wp
 		printf("* unset WP\n");
 		global_wp_on = FALSE;
@@ -28,13 +31,13 @@ set_current_wp(coord_t *coord)
 	}
 	else
 	{
-		printf("* set WAYPOINT: lat %f - lon %f\n", coord->rlat, coord->rlon);
+		printf("* set WAYPOINT: lat %f - lon %f\n", lat, lon);
 		if (global_wp_on && wp_icon) {
 			osm_gps_map_remove_image(OSM_GPS_MAP(mapwidget), wp_icon);
 		}
 		global_wp_on = TRUE;
-		global_wp.lat = coord->rlat;
-		global_wp.lon = coord->rlon;
+		global_wp.lat = lat;
+		global_wp.lon = lon;
 	
 		if(!wp_icon)
 		{
@@ -47,7 +50,7 @@ set_current_wp(coord_t *coord)
 			}
 		}
 
-		osm_gps_map_add_image(OSM_GPS_MAP(mapwidget), coord->rlat, coord->rlon, wp_icon);
+		osm_gps_map_add_image(OSM_GPS_MAP(mapwidget), lat, lon, wp_icon);
 	}
 }
 

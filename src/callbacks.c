@@ -284,13 +284,12 @@ on_combobox1_changed                   (GtkComboBox     *combobox,
 	gchar *reponame_combo;
 	GError **error = NULL;
 	gboolean success = FALSE;
-	static gboolean first_run = TRUE;
+	repo_t *repo;
 
+	printf("* %s()\n", __PRETTY_FUNCTION__);
 	
 	reponame_combo = gtk_combo_box_get_active_text(combobox);
-
 	global_curr_reponame = g_strdup(reponame_combo);
-	
 	
 	if(!global_curr_reponame)
 	{
@@ -298,10 +297,8 @@ on_combobox1_changed                   (GtkComboBox     *combobox,
 		printf("YOUR DISTRIBUTION SUCKS BIGTIME\n");
 	}
 	
-	
 	for(list = global_repo_list; list != NULL; list = list->next)
 	{
-		repo_t	*repo;
 		gchar	*reponame;
 
 		repo = list->data;
@@ -315,7 +312,6 @@ on_combobox1_changed                   (GtkComboBox     *combobox,
 		}
 	}
 	
-	
 	success = gconf_client_set_string(
 					global_gconfclient, 
 					GCONF"/repo_name",
@@ -324,13 +320,15 @@ on_combobox1_changed                   (GtkComboBox     *combobox,
 	
 	global_repo_nr = gtk_combo_box_get_active(combobox);
 	
-	 
-	
-	if(first_run) {
-		first_run = FALSE;
+	repo = global_curr_repo->data;
+	if (repo->type == REPO_TYPE_OSM_GPS_MAP)
+	{
+		g_object_set(G_OBJECT(mapwidget), "map-source", repo->ogm_source, NULL);
 	}
 	else
-		repaint_all();
+	{
+		// TODO set uri and cache location from foxtrot map source
+	}
 }
 
 void

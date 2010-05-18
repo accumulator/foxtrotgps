@@ -22,4 +22,7 @@ void
 set_current_wp(coord_t *coord);
 
 void
+set_myposition(float lat, float lon);
+
+void
 osd_wp();

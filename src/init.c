@@ -167,9 +167,6 @@ init()
 	if(!global_track_dir)
 		global_track_dir = g_strdup_printf("%s/Maps/",global_home_dir);
 	
-	global_myposition.lat = 0;
-	global_myposition.lon = 0;
-
 	widget = lookup_widget(window1, "checkbutton2");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), global_auto_download);
 
@@ -236,10 +233,10 @@ init()
 		g_error_free (err);
 	}
 	
-	
-	global_myposition.lat = gconf_client_get_float(global_gconfclient, GCONF"/myposition_lat", NULL);
-	global_myposition.lon = gconf_client_get_float(global_gconfclient, GCONF"/myposition_lon", NULL);
-	paint_myposition();
+	float lat, lon;
+	lat = gconf_client_get_float(global_gconfclient, GCONF"/myposition_lat", NULL);
+	lon = gconf_client_get_float(global_gconfclient, GCONF"/myposition_lon", NULL);
+	set_myposition(lat, lon);
 
 	float view_lat, view_lon;
 	int view_zoom;

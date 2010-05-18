@@ -13,13 +13,6 @@ static GdkPixbuf	*wp_icon = NULL;
 static GdkPixbuf	*myposition_icon = NULL;
 static GdkGC		*gc_map = NULL;
 
-
-
-void
-do_paint_myposition();
-
-
-
 void
 set_current_wp(coord_t *coord)
 {
@@ -160,99 +153,45 @@ osd_wp()
 	}
 }
 
-
-
-
-
+/*
+ * give (0,0) to unset myposition
+ */
 void
-paint_myposition()
+set_myposition(float lat, float lon)
 {
-	if(global_myposition.lat) do_paint_myposition();	
-}
+	GError *error = NULL;
 
-void
-do_paint_myposition()
-{	
-	int pixel_x, pixel_y, x,y;
-	float lat, lon;
-	GdkColor color;
-	GdkGC *gc;
-	GError	*error = NULL;
-	
-	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
-	return;
-
-	gc = gdk_gc_new(pixmap);
-	color.green = 60000;
-	color.blue = 0;
-	color.red = 10000;
-	gdk_gc_set_rgb_fg_color(gc, &color);
-	
-
-	if(!myposition_icon)
+	if (lat == 0 && lon == 0)
 	{
-		myposition_icon = gdk_pixbuf_new_from_file_at_size (
-			PACKAGE_PIXMAPS_DIR "/foxtrotgps-myposition.png", 36,36,
-			&error);
-		if (error)
-		{
-			g_print ("%s(): loading pixbuf failure. %s\n", __FUNCTION__,
-			error->message);
-			g_error_free (error);
-			
-			
+		printf("* unset MYPOSITION\n");
+		if (myposition_icon) {
+			osm_gps_map_remove_image(OSM_GPS_MAP(mapwidget), myposition_icon);
 		}
-	}
-	if (pixmap && !gc_map)	
-		gc_map = gdk_gc_new(pixmap);
-		
-	
-
-	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-
-
-
-	lat = deg2rad(global_myposition.lat);
-	lon = deg2rad(global_myposition.lon);
-	
-	
-	
-	
-	pixel_x = lon2pixel(global_zoom, lon);
-	pixel_y = lat2pixel(global_zoom, lat);
-	
-	x = pixel_x - global_x;
-	y = pixel_y - global_y;
-	
-printf("%d %d %f %f\n",x,y,lat,lon);	
-	
-	if(!myposition_icon)
-	{
-		gdk_draw_arc (
-			pixmap,
-			
-			gc,
-			TRUE,			
-			x-4, y-4,		
-			8,8,			
-			0,23040);		
 	}
 	else
 	{
-		gdk_draw_pixbuf (
-			pixmap,
-			gc_map,
-			myposition_icon,
-			0,0,
-			x,y-36,
-			36,36,
-			GDK_RGB_DITHER_NONE, 0, 0);
-		
-		gtk_widget_queue_draw_area (
-			map_drawable, 
-			x, y-36,
-			36,36);
+		printf("* set MYPOSITION: lat %f - lon %f\n", lat, lon);
+		if (myposition_icon) {
+			osm_gps_map_remove_image(OSM_GPS_MAP(mapwidget), myposition_icon);
+		}
+
+		if(!myposition_icon)
+		{
+			myposition_icon = gdk_pixbuf_new_from_file_at_size (
+				PACKAGE_PIXMAPS_DIR "/foxtrotgps-myposition.png", 36, 36, &error);
+			if (error)
+			{
+				g_print ("%s(): loading pixbuf failure. %s\n", __FUNCTION__, error->message);
+				g_error_free (error);
+			}
+		}
+
+		osm_gps_map_add_image(OSM_GPS_MAP(mapwidget), lat, lon, myposition_icon);
 	}
-	printf("MYPOSITION: lat %f - lon %f\n",lat, lon);
-	
+
+	global_myposition.lat = lat;
+	global_myposition.lon = lon;
+
+	gconf_client_set_float(global_gconfclient, GCONF"/myposition_lat", lat, NULL);
+	gconf_client_set_float(global_gconfclient, GCONF"/myposition_lon", lon, NULL);
 }

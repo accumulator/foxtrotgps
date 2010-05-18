@@ -791,21 +791,13 @@ on_item5_activate                      (GtkWidget       *widget,
                                         GdkEventButton  *event,
                                         gpointer         user_data)
 {
-	
 	GtkWidget *label;
 	gchar buffer[512];
-	float lat, lon,lat_deg,lon_deg;
+	float lat, lon;
 	
+	osm_gps_map_screen_to_geographic(OSM_GPS_MAP(mapwidget), mouse_x, mouse_y, &lat, &lon);
 	
-	printf("screen x,y: %d %d \n",mouse_x, mouse_y);
-	lat = pixel2lat(global_zoom, global_y+mouse_y);
-	lon = pixel2lon(global_zoom, global_x+mouse_x);
-	
-	lat_deg = rad2deg(lat);
-	lon_deg = rad2deg(lon);
-	
-	global_myposition.lat = lat_deg;
-	global_myposition.lon = lon_deg;
+	set_myposition(lat, lon);
 
 	label = lookup_widget(window2,"label64");
 	
@@ -813,25 +805,10 @@ on_item5_activate                      (GtkWidget       *widget,
 			"  <i>%f %f</i> \n\n"
 			"will now be used as your location\n"
 			"for the friend finder service.",
-			global_myposition.lat,
-			global_myposition.lon);
+			lat, lon);
 			
 	gtk_label_set_label(GTK_LABEL(label),buffer);
 	gtk_widget_show (window2);
-	
-	gconf_client_set_float(
-		global_gconfclient, 
-		GCONF"/myposition_lat",
-		global_myposition.lat,
-		NULL);
-
-	gconf_client_set_float(
-		global_gconfclient, 
-		GCONF"/myposition_lon",
-		global_myposition.lon,
-		NULL);
-		
-	paint_myposition();
 	
 	return FALSE;
 }
@@ -1087,22 +1064,7 @@ on_item7_activate                      (GtkWidget       *widget,
                                         GdkEventButton  *event,
                                         gpointer         user_data)
 {
-	global_myposition.lat = global_myposition.lon = 0;
-	
-	gconf_client_set_float(
-		global_gconfclient, 
-		GCONF"/myposition_lat",
-		0,
-		NULL);
-
-	gconf_client_set_float(
-		global_gconfclient, 
-		GCONF"/myposition_lon",
-		0,
-		NULL);
-	
-	repaint_all();
-	
+	set_myposition(0,0);
 	return FALSE;
 }
 

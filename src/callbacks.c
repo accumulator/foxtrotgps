@@ -1828,16 +1828,6 @@ void
 repaint_all()
 {
 	printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
-
-//	fill_tiles_pixel(global_x, global_y, global_zoom, FALSE);
-//	print_track();
-//	paint_loaded_track();
-//	paint_friends();
-//	paint_photos();
-//	paint_pois();
-//	paint_wp();
-//	paint_myposition();
-	
 }
 
 void

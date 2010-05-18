@@ -1,5 +1,3 @@
-
-
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib/gprintf.h>
@@ -12,15 +10,7 @@
 
 #include "globals.h"
 #include "tile_management.h"
-#include "gps_functions.h"
-#include "callbacks.h"
 #include "support.h"
-#include "converter.h"
-#include "geo_photos.h"
-#include "friends.h"
-#include "poi.h"
-#include "wp.h"
-#include "tracks.h"
 
 GtkWidget *Bar = NULL; 
 static GSList *tile_download_list = NULL;
@@ -42,15 +32,12 @@ update_thread_number (int change)
 	ret_val = current_number += change; 
 	g_static_mutex_unlock (&mutex);
 
-
 	return ret_val;
 }
 	
 size_t 
 cb_write_func(void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
-	
-	
 	return 
 	fwrite(ptr, size, nmemb, stream); 
 }
@@ -69,9 +56,7 @@ cb_progress_func(GtkWidget *Bar,
                      double ultotal,
                      double ulnow)
 {
-
   return 0;
-
 }
 
 void

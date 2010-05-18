@@ -50,7 +50,7 @@ set_current_wp(float lat, float lon)
 			}
 		}
 
-		osm_gps_map_add_image(OSM_GPS_MAP(mapwidget), lat, lon, wp_icon);
+		osm_gps_map_add_image_with_alignment(OSM_GPS_MAP(mapwidget), lat, lon, wp_icon, 0.06, 1.0);
 	}
 }
 
@@ -189,7 +189,7 @@ set_myposition(float lat, float lon)
 			}
 		}
 
-		osm_gps_map_add_image(OSM_GPS_MAP(mapwidget), lat, lon, myposition_icon);
+		osm_gps_map_add_image_with_alignment(OSM_GPS_MAP(mapwidget), lat, lon, myposition_icon, 0.06, 1.0);
 	}
 
 	global_myposition.lat = lat;

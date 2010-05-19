@@ -174,13 +174,12 @@ on_item8_activate                      (GtkMenuItem     *menuitem,
                                         gpointer         user_data);
 
 void
-on_cancelbutton3_clicked               (GtkButton       *button,
+on_download_maps_cancelbutton_clicked  (GtkButton       *button,
                                         gpointer         user_data);
 
 void
-on_okbutton3_clicked                   (GtkButton       *button,
+on_download_maps_okbutton_clicked      (GtkButton       *button,
                                         gpointer         user_data);
-
 
 gboolean
 on_drawingarea2_configure_event        (GtkWidget       *widget,

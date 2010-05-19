@@ -2853,7 +2853,7 @@ as my position</property>
       </widget>
     </child>
   </widget>
-  <widget class="GtkDialog" id="dialog4">
+  <widget class="GtkDialog" id="download_maps_dialog">
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Map DL</property>
     <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
@@ -3010,7 +3010,7 @@ as my position</property>
             <property name="visible">True</property>
             <property name="layout_style">GTK_BUTTONBOX_END</property>
             <child>
-              <widget class="GtkButton" id="cancelbutton3">
+              <widget class="GtkButton" id="download_maps_cancelbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
@@ -3018,11 +3018,11 @@ as my position</property>
                 <property name="label" translatable="yes">gtk-cancel</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
-                <signal name="clicked" handler="on_cancelbutton3_clicked"/>
+                <signal name="clicked" handler="on_download_maps_cancelbutton_clicked"/>
               </widget>
             </child>
             <child>
-              <widget class="GtkButton" id="okbutton3">
+              <widget class="GtkButton" id="download_maps_okbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
@@ -3030,7 +3030,7 @@ as my position</property>
                 <property name="label" translatable="yes">gtk-ok</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
-                <signal name="clicked" handler="on_okbutton3_clicked"/>
+                <signal name="clicked" handler="on_download_maps_okbutton_clicked"/>
               </widget>
               <packing>
                 <property name="position">1</property>

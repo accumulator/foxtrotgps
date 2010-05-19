@@ -51,14 +51,18 @@ create_msg_box(msg_t *m);
 void
 on_goto_friend2_clicked(GtkButton *button, gpointer user_data);
 
-
-
+void
+friends_list_updated(void);
 
 struct mem_struct {
 	char *memory;
 	size_t size;
 };
 
+static GdkPixbuf	*friend_icon = NULL;
+static GdkGC		*gc_map = NULL;
+static char			*db_ts_last_request_friends = NULL;
+static int			num_friends_added = 0;
 
 static size_t
 cb_write_to_mem(void *ptr, size_t size, size_t nmemb, void *data)
@@ -76,27 +80,6 @@ cb_write_to_mem(void *ptr, size_t size, size_t nmemb, void *data)
 	}
 	return realsize;
 }
-
-static GdkPixbuf	*friend_icon = NULL;
-static GdkGC		*gc_map = NULL;
-static char		*db_ts_last_request_friends = NULL;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 gboolean
 update_position()
@@ -123,7 +106,6 @@ update_position_thread(void *ptr)
 	static gchar lat[64], lon[64], mode[64];
 	static gchar alt[16] = "0", speed[16] = "0", head[16]="0";
 	
-	
 	gchar **user_data_sets;
 	long int response_code;
 	
@@ -136,13 +118,10 @@ update_position_thread(void *ptr)
 	
 	chunk.memory=NULL;
 	chunk.size = 0;
-	
 
 gdk_threads_enter();
 	
 	label_msg = (GtkLabel *)lookup_widget(window1, "label51");
-
-	
 	nick  = (GtkEntry *)lookup_widget(window1, "entry7");
 	pass  = (GtkEntry *)lookup_widget(window1, "entry8");
 	email = (GtkEntry *)lookup_widget(window1, "entry9");
@@ -169,7 +148,6 @@ gdk_threads_enter();
 
 gdk_threads_leave();
 	
-	
 	if (global_myposition.lat && global_myposition.lon)
 	{
 		g_sprintf(lat, "%f", global_myposition.lat);
@@ -192,7 +170,6 @@ gdk_threads_leave();
 		g_sprintf(lon, "%f", tmplon);
 		g_sprintf(mode, "%s|%dx%d", "atm", global_drawingarea_width, global_drawingarea_height);		
 	}
-	
 	
 	if(gpsdata)
 	{
@@ -263,7 +240,6 @@ gdk_threads_leave();
                CURLFORM_COPYCONTENTS, m,
                CURLFORM_END);
 	       
-	       
 	curl_handle = curl_easy_init();
 	
 	curl_easy_setopt(curl_handle, CURLOPT_URL, "http://www.tangogps.org/friends/update_pos.php");
@@ -272,30 +248,15 @@ gdk_threads_leave();
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
 	curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0 |" VERSION " | " __VERSION__);
 
-
-
 	curl_easy_perform(curl_handle);
 	curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &response_code);
 	
 	
 	curl_easy_cleanup(curl_handle);
 	
-	
-	
-	
-	
-	
-
-
 	if (response_code == 200) 
 	{ 
-		
-		
-		
-		
-
 		user_data_sets = g_strsplit_set (chunk.memory, "|", -1);
-	
 			
 		gdk_threads_enter();
 		g_slist_free(friends_list);
@@ -311,10 +272,6 @@ gdk_threads_leave();
 			
 			array = g_strsplit(user_data_sets[i],"#",-1);
 			while (array[len]) len++;
-			
-			
-			
-			
 			
 			if(len>=7)
 			{
@@ -338,17 +295,11 @@ gdk_threads_leave();
 		gdk_threads_enter();
 		gtk_label_set_text(label_msg, "No response (200)"); 
 		gdk_threads_leave();
-		
 	}
 	
-	
-	
-	
 	gdk_threads_enter();
-	paint_friends();
-	
+	friends_list_updated();
 	gdk_threads_leave();
-	
 	
 	if(chunk.memory)
 		g_free(chunk.memory);
@@ -358,88 +309,6 @@ gdk_threads_leave();
 	g_free(ff_mode);
 
 	return NULL;
-}
-
-void
-paint_friends()
-{	
-	GSList *list;
-	int pixel_x, pixel_y, x,y;
-	float lat, lon;
-	GdkColor color;
-	GdkGC *gc;
-	GError	*error = NULL;
-	
-	gc = gdk_gc_new(pixmap);
-	color.green = 60000;
-	color.blue = 0;
-	color.red = 10000;
-	gdk_gc_set_rgb_fg_color(gc, &color);
-	
-
-	if(!friend_icon)
-	{
-		friend_icon = gdk_pixbuf_new_from_file_at_size (
-			PACKAGE_PIXMAPS_DIR "/foxtrotgps-friend.png", 24,24,
-			&error);
-	}
-	if (pixmap && !gc_map)	
-		gc_map = gdk_gc_new(pixmap);
-		
-	
-	if (global_show_friends)
-		{
-		for(list = friends_list; list != NULL; list = list->next)
-		{
-			friend_t *f = list->data;
-		
-			lat = deg2rad(f->lat);
-			lon = deg2rad(f->lon);
-			
-			
-			
-			
-			pixel_x = lon2pixel(global_zoom, lon);
-			pixel_y = lat2pixel(global_zoom, lat);
-			
-			x = pixel_x - global_x;
-			y = pixel_y - global_y;
-			
-			f->screen_x = x;
-			f->screen_y = y;
-			
-			
-			
-			if(!friend_icon)
-			{
-				gdk_draw_arc (
-					pixmap,
-					
-					gc,
-					TRUE,			
-					x-4, y-4,		
-					8,8,			
-					0,23040);		
-			}
-			else
-			{
-				gdk_draw_pixbuf (
-					pixmap,
-					gc_map,
-					friend_icon,
-					0,0,
-					x-12,y-12,
-					24,24,
-					GDK_RGB_DITHER_NONE, 0, 0);
-				
-				gtk_widget_queue_draw_area (
-					map_drawable, 
-					x-12, y-12,
-					24,24);
-			}
-			
-		}
-	}
 }
 
 void
@@ -460,15 +329,7 @@ update_position0()
 		
 		curl_easy_cleanup(curl);
 	}
-	
 }
-
-
-
-
-
-
-
 
 int
 register_nick()
@@ -493,14 +354,10 @@ register_nick_thread(void *ptr)
 	GtkLabel *label_msg;
 	const gchar *n, *p, *e;
 	gchar *buffer;
-	
-	
-	
 	CURL *curl_handle;
 	
 	struct curl_httppost *formdata=NULL;
 	struct curl_httppost *lastptr=NULL;
-		
 	struct mem_struct chunk;
 	
 	chunk.memory=NULL;
@@ -508,9 +365,6 @@ register_nick_thread(void *ptr)
 	
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 
-
-
-	
 	nick  = (GtkEntry *)lookup_widget(window1, "entry7");
 	pass  = (GtkEntry *)lookup_widget(window1, "entry8");
 	email = (GtkEntry *)lookup_widget(window1, "entry9");
@@ -567,10 +421,6 @@ register_nick_thread(void *ptr)
 	label_msg = (GtkLabel *)lookup_widget(window1, "label62");
 	gtk_label_set_text(label_msg, buffer); 
 	gdk_threads_leave();
-	
-
-	
-	
 	
 	curl_global_cleanup();
 	
@@ -677,7 +527,7 @@ on_msg_send_clicked(GtkButton *button, gpointer user_data)
 	widget = lookup_widget(GTK_WIDGET(button), "entry30");
 	m->txt = g_strdup( gtk_entry_get_text(GTK_ENTRY(widget)) );
 	m->to = g_strdup(to);
-	if (global_myposition.lat && global_myposition.lon)
+	if (global_myposition.lat || global_myposition.lon)
 	{
 		m->lat = global_myposition.lat;
 		m->lon = global_myposition.lon;
@@ -720,25 +570,16 @@ send_message(gpointer user_data)
 void *
 thread_send_message(void *ptr)
 {
-	
 	GSList		*postdata = NULL;
 	postreply_t	*postreply;
-	
-		
 
 	postdata = ptr;
-
 	
 	postreply = mycurl__do_http_post(MSG_SEND_URL, postdata, VERSION);
-	
-
-	
 	
 	gdk_threads_enter();
 	process_msg_replydata(postreply);
 	gdk_threads_leave();
-
-	
 	
 	g_slist_free(postdata);
 	g_free(postreply);
@@ -752,9 +593,6 @@ create_msg_postdata(msg_t *m)
 	GSList		*postdata = NULL;
 	const char *n, *p;
 	postdata_item_t *item;
-
-		
-	
 	
 	n = gtk_entry_get_text((GtkEntry *)lookup_widget(window1, "entry7"));
 	p = gtk_entry_get_text((GtkEntry *)lookup_widget(window1, "entry8"));
@@ -818,12 +656,7 @@ process_msg_replydata(postreply_t *postreply)
 	int i = 1;
 	static gboolean first_call = TRUE;
 	
-	
-	
 	widget = lookup_widget(window1, "label132");
-	
-	
-	
 	
 	if(postreply->status_code == 200 && postreply->size > 0)
 	{
@@ -864,18 +697,11 @@ process_msg_replydata(postreply_t *postreply)
 			g_strfreev(arr);
 		}
 		
-		
 		while (arr0[i] && strlen(arr0[i]) )
 		{
-
-			
 			msg = g_new0(msg_t, 1);
 			
-			
 			arr = g_strsplit (arr0[i], "|||", -1);
-			
-			
-			
 			
 			msg->id 	= atoi(arr[1]);
 			msg->time	= g_strdup(arr[2]);
@@ -898,15 +724,6 @@ process_msg_replydata(postreply_t *postreply)
 	{
 		gtk_label_set_label(GTK_LABEL(widget), g_strdup_printf("msg-code: %d",(int)postreply->status_code) );
 	}
-	
-	
-	
-	
-	
-	
-
-	
-
 }
 
 void
@@ -923,8 +740,6 @@ add_message(msg_t *m)
 	hseparator = gtk_hseparator_new ();
 	gtk_widget_show (hseparator);
 	gtk_box_pack_start (GTK_BOX (widget), hseparator, FALSE, FALSE, 0);
-	
-
 }
 
 GtkWidget*
@@ -993,4 +808,62 @@ on_goto_friend2_clicked(GtkButton *button, gpointer user_data)
 	set_current_wp(m->lat, m->lon);
 	
 	osm_gps_map_set_center(OSM_GPS_MAP(mapwidget), m->lat, m->lon);
+}
+
+void
+set_friends_show(gboolean show)
+{
+	GError *error = NULL;
+
+	if (global_show_friends == show)
+		return;
+
+	global_show_friends = show;
+
+	if(!friend_icon)
+	{
+		friend_icon = gdk_pixbuf_new_from_file_at_size (
+			PACKAGE_PIXMAPS_DIR "/foxtrotgps-friend.png", 24,24,
+			&error);
+		// minimum refcount of one, keeps it allocated, despite friends_list_updated()
+		// TODO we need to unref it somewhere too, or does it get automatically unreffed at mainloop exit?
+		g_object_ref(friend_icon);
+	}
+
+	if (!friend_icon)
+	{
+		printf("Could not load friend icon\n");
+		return;
+	}
+
+	friends_list_updated();
+}
+
+void
+friends_list_updated(void)
+{
+	GSList * list;
+
+	if (!friend_icon)
+		return;
+
+	// OGM IDs the image by pixbuf pointer, but also uses refcounting of the pixbuf,
+	// so we can reuse a single pixbuf as long as we remove all of them before
+	int i;
+	for (i = 0; i < num_friends_added; i++)
+	{
+		osm_gps_map_remove_image(OSM_GPS_MAP(mapwidget), friend_icon);
+	}
+
+	num_friends_added = 0;
+
+	if (global_show_friends)
+	{
+		for(list = friends_list; list != NULL; list = list->next)
+		{
+			friend_t *f = list->data;
+			osm_gps_map_add_image(OSM_GPS_MAP(mapwidget), f->lat, f->lon, friend_icon);
+			num_friends_added++;
+		}
+	}
 }

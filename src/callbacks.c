@@ -536,8 +536,6 @@ on_button11_clicked                    (GtkButton       *button,
 		GCONF"/fftimer_running",
 		global_fftimer_running,
 		error);
-	
-	global_show_friends = TRUE;
 }
 
 
@@ -1735,18 +1733,17 @@ on_item19_activate                     (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
 {
 	gboolean active;
-	
+
 	active = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem));
-	global_show_friends = (active) ? TRUE : FALSE;
+
+	set_friends_show(active);
 	
-	
-	if(global_show_friends && !global_fftimer_running) {
+	if(active && !global_fftimer_running) {
 		GtkWidget *widget = NULL;
 		
 		widget = lookup_widget(window1, "button11");
 		gtk_button_clicked(GTK_BUTTON(widget));
 	}
-	repaint_all();
 }
 
 

@@ -39,9 +39,6 @@ update_position();
 void *
 update_position_thread(void *ptr);
 
-void
-paint_friends();
-
 int
 register_nick();
 	
@@ -53,3 +50,6 @@ create_friend_box(friend_t *f);
 
 gboolean
 send_message(gpointer user_data);
+
+void
+set_friends_show(gboolean show);

@@ -106,10 +106,6 @@ on_button11_clicked                    (GtkButton       *button,
                                         gpointer         user_data);
 
 void
-on_item3_activate                      (GtkMenuItem     *menuitem,
-                                        gpointer         user_data);
-
-void
 on_item4_activate                      (GtkMenuItem     *menuitem,
                                         gpointer         user_data);
 

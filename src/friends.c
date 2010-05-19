@@ -433,8 +433,18 @@ create_friend_box(friend_t *f)
 {
 	GtkWidget *hbox, *label, *vbox, *button;
 	char *label_txt;
+	float distance = 0;
 	
-	label_txt = g_strdup_printf("<b>%s</b>\nLast seen:\n%s\n<i>%s</i>",f->nick, f->lastseen, f->away_msg);
+	if (gpsdata && gpsdata->valid)
+	{
+		distance = get_distance(gpsdata->fix.latitude, gpsdata->fix.longitude, f->lat, f->lon);
+	}
+	else if (global_myposition.lat != 0 || global_myposition.lon != 0)
+	{
+		distance = get_distance(global_myposition.lat, global_myposition.lon, f->lat, f->lon);
+	}
+
+	label_txt = g_strdup_printf("<b>%s</b>\nLast seen:\n%s\nDistance: %.0fkm\n<i>%s</i>",f->nick, f->lastseen, distance, f->away_msg);
 	
 	hbox = gtk_hbox_new (FALSE, 2);
 	gtk_widget_show (hbox);
@@ -469,6 +479,47 @@ create_friend_box(friend_t *f)
 	return hbox;
 }
 
+void
+create_friends_window (GSList *friends)
+{
+	GSList *list;
+	GtkWidget *label, *window, *friend_box, *widget, *hseparator;
+	gchar buffer[8192];
+	gboolean friend_found = FALSE;
+	float lat, lon,lat_deg,lon_deg;
+	float distance=0;
+
+	printf("*** %s(): \n",__PRETTY_FUNCTION__);
+
+	window = create_window8();
+	widget = lookup_widget(window, "vbox35");
+	gtk_widget_show (window);
+
+	int num_friends = 0;
+	for(list = friends; list != NULL; list = list->next)
+	{
+		friend_t *f = list->data;
+
+		friend_box = create_friend_box(f);
+
+		gtk_box_pack_start (GTK_BOX (widget), friend_box, FALSE, FALSE, 0);
+
+		hseparator = gtk_hseparator_new ();
+		gtk_widget_show (hseparator);
+
+		gtk_box_pack_start (GTK_BOX (widget), hseparator, FALSE, FALSE, 0);
+
+		num_friends++;
+	}
+
+	if (num_friends == 1)
+		g_sprintf(buffer, "%d friend selected", num_friends);
+	else
+		g_sprintf(buffer, "%d friends selected", num_friends);
+
+	label = lookup_widget(window,"label119");
+	gtk_label_set_label(GTK_LABEL(label),buffer);
+}
 
 void
 on_msg_friend_clicked(GtkButton *button, gpointer user_data)

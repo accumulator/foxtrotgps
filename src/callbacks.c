@@ -30,6 +30,8 @@
 
 #define WTFCOUNTER 5
 
+#define DRAG_TRESHOLD 10
+#define ICON_SELECT_TRESHOLD 15
 
 static int wtfcounter=0; 
 
@@ -84,8 +86,6 @@ on_map_button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer use
 
 	mouse_x = (int) event->x;
 	mouse_y = (int) event->y;
-//	local_x = global_x;
-//	local_y = global_y;
 
 	return FALSE;
 }
@@ -93,88 +93,88 @@ on_map_button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer use
 gboolean
 on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer user_data)
 {
+	int item_x, item_y;
+	GSList *list;
+	GSList *friends_found = NULL;
+	gboolean photo_found = FALSE;
+	gboolean poi_found = FALSE;
+
 	printf("* %s()\n", __PRETTY_FUNCTION__);
 
-	if (abs(mouse_x - (int) event->x) < 10 && abs(mouse_y - (int) event->y) < 10)
+	// bail out when dragging
+	if (abs(mouse_x - (int) event->x) > DRAG_TRESHOLD || abs(mouse_y - (int) event->y) > DRAG_TRESHOLD)
+		return FALSE;
+
+	if(global_show_friends)
 	{
-		GSList *list;
-		gboolean friend_found = FALSE;
-		gboolean photo_found = FALSE;
-		gboolean poi_found = FALSE;
-
-		if(global_show_friends)
+		for(list = friends_list; list != NULL; list = list->next)
 		{
-			for(list = friends_list; list != NULL && !friend_found; list = list->next)
+			friend_t *f = list->data;
+
+			osm_gps_map_geographic_to_screen(OSM_GPS_MAP(mapwidget), f->lat, f->lon, &item_x, &item_y);
+
+			if (abs(item_x - mouse_x) < ICON_SELECT_TRESHOLD && abs(item_y - mouse_y) < ICON_SELECT_TRESHOLD)
 			{
-				friend_t *f = list->data;
-
-				if( abs(f->screen_x - mouse_x) < 15 &&
-					abs(f->screen_y - mouse_y) < 15)
-				{
-
-					friend_found = TRUE;
-				}
-
+				friends_found = g_slist_append(friends_found, f);
 			}
 		}
+	}
 
-		if(global_show_photos && !photo_found)
+	if(global_show_photos)
+	{
+		for(list = photo_list; list != NULL; list = list->next)
 		{
-			for(list = photo_list; list != NULL && !photo_found; list = list->next)
+			photo_t *p = list->data;
+
+			osm_gps_map_geographic_to_screen(OSM_GPS_MAP(mapwidget), p->lat, p->lon, &item_x, &item_y);
+
+			if (abs(item_x - mouse_x) < ICON_SELECT_TRESHOLD && abs(item_y - mouse_y) < ICON_SELECT_TRESHOLD)
 			{
-				photo_t *p = list->data;
-
-				if( 	abs(p->screen_x - mouse_x) < 15 &&
-					abs(p->screen_y - mouse_y) < 15)
-				{
-
-					photo_found = TRUE;
-				}
-
+				photo_found = TRUE;
+				break;
 			}
 		}
+	}
 
-		if (global_show_pois )
+	if (global_show_pois )
+	{
+		for(list = poi_list; list != NULL; list = list->next)
 		{
-			for(list = poi_list; list != NULL && !poi_found; list = list->next)
+			poi_t *p = list->data;
+
+			osm_gps_map_geographic_to_screen(OSM_GPS_MAP(mapwidget), p->lat_deg, p->lon_deg, &item_x, &item_y);
+
+			if (abs(item_x - mouse_x) < ICON_SELECT_TRESHOLD && abs(item_y - mouse_y) < ICON_SELECT_TRESHOLD)
 			{
-				poi_t *p = list->data;
-
-				if( 	abs(p->screen_x - mouse_x) < 15 &&
-					abs(p->screen_y - mouse_y) < 15)
-				{
-
-					poi_found = TRUE;
-				}
-
+				poi_found = TRUE;
+				break;
 			}
 		}
+	}
 
+	if (!friends_found && !photo_found && !poi_found &&
+		!distance_mode && !pickpoint_mode)
+	{
+		gtk_widget_show(menu1);
+		gtk_menu_popup (GTK_MENU(menu1), NULL, NULL, NULL, NULL,
+			  event->button, event->time);
+	}
 
-		if (!friend_found && !photo_found && !poi_found &&
-			!distance_mode && !pickpoint_mode)
-		{
-
-			gtk_widget_show(menu1);
-
-			gtk_menu_popup (GTK_MENU(menu1), NULL, NULL, NULL, NULL,
-				  event->button, event->time);
-
-		}
-
-		if(distance_mode)
-			do_distance();
-		else if (pickpoint_mode)
-			do_pickpoint();
-		else
-		{
-			if (friend_found)
-				on_item3_activate(NULL, NULL);
-			if (photo_found)
-				on_item10_activate(NULL, NULL);
-			if (poi_found)
-				on_item15_activate(NULL, NULL);
-		}
+	if(distance_mode)
+		do_distance();
+	else if (pickpoint_mode)
+		do_pickpoint();
+	else
+	{
+		// TODO move these functions to their modules (they're not event handlers anyway),
+		// and don't iterate over the lists again in these functions, but instead
+		// provide a (list of) match(es) from here.
+		if (friends_found)
+			create_friends_window(friends_found);
+		if (photo_found)
+			on_item10_activate(NULL, NULL);
+		if (poi_found)
+			on_item15_activate(NULL, NULL);
 	}
 
 	return FALSE;
@@ -537,73 +537,6 @@ on_button11_clicked                    (GtkButton       *button,
 		error);
 }
 
-
-void
-on_item3_activate                      (GtkMenuItem     *menuitem,
-                                        gpointer         user_data)
-{	
-	GSList *list;
-	GtkWidget *label, *window, *friend_box, *widget, *hseparator;
-	gchar buffer[8192];
-	gboolean friend_found = FALSE;
-	float lat, lon,lat_deg,lon_deg;
-	float distance=0;
-
-	window = create_window8();
-	widget = lookup_widget(window, "vbox35");
-	gtk_widget_show (window);
-
-	
-	printf("screen x,y: %d %d \n",mouse_x, mouse_y);
-	lat = pixel2lat(global_zoom, global_y+mouse_y);
-	lon = pixel2lon(global_zoom, global_x+mouse_x);
-	
-	lat_deg = rad2deg(lat);
-	lon_deg = rad2deg(lon);
-	printf ("##### Lonitude: %f %f - %f %f \n", lat, lon, lat_deg, lon_deg);
-	
-	if(gpsdata !=NULL && !global_myposition.lat && !global_myposition.lon)
-	{
-		distance = get_distance(gpsdata->fix.latitude, gpsdata->fix.longitude, lat_deg, lon_deg);
-	}
-	else if(global_myposition.lat && global_myposition.lon)
-	{
-		distance = get_distance(global_myposition.lat, global_myposition.lon, lat_deg, lon_deg);
-	}
-	
-	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-
-	g_sprintf(buffer, "<b><i>Distance:</i></b> %.3fkm\n",distance);
-	
-	for(list = friends_list; list != NULL; list = list->next)
-	{
-		friend_t *f = list->data;
-
-		if( 	abs(f->screen_x - mouse_x) < 15 &&
-			abs(f->screen_y - mouse_y) < 15)
-		{
-			printf("FOUND FRIEND X: %d %d %s\n\n",f->screen_x, mouse_x,f->nick);
-	
-			friend_box = create_friend_box(f);
-			
-			gtk_box_pack_start (GTK_BOX (widget), friend_box, FALSE, FALSE, 0);
-			
-			hseparator = gtk_hseparator_new ();
-			gtk_widget_show (hseparator);
-			gtk_box_pack_start (GTK_BOX (widget), hseparator, FALSE, FALSE, 0);
-			
-			friend_found = TRUE;
-		}
-	
-	}
-	
-	if (!friend_found)
-		g_sprintf(buffer,"No friends at or near this position");
-
-
-	label = lookup_widget(window,"label119");
-	gtk_label_set_label(GTK_LABEL(label),buffer);
-}
 
 void
 on_item4_activate                      (GtkMenuItem     *menuitem,

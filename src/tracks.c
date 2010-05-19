@@ -28,21 +28,16 @@
 
 GSList *loaded_track = NULL;
 GSList *loaded_track_ogm = NULL;
-
 GtkWidget *window12;
 GtkWidget *dialog10;
-
 FILE *fp = NULL;
 
-
 GtkWidget *	make_file_label(const char *file, char *full_file);
-
 bbox_t		get_track_bbox(GSList *track);
-
 GSList *	load_log_file_into_list(char *file);
 GSList *	load_gpx_file_into_list(char *file);
+GSList *	load_gpx_string_into_list(char *gpx_string);
 GSList *	parse_nodes(xmlNode *node);
-
 void *		fetch_track_thread(void *ptr);
 
 
@@ -236,7 +231,7 @@ track_convert_to_ogm(GSList *foxtrot_track)
 }
 
 gboolean
-load_track(char *file)
+load_track_from_file(char *file)
 {
 	GSList * old_track_ogm = NULL;
 
@@ -277,6 +272,38 @@ load_track(char *file)
 	return loaded_track ? TRUE : FALSE;
 }
 
+gboolean
+load_track_from_gpx_string(char *string)
+{
+	GSList * old_track_ogm = NULL;
+
+	if (loaded_track)
+	{
+		g_slist_free(loaded_track);
+		loaded_track = NULL;
+	}
+
+	if (loaded_track_ogm)
+	{
+		old_track_ogm = loaded_track_ogm;
+		g_slist_free(loaded_track_ogm);
+		loaded_track_ogm = NULL;
+	}
+
+	loaded_track = load_gpx_string_into_list(string);
+
+	if (loaded_track)
+	{
+		loaded_track_ogm = track_convert_to_ogm(loaded_track);
+	}
+
+	if (loaded_track_ogm || old_track_ogm)
+	{
+		osm_gps_map_replace_track(OSM_GPS_MAP(mapwidget), old_track_ogm, loaded_track_ogm);
+	}
+
+	return loaded_track ? TRUE : FALSE;
+}
 
 gboolean
 tracks_on_file_button_release_event   (	GtkWidget       *widget,
@@ -300,9 +327,7 @@ tracks_on_file_button_release_event   (	GtkWidget       *widget,
 			       (GtkCallback) gtk_widget_destroy,
 			       NULL);
 
-	load_track(file);
-	
-	if (loaded_track) {
+	if (load_track_from_file(file)) {
 		bbox = get_track_bbox(loaded_track);
 
 		track_zoom = get_zoom_covering(width, height, bbox.lat1, bbox.lon1, bbox.lat2, bbox.lon2);
@@ -503,16 +528,13 @@ fetch_track_thread(void *ptr)
 
 	printf("HTTP-GET: size: %d, statuscode %d \n", (int)reply->size, (int)reply->status_code);
 
-	loaded_track = load_gpx_string_into_list(reply->data);
-	
-	if(loaded_track)
+	if (load_track_from_gpx_string(reply->data))
 	{
 		FILE *fp = NULL;
 		time_t time_epoch_sec;
 		struct tm  *tm_struct;
 		gchar buffer[256];
 		gchar *filename = NULL;
-		
 		
 		time_epoch_sec = time(NULL);
 		tm_struct = localtime(&time_epoch_sec);
@@ -534,7 +556,6 @@ fetch_track_thread(void *ptr)
 		
 		g_free(filename);
 		
-		
 		bbox = get_track_bbox(loaded_track);
 		
 		track_zoom = get_zoom_covering(width, height, bbox.lat1, bbox.lon1, bbox.lat2, bbox.lon2);
@@ -542,7 +563,6 @@ fetch_track_thread(void *ptr)
 	
 		gdk_threads_enter();
 		{
-			
 			if(loaded_track)
 				osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
 					rad2deg((bbox.lat1+bbox.lat2)/2), rad2deg((bbox.lon1+bbox.lon2)/2), track_zoom);
@@ -561,20 +581,12 @@ fetch_track_thread(void *ptr)
 	{
 		const char *err_msg;
 		
-		
-		
 		if(reply->status_code == 200)
 			err_msg = g_strdup("<span color='#aa0000'><b>Oops! No Route found</b></span>\nTry with another Start/End");
-		
-		
 		else if(reply->status_code == 203)
 			err_msg = g_strdup(reply->data);
-		
-		
 		else if (reply->status_code)
 			err_msg = g_strdup("<span color='#aa0000'><b>Duh! A Server Error</b></span>\nMaybe try later again...");
-		
-		
 		else
 			err_msg = g_strdup("<span color='#aa0000'><b>Oh! A Network Error</b></span>\nCheck the internet!");
 		
@@ -589,9 +601,7 @@ fetch_track_thread(void *ptr)
 			gtk_widget_set_sensitive(widget, TRUE);			
 		}
 		gdk_threads_leave();
-	
 	}
-	
 	
 	return NULL;
 }

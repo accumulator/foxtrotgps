@@ -11,7 +11,10 @@ void
 tracks_open_tracks_dialog();
 
 gboolean
-load_track(char *file);
+load_track_from_file(char *file);
+
+gboolean
+load_track_from_gpx_string(char *string);
 
 gboolean
 tracks_on_file_button_release_event      (	GtkWidget       *widget,

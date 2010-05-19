@@ -107,8 +107,7 @@ init()
 
 	repoconfig__create_dropdown();
 
-	
-
+	gtk_widget_grab_focus(mapwidget);
 
 	global_gconfclient	= gconf_client_get_default(); 
 	nick			= gconf_client_get_string(global_gconfclient, GCONF"/nick",&err);

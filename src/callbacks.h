@@ -381,7 +381,7 @@ on_button30_clicked                    (GtkButton       *button,
                                         gpointer         user_data);
 
 gboolean
-on_drawingarea1_key_press_event        (GtkWidget       *widget,
+on_map_key_press_event                 (GtkWidget       *widget,
                                         GdkEventKey     *event,
                                         gpointer         user_data);
 

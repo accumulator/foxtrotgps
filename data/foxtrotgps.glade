@@ -166,6 +166,7 @@
                 <child>
                   <widget class="Custom" id="mapwidget">
                     <property name="creation_function">OsmGpsMap</property>
+                    <signal name="key-press-event" handler="on_map_key_press_event"/>
                   </widget>
                   <packing>
                     <property name="position">1</property>

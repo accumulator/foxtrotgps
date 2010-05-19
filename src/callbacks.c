@@ -1881,84 +1881,74 @@ on_button30_clicked                    (GtkButton       *button,
 }
 
 gboolean
-on_drawingarea1_key_press_event        (GtkWidget       *widget,
-                                        GdkEventKey     *event,
-                                        gpointer         user_data)
+on_map_key_press_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 {
-	if (event->keyval == GDK_Page_Up || event->keyval == GDK_KP_Up || event->keyval == 'i')
-		on_toolbar_button_zoom_in_clicked(NULL, NULL);
-	else if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK && event->keyval == 'p')
-		geo_photos_open_dialog_photo_correlate();
-	else if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK && event->keyval == 't')
-		tracks_open_tracks_dialog();
-	else if(event->keyval == GDK_Page_Down || event->keyval == 'o')
-		on_toolbar_button_zoom_out_clicked(NULL, NULL);
-	else if(event->keyval == 'm')
-		on_button76_clicked(NULL, NULL);
-	else if(event->keyval == GDK_space || event->keyval == GDK_F11)
-		on_button1_clicked(GTK_BUTTON(lookup_widget(window1, "button1")), NULL);
-	else if(event->keyval == GDK_a)
-		on_toolbar_button_autocenter_clicked(GTK_TOGGLE_TOOL_BUTTON(lookup_widget(window1,"button3")), NULL);
-	else if(event->keyval == GDK_r)
-		on_item23_button_release_event(NULL, NULL, NULL);
-	else if(event->keyval == GDK_1)
-	{
-		GtkWidget *widget;
-		widget = lookup_widget(window1, "combobox1");
-		gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 0);
-		repaint_all();
-	}
-	else if(event->keyval == GDK_2)
-	{
-		GtkWidget *widget;
-		widget = lookup_widget(window1, "combobox1");
-		gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 1);
-		repaint_all();
-	}
-	else if(event->keyval == GDK_3)
-	{
-		GtkWidget *widget;
-		widget = lookup_widget(window1, "combobox1");
-		gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 2);
-		repaint_all();
-	}
-	else if(event->keyval == GDK_4)
-	{
-		GtkWidget *widget;
-		widget = lookup_widget(window1, "combobox1");
-		gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 3);
-		repaint_all();
-	}
-	else if(event->keyval == GDK_5)
-	{
-		GtkWidget *widget;
-		widget = lookup_widget(window1, "combobox1");
-		gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 4);
-		repaint_all();
-	}
-	else if(event->keyval == GDK_6)
-	{
-		GtkWidget *widget;
-		widget = lookup_widget(window1, "combobox1");
-		gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 5);
-		repaint_all();
-	}
-	else if(event->keyval == GDK_7)
-	{
-		GtkWidget *widget;
-		widget = lookup_widget(window1, "combobox1");
-		gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 6);
-		repaint_all();
-	}
-	else if(event->keyval == GDK_8)
-	{
-		GtkWidget *widget;
-		widget = lookup_widget(window1, "combobox1");
-		gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 7);
-		repaint_all();
-	}
+	GtkComboBox *source_combobox = GTK_COMBO_BOX(lookup_widget(window1, "combobox1"));
 
-	return TRUE;
+	switch(event->keyval)
+	{
+	case GDK_Page_Up:
+	case GDK_KP_Page_Up:
+	case 'i':
+		on_toolbar_button_zoom_in_clicked(NULL, NULL);
+		return TRUE;
+	case GDK_Page_Down:
+	case GDK_KP_Page_Down:
+	case 'o':
+		on_toolbar_button_zoom_out_clicked(NULL, NULL);
+		return TRUE;
+	case GDK_F11:
+	case GDK_space:
+		on_button1_clicked(GTK_BUTTON(lookup_widget(window1, "button1")), NULL);
+		return TRUE;
+	case 'a':
+		on_toolbar_button_autocenter_clicked(GTK_TOGGLE_TOOL_BUTTON(lookup_widget(window1,"button3")), NULL);
+		return TRUE;
+	case 'm':
+		on_button76_clicked(NULL, NULL);
+		return TRUE;
+	case 'r':
+		on_item23_button_release_event(NULL, NULL, NULL);
+		return TRUE;
+	case 'p':
+		geo_photos_open_dialog_photo_correlate();
+		return TRUE;
+	case 't':
+		tracks_open_tracks_dialog();
+		return TRUE;
+	case GDK_1:
+		gtk_combo_box_set_active(source_combobox, 0);
+		return TRUE;
+	case GDK_2:
+		gtk_combo_box_set_active(source_combobox, 1);
+		return TRUE;
+	case GDK_3:
+		gtk_combo_box_set_active(source_combobox, 2);
+		return TRUE;
+	case GDK_4:
+		gtk_combo_box_set_active(source_combobox, 3);
+		return TRUE;
+	case GDK_5:
+		gtk_combo_box_set_active(source_combobox, 4);
+		return TRUE;
+	case GDK_6:
+		gtk_combo_box_set_active(source_combobox, 5);
+		return TRUE;
+	case GDK_7:
+		gtk_combo_box_set_active(source_combobox, 6);
+		return TRUE;
+	case GDK_8:
+		gtk_combo_box_set_active(source_combobox, 7);
+		return TRUE;
+	case GDK_9:
+		gtk_combo_box_set_active(source_combobox, 8);
+		return TRUE;
+	case GDK_0:
+		gtk_combo_box_set_active(source_combobox, 9);
+		return TRUE;
+	default:
+		return FALSE;
+	}
 }
 
 void

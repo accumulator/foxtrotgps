@@ -33,8 +33,6 @@ foxtrotgps_SOURCES = \
 	gps_functions.h\
 	init.c\
 	init.h\
-	tile_management.c\
-	tile_management.h\
 	friends.c\
 	friends.h\
 	gpsdstart.sh\

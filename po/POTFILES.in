@@ -8,8 +8,6 @@ src/interface.h
 src/interface.c
 src/callbacks.h
 src/callbacks.c
-src/map_management.c
-src/map_management.h
 src/globals.c
 src/globals.h
 src/converter.c
@@ -18,8 +16,6 @@ src/gps_functions.c
 src/gps_functions.h
 src/init.c
 src/init.h
-src/tile_management.c
-src/tile_management.h
 src/friends.c
 src/friends.h
 src/gpsdstart.sh

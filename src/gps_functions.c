@@ -20,7 +20,6 @@
 #include "gps_functions.h"
 #include "globals.h"
 #include "support.h"
-#include "tile_management.h"
 #include "converter.h"
 #include "wp.h"
 #include "tracks.h"
@@ -302,12 +301,11 @@ set_label_nogps()
 {
 	static GtkLabel *label=NULL;
 	static gchar buffer[BUFSIZE];
-	int num_dl_threads = 0;
+	int num_dl_threads = (global_tiles_in_dl_queue) ? 1 : 0;
 
 	if(label == NULL)
 		label   = GTK_LABEL(lookup_widget(window1, "label4"));
 	
-	num_dl_threads = update_thread_number(0);
 	if(num_dl_threads && !global_tiles_in_dl_queue)
 	{	
 		g_snprintf(buffer, BUFSIZE,
@@ -337,12 +335,10 @@ set_label()
 	static gchar numdl_buf[64], dl_buf[64], ff_buf[64], tr_buf[64];
 	static gchar speedunit[5], distunit[3], altunit[3];
 	int trip_hours, trip_minutes, trip_seconds;
-	int num_dl_threads = 0;
 	time_t time_sec;
 	struct tm  *ts;
 	double unit_conv = 1, unit_conv_alt = 1;
-	
-	osd_speed(FALSE);
+	int num_dl_threads = (global_tiles_in_dl_queue) ? 1 : 0;
 	
 	if(global_speed_unit==1)
 	{
@@ -400,12 +396,6 @@ set_label()
 		label68 = GTK_LABEL(lookup_widget(window1, "label68"));
 		label70 = GTK_LABEL(lookup_widget(window1, "label70"));
 	}
-
-
-	
-	
-	
-	num_dl_threads = update_thread_number(0);
 	
 	if(num_dl_threads && !global_tiles_in_dl_queue)
 		g_sprintf(numdl_buf, "<span foreground='#0000ff'><b>D%d</b></span> ", 

@@ -21,6 +21,13 @@
 #define SEGMENT_DISTANCE 100			/* start a new segment when distance exceeds: 100m */
 
 typedef struct {
+	double lat1;
+	double lon1;
+	double lat2;
+	double lon2;
+} bbox_t;
+
+typedef struct {
 	int   time;
 	float lat;
 	float lon;
@@ -161,7 +168,7 @@ extern gboolean		global_auto_download;
 extern gboolean		global_mapmode;
 extern gboolean		global_autocenter;
 extern gboolean		global_reconnect_gpsd;
-extern int		global_tiles_in_dl_queue;
+extern int			global_tiles_in_dl_queue;
 
 extern gboolean		global_show_pois;
 extern gboolean		global_show_friends;

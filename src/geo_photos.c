@@ -11,7 +11,6 @@
 #include "interface.h"
 #include "exif.h"
 #include "tracks.h"
-#include "tile_management.h"
 
 #include <glib.h>
 #include <glib/gprintf.h>

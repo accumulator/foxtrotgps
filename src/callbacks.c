@@ -2863,11 +2863,6 @@ on_item23_button_release_event         (GtkWidget       *widget,
 	label = lookup_widget(dialog10, "label190");
 	gtk_label_set_label(GTK_LABEL(label),"");
 
-	entry = lookup_widget(dialog10, "entry31");
-	gtk_entry_set_text(GTK_ENTRY(entry),"");
-	entry = lookup_widget(dialog10, "entry32");
-	gtk_entry_set_text(GTK_ENTRY(entry),"");	
-	
 	button = lookup_widget(dialog10, "okbutton11");
 	gtk_widget_set_sensitive(button, TRUE);
 	

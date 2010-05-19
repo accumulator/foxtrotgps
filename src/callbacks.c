@@ -1897,14 +1897,6 @@ on_drawingarea1_key_press_event        (GtkWidget       *widget,
 		on_button76_clicked(NULL, NULL);
 	else if(event->keyval == GDK_space || event->keyval == GDK_F11)
 		on_button1_clicked(GTK_BUTTON(lookup_widget(window1, "button1")), NULL);
-	else if(event->keyval == GDK_Right)
-		move_map(1);
-	else if(event->keyval == GDK_Down)
-		move_map(2);
-	else if(event->keyval == GDK_Left)
-		move_map(3);
-	else if(event->keyval == GDK_Up)
-		move_map(4);
 	else if(event->keyval == GDK_a)
 		on_toolbar_button_autocenter_clicked(GTK_TOGGLE_TOOL_BUTTON(lookup_widget(window1,"button3")), NULL);
 	else if(event->keyval == GDK_r)
@@ -3137,43 +3129,6 @@ on_checkbutton15_toggled               (GtkToggleButton *togglebutton,
 	widget = lookup_widget(window1, "entry8");
 	gtk_entry_set_visibility (GTK_ENTRY (widget), active);
 
-}
-
-void
-move_map(int i)
-{
-	GtkWidget *widget = NULL;
-
-	printf("* deprecated %s()\n", __PRETTY_FUNCTION__);
-	return;
-
-	widget = lookup_widget(window1, "drawingarea1");
-	
-	if(i == 1)
-		global_x += 80;
-	else if(i == 3)
-		global_x -= 80;
-	else if(i == 2)
-		global_y += 80;
-	else if(i == 4)
-		global_y -= 80;
-
-		
-	gdk_draw_rectangle (
-		pixmap,
-		widget->style->white_gc,
-		TRUE,
-		0, 0,
-		widget->allocation.width+260,
-		widget->allocation.height+260);
-				
-	gtk_widget_queue_draw_area (
-		widget, 
-		0,0,widget->allocation.width+260,widget->allocation.height+260);
-	
-	global_autocenter = FALSE;
-	
-	repaint_all();
 }
 
 void

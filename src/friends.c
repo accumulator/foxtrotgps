@@ -164,8 +164,8 @@ gdk_threads_leave();
 	{
 		float tmplat, tmplon;
 		
-		tmplat = rad2deg( pixel2lat(global_zoom, global_y+global_drawingarea_height/2) );
-		tmplon = rad2deg( pixel2lon(global_zoom, global_x+global_drawingarea_width/2) );
+		tmplat = RAD2DEG( pixel2lat(global_zoom, global_y+global_drawingarea_height/2) );
+		tmplon = RAD2DEG( pixel2lon(global_zoom, global_x+global_drawingarea_width/2) );
 		g_sprintf(lat, "%f", tmplat);
 		g_sprintf(lon, "%f", tmplon);
 		g_sprintf(mode, "%s|%dx%d", "atm", global_drawingarea_width, global_drawingarea_height);		

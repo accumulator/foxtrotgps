@@ -2966,11 +2966,8 @@ do_pickpoint()
 	GtkWidget *widget = NULL;
 	float lat=0, lon=0;
 	printf("%s():\n",__PRETTY_FUNCTION__);
-	
-	
-	
-	lat = rad2deg( pixel2lat(global_zoom, global_y+mouse_y) );
-	lon = rad2deg( pixel2lon(global_zoom, global_x+mouse_x) );
+
+	osm_gps_map_screen_to_geographic(OSM_GPS_MAP(mapwidget), mouse_x, mouse_y, &lat, &lon);
 	
 	if (pickpoint == 1)
 		widget = lookup_widget(dialog10, "entry31");

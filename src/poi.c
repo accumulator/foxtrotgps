@@ -345,8 +345,8 @@ show_window6()
 	
 	lat = pixel2lat(global_zoom, global_y+mouse_y);
 	lon = pixel2lon(global_zoom, global_x+mouse_x);
-	lat_deg = rad2deg(lat);
-	lon_deg = rad2deg(lon);
+	lat_deg = RAD2DEG(lat);
+	lon_deg = RAD2DEG(lon);
 	entry14 = lookup_widget(dialog, "entry14");
 	entry15 = lookup_widget(dialog, "entry15");
 	
@@ -651,8 +651,8 @@ show_poi_detail()
 	
 
 	
-	lat_deg = rad2deg(lat);
-	lon_deg = rad2deg(lon);
+	lat_deg = RAD2DEG(lat);
+	lon_deg = RAD2DEG(lon);
 	printf ("##### Lonitude: %f %f - %f %f \n", lat, lon, lat_deg, lon_deg);
 	
 	

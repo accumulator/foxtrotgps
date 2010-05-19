@@ -462,7 +462,6 @@ parse_nodes(xmlNode *node)
 	xmlNode *cur_node = NULL;
 	GSList *list = NULL;
 
-
 	for (cur_node = node; cur_node; cur_node = cur_node->next)
 	{
 		if (cur_node->type == XML_ELEMENT_NODE)			
@@ -475,8 +474,8 @@ parse_nodes(xmlNode *node)
 				lat = atof((char *)xmlGetProp(cur_node, BAD_CAST "lat"));
 				lon = atof((char *)xmlGetProp(cur_node, BAD_CAST "lon"));
 				
-				tp->lat = deg2rad(lat);
-				tp->lon = deg2rad(lon);		
+				tp->lat = DEG2RAD(lat);
+				tp->lon = DEG2RAD(lon);
 		
 				list = g_slist_append(list, tp);
 			}
@@ -559,21 +558,17 @@ fetch_track_thread(void *ptr)
 		bbox = get_track_bbox(loaded_track);
 		
 		track_zoom = get_zoom_covering(width, height, bbox.lat1, bbox.lon1, bbox.lat2, bbox.lon2);
-		track_zoom = (track_zoom > 15) ? 15 : track_zoom;
 	
 		gdk_threads_enter();
 		{
 			if(loaded_track)
 				osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
-					rad2deg((bbox.lat1+bbox.lat2)/2), rad2deg((bbox.lon1+bbox.lon2)/2), track_zoom);
+					RAD2DEG((bbox.lat1+bbox.lat2)/2), RAD2DEG((bbox.lon1+bbox.lon2)/2), track_zoom);
 		
-			//paint_loaded_track();
 			gtk_widget_hide(dialog10);
 			
-			
-			
 			range = lookup_widget(window1, "vscale1");
-			gtk_range_set_value(GTK_RANGE(range), (double) global_zoom);
+			gtk_range_set_value(GTK_RANGE(range), (double) track_zoom);
 		}
 		gdk_threads_leave();
 	}

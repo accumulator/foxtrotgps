@@ -149,3 +149,101 @@ glade_set_atk_action_description       (AtkAction       *action,
     }
 }
 
+gchar *
+my_strescape (const gchar *source, const gchar *exceptions)
+{
+	const guchar *p;
+	gchar *dest;
+	gchar *q;
+	guchar excmap[256];
+
+	g_return_val_if_fail (source != NULL, NULL);
+
+	p = (guchar *) source;
+
+	q = dest = g_malloc (strlen (source) * 4 + 1);
+
+	memset (excmap, 0, 256);
+	if (exceptions)
+	{
+		guchar *e = (guchar *) exceptions;
+		while (*e)
+		{
+			excmap[*e] = 1;
+			e++;
+		}
+	}
+
+	while (*p)
+	{
+		if (excmap[*p])
+			*q++ = *p;
+		else
+		{
+			switch (*p)
+			{
+			case '"':
+				*q++ = '`';
+				break;
+			case '\'':
+				*q++ = '`';
+				break;
+			default:
+				*q++ = *p;
+				break;
+			}
+		}
+		p++;
+	}
+	*q = 0;
+
+	return dest;
+}
+
+gchar *
+my_strescape_back (const gchar *source, const gchar *exceptions)
+{
+	const guchar *p;
+	gchar *dest;
+	gchar *q;
+	guchar excmap[256];
+
+	g_return_val_if_fail (source != NULL, NULL);
+
+	p = (guchar *) source;
+
+	q = dest = g_malloc (strlen (source) * 4 + 1);
+
+	memset (excmap, 0, 256);
+	if (exceptions)
+    {
+		guchar *e = (guchar *) exceptions;
+
+		while (*e)
+		{
+			excmap[*e] = 1;
+			e++;
+		}
+	}
+
+	while (*p)
+	{
+		switch (*p)
+		{
+		case '&':
+			*q++ = '&';
+			*q++ = 'a';
+			*q++ = 'm';
+			*q++ = 'p';
+			*q++ = ';';
+			break;
+		default:
+			*q++ = *p;
+			break;
+		}
+		p++;
+	}
+	*q = 0;
+
+	return dest;
+}

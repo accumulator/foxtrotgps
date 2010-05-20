@@ -63,3 +63,5 @@ void        glade_set_atk_action_description (AtkAction       *action,
                                               const gchar     *action_name,
                                               const gchar     *description);
 
+gchar *my_strescape (const gchar *source, const gchar *exceptions);
+gchar *my_strescape_back (const gchar *source,  const gchar *exceptions);

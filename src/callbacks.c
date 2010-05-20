@@ -1120,19 +1120,7 @@ on_item10_activate                     (GtkMenuItem     *menuitem,
 	gtk_widget_show(window3);
 
 	drawingarea2 = lookup_widget(window3,"drawingarea2");
-
-	
-	
-
-
-	
-	
 	label = lookup_widget(window3,"label104");
-	
-	
-
-	
-	
 	
 	for(list = photo_list; list != NULL; list = list->next)
 	{
@@ -1143,17 +1131,14 @@ on_item10_activate                     (GtkMenuItem     *menuitem,
 		   abs(p->screen_y - mouse_y) < 15 &&
 		   !photo_found && !photo) 
 		{
-			
 			printf("FOUND PHOTO X: %d %d %s\n",p->screen_x, mouse_x, p->name);
-	
 			
 			g_sprintf(buffer, 
 				"%s ",
 				p->name);
 			photo_found = TRUE;
-			wp->lat = deg2rad(p->lat);
-			wp->lon = deg2rad(p->lon);
-			
+			wp->lat = p->lat;
+			wp->lon = p->lon;
 			
 			photo = gdk_pixbuf_new_from_file_at_size (
 							p->filename, 240,-1,
@@ -1659,7 +1644,7 @@ on_button27_clicked                    (GtkButton       *button,
 	printf("* %s()\n", __PRETTY_FUNCTION__);
 
 	wp = user_data;
-	//set_current_wp(wp->lat, wp->lon);
+	set_current_wp(wp->lat, wp->lon);
 	
 	window = lookup_widget(GTK_WIDGET(button), "window5");
 	gtk_widget_destroy(window);
@@ -1746,7 +1731,7 @@ on_button29_clicked                    (GtkButton       *button,
 	printf("* %s()\n", __PRETTY_FUNCTION__);
 
 	wp = user_data;
-	//set_current_wp(wp->lat, wp->lon);
+	set_current_wp(wp->lat, wp->lon);
 
 	window = lookup_widget(GTK_WIDGET(button), "window3");
 	gtk_widget_hide(window);

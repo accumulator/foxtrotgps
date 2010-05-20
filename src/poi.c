@@ -1,4 +1,3 @@
-
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -691,8 +690,8 @@ show_poi_detail()
 printf("%s %s \n",buffer, buffer2);			
 			poi_found = TRUE;
 			
-			wp->lat = deg2rad(p->lat_deg);
-			wp->lon = deg2rad(p->lon_deg);
+			wp->lat = p->lat_deg;
+			wp->lon = p->lon_deg;
 			
 			this_poi = list->data;
 		}

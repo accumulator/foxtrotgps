@@ -43,31 +43,6 @@ static gboolean new_dialog = TRUE;
 		creator TEXT, bookmarked REAL, user_rating REAL, rating REAL, user_comment TEXT);"
 
 
-float
-parse_degrees(const char *s)
-{
-	float deg, min, sec;
-	
-	if (3 == sscanf(s, "%f %f %f", &deg, &min, &sec))
-		return deg + min/60 + sec/3600;
-	else if (3 == sscanf(s, "%f° %f' %f\"", &deg, &min, &sec))
-		return deg + min/60 + sec/3600;
-	else if (3 == sscanf(s, "%f°%f'%f\"", &deg, &min, &sec))
-		return deg + min/60 + sec/3600;
-		
-	else if (2 == sscanf(s, "%f %f", &deg, &min))
-		return deg + min/60;
- 	else if (2 == sscanf(s, "%f° %f'", &deg, &min))
-		return deg + min/60;
-	else if (2 == sscanf(s, "%f°%f'", &deg, &min))
-		return deg + min/60;
-		
-	else if (1 == sscanf(s, "%f", &deg))
-		return deg;
-
-	return (float) atof(s);
-}
-
 static int
 sql_cb__poi_get(void *unused, int colc, char **colv, char **col_names)
 {

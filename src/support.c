@@ -1,5 +1,3 @@
-
-
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -246,4 +244,29 @@ my_strescape_back (const gchar *source, const gchar *exceptions)
 	*q = 0;
 
 	return dest;
+}
+
+float
+parse_degrees(const char *s)
+{
+	float deg, min, sec;
+
+	if (3 == sscanf(s, "%f %f %f", &deg, &min, &sec))
+		return deg + min/60 + sec/3600;
+	else if (3 == sscanf(s, "%f° %f' %f\"", &deg, &min, &sec))
+		return deg + min/60 + sec/3600;
+	else if (3 == sscanf(s, "%f°%f'%f\"", &deg, &min, &sec))
+		return deg + min/60 + sec/3600;
+
+	else if (2 == sscanf(s, "%f %f", &deg, &min))
+		return deg + min/60;
+ 	else if (2 == sscanf(s, "%f° %f'", &deg, &min))
+		return deg + min/60;
+	else if (2 == sscanf(s, "%f°%f'", &deg, &min))
+		return deg + min/60;
+
+	else if (1 == sscanf(s, "%f", &deg))
+		return deg;
+
+	return (float) atof(s);
 }

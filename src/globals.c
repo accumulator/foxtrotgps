@@ -26,18 +26,8 @@ GList	*global_infopane_current = NULL;
 
 char *global_track_dir = NULL;
 
-int global_x = 890;
-int global_y = 515;
-int global_zoom = 3;
-int global_zoom_max = 20;
 int global_detail_zoom = 0;
 		
-int mouse_dx = 0; 
-int mouse_dy = 0;
-		
-int global_drawingarea_width  = 0;
-int global_drawingarea_height = 0;
-
 int global_speed_unit	= 0;	
 int global_alt_unit	= 0;	
 int global_latlon_unit	= 0;	

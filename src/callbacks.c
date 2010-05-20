@@ -28,12 +28,11 @@
 #include "wp.h"
 #include "tracks.h"
 
-#define WTFCOUNTER 5
-
 #define DRAG_TRESHOLD 10
 #define ICON_SELECT_TRESHOLD 15
 
-static int wtfcounter=0; 
+void do_distance();
+void do_pickpoint();
 
 static int	friendfinder_timer = 0;
 static gboolean distance_mode = FALSE;
@@ -42,23 +41,14 @@ static int	pickpoint;
 static int	msg_timer = 0;
 static gboolean msg_pane_visible=TRUE;
 static gboolean maximized = FALSE;
-
+static int local_x = 0;
+static int local_y = 0;
+static int drag_started = 0;
+static GdkPixmap *pixmap_photo = NULL;
+static GdkPixmap *pixmap_photo_big = NULL;
 
 GtkWidget *dialog10 = NULL;
 
-
-static int local_x = 0;
-static int local_y = 0;
-
-
-static int drag_started = 0;
-
-static	GdkPixmap *pixmap_photo = NULL;
-static	GdkPixmap *pixmap_photo_big = NULL;
-
-void do_distance();
-void do_pickpoint();
-void move_map(int i);
 
 void
 set_cursor(int type)
@@ -460,6 +450,8 @@ on_checkbutton2_toggled                (GtkToggleButton *togglebutton,
 				global_auto_download,
 				error);
 	
+	/* TODO propagate this setting to osm-gps-map */
+
 }
 
 
@@ -652,38 +644,8 @@ on_item4_activate                      (GtkMenuItem     *menuitem,
 	}
 	else
 	{
-		
-		
-		GdkColor color;
-		GdkGC *gc;
-	
-		gc = gdk_gc_new(pixmap);
-		color.green = 20000;
-		color.blue = 20000;
-		color.red = 65000;
-		gdk_gc_set_rgb_fg_color(gc, &color);
-		gdk_gc_set_line_attributes(
-		gc, 5, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
-
-
-		
-		
-		gdk_draw_arc (
-			pixmap,
-			
-			gc,
-			TRUE,			
-			mouse_x-8, mouse_y-8,		
-			16,16,			
-			0,23040);		
-
-		gtk_widget_queue_draw_area (
-			map_drawable, 
-			mouse_x - 8, 
-			mouse_y - 8,
-			mouse_x + 16,
-			mouse_y + 16);
-			
+		/* Original drawing code removed
+		 * TODO : draw indicator at click location */
 	}
 	
 	
@@ -737,87 +699,6 @@ on_item5_activate                      (GtkWidget       *widget,
 	gtk_widget_show (window2);
 	
 	return FALSE;
-}
-
-gboolean
-on_drawinarea1_scroll_event            (GtkWidget       *widget,
-                                        GdkEventScroll  *event,
-                                        gpointer         user_data)
-{
-	if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) {
-		if (event->direction == GDK_SCROLL_UP) {
-			printf("SCROLL UP+Ctrl\n");
-		} else {
-			printf("SCROLL DOWN+Ctrl\n");
-		}
-		return TRUE;
-	}
-	else
-	{
-		GtkWidget *range;
-		int zoom_old;
-		double factor;
-		int width_center, height_center;
-		static int slowpad = 0;
-		
-		if (event->direction == GDK_SCROLL_UP && slowpad % 2 ==0)
-		{
-			slowpad++;
-						
-			if(global_zoom<global_zoom_max)
-			{	
-				range = lookup_widget(window1, "vscale1");
-				
-				width_center  = map_drawable->allocation.width 	/ 2;
-				height_center = map_drawable->allocation.height / 2;
-								
-				zoom_old = global_zoom;
-			
-				global_zoom++;
-				gtk_range_set_value(GTK_RANGE(range), (double) global_zoom);
-				
-				
-				
-				factor = 2;
-				
-				
-				global_x = 2 * global_x + (int)event->x;
-				global_y = 2 * global_y + (int)event->y;
-				
-				
-				repaint_all();
-			}
-		}
-		else if (event->direction == GDK_SCROLL_DOWN && slowpad % 2 ==0)
-		{
-			slowpad++;
-
-			if(global_zoom>2)
-			{
-				range = lookup_widget(window1, "vscale1");
-			
-				width_center  = map_drawable->allocation.width 	/ 2;
-				height_center = map_drawable->allocation.height / 2;
-								
-				zoom_old = global_zoom;
-			
-				global_zoom--;
-				gtk_range_set_value(GTK_RANGE(range), (double) global_zoom);
-			
-				factor = exp(global_zoom * M_LN2)/exp(zoom_old * M_LN2);
-				
-				global_x = global_x/2 - (int)event->x/2;
-				global_y = global_y/2 - (int)event->y/2;
-				
-				repaint_all();
-			}
-		}
-		else slowpad++;
-			
-		return TRUE;
-	}
-
-
 }
 
 void
@@ -1039,7 +920,7 @@ on_download_maps_okbutton_clicked (GtkButton *button, gpointer user_data)
 	coord_t c1,c2;
 	osm_gps_map_get_bbox(OSM_GPS_MAP(mapwidget), &c1, &c2);
 	printf("*** downloading tiles: bbox=%f,%f-%f,%f zoom=%d-%d\n", c1.rlat, c1.rlon, c2.rlat, c2.rlon, zoom+1, zoom_end);
-	osm_gps_map_download_maps(OSM_GPS_MAP(mapwidget), &c1, &c2, global_zoom+1, zoom_end);
+	osm_gps_map_download_maps(OSM_GPS_MAP(mapwidget), &c1, &c2, zoom+1, zoom_end);
 	gtk_widget_hide(dialog);
 }
 

@@ -54,6 +54,7 @@ set_current_wp(float lat, float lon)
 	}
 }
 
+/* deprecated */
 void
 osd_wp()
 {
@@ -67,7 +68,9 @@ osd_wp()
 	gchar *buffer;
 	static gchar distunit[3];
 	
-	
+	int global_drawingarea_width;
+	int global_drawingarea_height;
+
 	static int width = 0, height = 0;
 
 	float distance;
@@ -76,7 +79,7 @@ osd_wp()
 	//printf("* %s() deprecated\n", __PRETTY_FUNCTION__);
 	return;
 
-	if(gpsdata && mouse_dx == 0 && mouse_dy == 0) 
+	if(gpsdata)
 	{
 		switch (global_speed_unit)
 		{

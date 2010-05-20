@@ -114,12 +114,6 @@ void
 on_button14_clicked                    (GtkButton       *button,
                                         gpointer         user_data);
 
-
-gboolean
-on_drawinarea1_scroll_event            (GtkWidget       *widget,
-                                        GdkEventScroll   *event,
-                                        gpointer         user_data);
-
 void
 on_button15_clicked                    (GtkButton       *button,
                                         gpointer         user_data);

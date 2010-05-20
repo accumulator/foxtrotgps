@@ -147,6 +147,13 @@ gdk_threads_enter();
 
 gdk_threads_leave();
 	
+	/* TODO factor out these 5 vars */
+	int global_drawingarea_width;
+	int global_drawingarea_height;
+	int global_x;
+	int global_y;
+	int global_zoom;
+
 	if (global_myposition.lat && global_myposition.lon)
 	{
 		g_sprintf(lat, "%f", global_myposition.lat);

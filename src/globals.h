@@ -122,22 +122,11 @@ extern GList		*global_infopane_current;
 
 extern char *global_track_dir;
 
-extern int global_x;
-extern int global_y;
-extern int global_zoom;
-extern int global_zoom_max;
 extern int global_detail_zoom;
-
-extern int mouse_dx; // for mouse move pixmap
-extern int mouse_dy;
 
 extern int global_speed_unit;
 extern int global_alt_unit;
 extern int global_latlon_unit;
-
-extern int global_drawingarea_width;
-extern int global_drawingarea_height;
-
 
 extern tangogps_gps_data_t *gpsdata;
 

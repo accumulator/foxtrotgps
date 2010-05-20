@@ -161,9 +161,6 @@ init()
 		gtk_entry_set_text( GTK_ENTRY(widget), me_msg );
 
 	
-	widget = lookup_widget(window1, "vscale1");
-	gtk_range_set_value(GTK_RANGE(widget), (double) global_zoom);
-	
 	global_track_dir	= gconf_client_get_string(global_gconfclient, GCONF"/track_dir",&err);
 	if(!global_track_dir)
 		global_track_dir = g_strdup_printf("%s/Maps/",global_home_dir);
@@ -252,6 +249,9 @@ init()
 	view_zoom = gconf_client_get_int(global_gconfclient, GCONF"/view_zoom", NULL);
 
 	osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget), view_lat, view_lon, view_zoom);
+
+	widget = lookup_widget(window1, "vscale1");
+	gtk_range_set_value(GTK_RANGE(widget), (double) view_zoom);
 
 	global_autocenter = gconf_client_get_bool(global_gconfclient, GCONF"/autocenter", NULL);
 	if (global_autocenter) {

@@ -50,3 +50,8 @@ geo_photo_close_dialog_photo_correlate();
 
 void
 geo_photo_correction_entry_cb(GtkEditable *editable);
+
+void
+set_photos_show(gboolean show);
+
+

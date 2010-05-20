@@ -1676,14 +1676,9 @@ on_item9_activate                      (GtkMenuItem     *menuitem,
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 	
 	active = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem));
-	global_show_photos = (active) ? TRUE : FALSE;
-
-	if (active && photo_list == NULL)
-		get_photos();
 	
-	repaint_all();
+	set_photos_show(active);
 }
-
 
 void
 repaint_all()

@@ -24,32 +24,30 @@
 
 #define PHOTO_DB "geophoto.db"
 
+
+void geocode_set_photodir (char *dirname,   GtkWidget *widget);
+void geocode_set_trackname(char *trackname, GtkWidget *widget);
+char     *get_basename(char *file);
+GList   *get_entries_from_dir(char *dirname);
+gboolean  file_type_test(const char *file, char *type);
+void update_gps_time_label();
+gpointer geocode_thread(gpointer user_data);
+void photos_list_updated(void);
+void prepare_perl();
+
+static GdkPixbuf *photo_icon = NULL;
+static int num_photos_added = 0;
+
 GList *geocode_photo_list;
 GtkWidget *dialog_image_data = NULL;
 GtkWidget *dialog_photo_correlate = NULL;
 GtkWidget *dialog_geocode_result = NULL;
-
 char *geocode_photodir	= NULL;
 char *geocode_trackname	= NULL;
 int geocode_correction = 0;
 int geocode_timezone = 0;
 gboolean add_to_database = TRUE;
 struct tm tm_photo;
-
-
-void geocode_set_photodir (char *dirname,   GtkWidget *widget);
-void geocode_set_trackname(char *trackname, GtkWidget *widget);
-
-char     *get_basename(char *file);
-GList   *get_entries_from_dir(char *dirname);
-gboolean  file_type_test(const char *file, char *type);
-
-void update_gps_time_label();
-gpointer geocode_thread(gpointer user_data);
-void prepare_perl();
-
-
-
 
 
 static int
@@ -86,7 +84,6 @@ paint_photos()
 	GSList *list;
 	GdkColor color;
 	GError	*error = NULL;
-	static GdkPixbuf *photo_icon = NULL;
 	static GdkGC *gc;
 	
 	
@@ -187,10 +184,10 @@ paint_photos()
 
 
 void
-get_photos()
+get_photos_for_bbox(float lat1, float lon1, float lat2, float lon2)
 {
 	char *sql, *db;
-	coord_t c1,c2;
+	coord_t c1, c2;
 	
 	db = g_strconcat(foxtrotgps_dir,"/", PHOTO_DB, NULL);
 	
@@ -204,13 +201,18 @@ get_photos()
 			"SELECT * FROM photo "
 			"WHERE lat>%f AND lat<%f AND lon>%f AND lon<%f "
 			"LIMIT 500;",
-			c1.rlat > c2.rlat ? c2.rlat : c1.rlat,
-			c1.rlat > c2.rlat ? c1.rlat : c2.rlat,
-			c1.rlon > c2.rlon ? c2.rlon : c1.rlon,
-			c1.rlon > c2.rlon ? c1.rlon : c2.rlon
+			lat1, lat2, lon1, lon2
 	);
 	
-	sql_execute(db, sql, sql_cb__photo);		
+	sql_execute(db, sql, sql_cb__photo);
+
+	photos_list_updated();
+}
+
+void
+get_photos()
+{
+	get_photos_for_bbox(-90, -180, 90, 180);
 }
 
 void
@@ -786,6 +788,69 @@ printf("commandline in thread: %s\n", command_line);
 
 	return NULL;
 }
+
+
+void
+photos_list_updated(void)
+{
+	GSList * list;
+
+	if (!photo_icon)
+		return;
+
+	// OGM IDs the image by pixbuf pointer, but also uses refcounting of the pixbuf,
+	// so we can reuse a single pixbuf as long as we remove all of them before
+	int i;
+	for (i = 0; i < num_photos_added; i++)
+	{
+		osm_gps_map_remove_image(OSM_GPS_MAP(mapwidget), photo_icon);
+	}
+
+	num_photos_added = 0;
+
+	if (global_show_photos)
+	{
+		for (list = photo_list; list != NULL; list = list->next)
+		{
+			photo_t *p = list->data;
+			osm_gps_map_add_image(OSM_GPS_MAP(mapwidget), p->lat, p->lon, photo_icon);
+			num_photos_added++;
+		}
+	}
+}
+
+void
+set_photos_show(gboolean show)
+{
+	GError *error = NULL;
+
+	if (global_show_photos == show)
+		return;
+
+	global_show_photos = show;
+
+	if(!photo_icon)
+	{
+		photo_icon = gdk_pixbuf_new_from_file_at_size (
+			PACKAGE_PIXMAPS_DIR "/foxtrotgps-photo.png", 24,24,
+			&error);
+		// minimum refcount of one, keeps it allocated, despite pois_list_updated()
+		// TODO we need to unref it somewhere too, or does it get automatically unreffed at mainloop exit?
+		g_object_ref(photo_icon);
+	}
+
+	if (!photo_icon)
+	{
+		printf("Could not load Photo icon\n");
+		return;
+	}
+
+	if (show && !photo_list)
+		get_photos();
+
+	photos_list_updated();
+}
+
 
 
 void

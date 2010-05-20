@@ -97,7 +97,7 @@ on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer u
 	GSList *list;
 	GSList *friends_found = NULL;
 	gboolean photo_found = FALSE;
-	gboolean poi_found = FALSE;
+	GSList *pois_found = NULL;
 
 	printf("* %s()\n", __PRETTY_FUNCTION__);
 
@@ -146,13 +146,12 @@ on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer u
 
 			if (abs(item_x - mouse_x) < ICON_SELECT_TRESHOLD && abs(item_y - mouse_y) < ICON_SELECT_TRESHOLD)
 			{
-				poi_found = TRUE;
-				break;
+				pois_found = g_slist_append(pois_found, p);
 			}
 		}
 	}
 
-	if (!friends_found && !photo_found && !poi_found &&
+	if (!friends_found && !photo_found && !pois_found &&
 		!distance_mode && !pickpoint_mode)
 	{
 		gtk_widget_show(menu1);
@@ -173,8 +172,8 @@ on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer u
 			create_friends_window(friends_found);
 		if (photo_found)
 			on_item10_activate(NULL, NULL);
-		if (poi_found)
-			on_item15_activate(NULL, NULL);
+		if (pois_found)
+			create_pois_window(pois_found);
 	}
 
 	return FALSE;
@@ -1342,7 +1341,7 @@ on_okbutton4_clicked                   (GtkButton       *button,
 {
 	GtkWidget *dialog;
 	dialog = lookup_widget(GTK_WIDGET(button), "window6");
-	set_poi(dialog);
+	insert_poi(dialog);
 	
 
 	global_show_pois = TRUE; 
@@ -1363,30 +1362,21 @@ on_cancelbutton5_clicked               (GtkButton       *button,
 
 }
 
-
+/* called when pressing OK in POI select dialog */
 void
 on_okbutton5_clicked                   (GtkButton       *button,
                                         gpointer         user_data)
 {
-	GtkWidget *dialog,*combobox,*widget;
-	gboolean pois_shown;
+	GtkWidget *dialog, *combobox;
 	
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 	
 	dialog = lookup_widget(GTK_WIDGET(button), "dialog6");
-	
 	combobox = lookup_widget(GTK_WIDGET(button), "combobox4");
+	
 	global_poi_cat = gtk_combo_box_get_active(GTK_COMBO_BOX(combobox));
 
 	gtk_widget_hide(dialog);
-	
-	widget = lookup_widget(menu1, "item20");
-	pois_shown = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
-	
-	if(pois_shown)
-		repaint_all();
-	else
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(widget), TRUE);
 	
 }
 
@@ -1408,13 +1398,6 @@ on_combobox2_changed                   (GtkComboBox     *combobox,
 {
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 	on_combobox_cat_changed(combobox);
-}
-
-void
-on_item15_activate                     (GtkMenuItem     *menuitem,
-                                        gpointer         user_data)
-{
-	show_poi_detail();
 }
 
 void
@@ -1680,7 +1663,6 @@ on_item19_activate                     (GtkMenuItem     *menuitem,
 	}
 }
 
-
 void
 on_item20_activate                     (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
@@ -1689,14 +1671,9 @@ on_item20_activate                     (GtkMenuItem     *menuitem,
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 	
 	active = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem));
-	global_show_pois = (active) ? TRUE : FALSE;
-
-
 	
-	repaint_all();
+	set_pois_show(active);
 }
-
-
 
 void
 on_item9_activate                      (GtkMenuItem     *menuitem,

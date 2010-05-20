@@ -229,10 +229,6 @@ on_combobox2_changed                   (GtkComboBox     *combobox,
                                         gpointer         user_data);
 
 void
-on_item15_activate                     (GtkMenuItem     *menuitem,
-                                        gpointer         user_data);
-
-void
 on_button22_clicked                    (GtkButton       *button,
                                         gpointer         user_data);
 

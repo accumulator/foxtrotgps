@@ -1,12 +1,8 @@
-
-//void
-//get_poi();
+void
+set_pois_show(gboolean show);
 
 void
-paint_pois();
-
-void
-set_poi(GtkWidget *dialog);
+insert_poi(GtkWidget *dialog);
 
 void
 update_poi(GtkWidget *dialog);
@@ -24,4 +20,7 @@ void
 get_pois();
 
 void
-show_poi_detail();
+get_pois_for_bbox(float lat1, float lon1, float lat2, float lon2);
+
+void
+create_pois_window();

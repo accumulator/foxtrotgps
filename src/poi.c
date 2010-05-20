@@ -20,9 +20,14 @@
 
 #include <osm-gps-map.h>
 
+void pois_list_updated(void);
+
 #define POI_DB "poi.db"
 
-GtkListStore *list_store;
+#define POI_DB_CREATE  "CREATE TABLE poi (	\
+		idmd5 TEXT, lat REAL, lon REAL, visibility REAL, cat REAL, subcat REAL, \
+		keywords TEXT, desc TEXT, price_range REAL, extended_open REAL,	\
+		creator TEXT, bookmarked REAL, user_rating REAL, rating REAL, user_comment TEXT);"
 
 enum {
 	COLUMN_STRING,
@@ -31,16 +36,13 @@ enum {
 	N_COLUMNS
 };
 
-
+static GdkPixbuf *poi_icon = NULL;
 static GtkWidget *combobox_subcat = NULL;
 static gboolean new_dialog = TRUE;
+static int num_pois_added = 0;
 
+GtkListStore *list_store;
 
-
-#define POI_DB_CREATE  "CREATE TABLE poi (	\
-		idmd5 TEXT, lat REAL, lon REAL, visibility REAL, cat REAL, subcat REAL, \
-		keywords TEXT, desc TEXT, price_range REAL, extended_open REAL,	\
-		creator TEXT, bookmarked REAL, user_rating REAL, rating REAL, user_comment TEXT);"
 
 
 static int
@@ -67,90 +69,35 @@ sql_cb__poi_get(void *unused, int colc, char **colv, char **col_names)
 }
 
 void
-paint_pois()
+set_pois_show(gboolean show)
 {
-	
-	
-	int pixel_x, pixel_y, x, y;
-	float lat, lon;
-	GSList *list;
-	GdkColor color;
-	GError	*error = NULL;
-	static GdkPixbuf *photo_icon = NULL;
-	static GdkGC *gc;
-	
+	GError *error = NULL;
 
-	if (!gc)
-		gc = gdk_gc_new(pixmap); 
-	color.green = 0;
-	color.blue = 60000;
-	color.red = 0;
-	gdk_gc_set_rgb_fg_color(gc, &color);
-	
+	if (global_show_pois == show)
+		return;
 
-	if(!photo_icon)
+	global_show_pois = show;
+
+	if(!poi_icon)
 	{
-		photo_icon = gdk_pixbuf_new_from_file_at_size (
-			PACKAGE_PIXMAPS_DIR "/foxtrotgps-poi.png", 25,25,
+		poi_icon = gdk_pixbuf_new_from_file_at_size (
+			PACKAGE_PIXMAPS_DIR "/foxtrotgps-poi.png", 24,24,
 			&error);
+		// minimum refcount of one, keeps it allocated, despite pois_list_updated()
+		// TODO we need to unref it somewhere too, or does it get automatically unreffed at mainloop exit?
+		g_object_ref(poi_icon);
 	}
 
-	if(global_show_pois)
+	if (!poi_icon)
 	{
-		get_pois();
-		
-		for(list = poi_list; list != NULL; list = list->next)
-		{
-			poi_t *p = list->data;
-		
-			lat = deg2rad(p->lat);
-			lon = deg2rad(p->lon);
-			
-			
-			
-			pixel_x = lon2pixel(global_zoom, lon);
-			pixel_y = lat2pixel(global_zoom, lat);
-			
-			x = pixel_x - global_x;
-			y = pixel_y - global_y;
-			
-			p->screen_x = x;
-			p->screen_y = y;
-			
-			
-			
-			if(!photo_icon)
-			{
-				gdk_draw_arc (
-					pixmap,
-					
-					gc,
-					TRUE,			
-					x-4, y-4,		
-					8,8,			
-					0,23040);		
-			}
-			else
-			{
-				gdk_draw_pixbuf (
-					pixmap,
-					NULL,
-					photo_icon,
-					0,0,
-					x-12,y-12,
-					24,24,
-					GDK_RGB_DITHER_NONE, 0, 0);
-				
-			}
-			
-			gtk_widget_queue_draw_area (
-					map_drawable, 
-					x-12, y-12,
-					24,24);
-			
-			printf("POI: %s lat %f - lon %f\n",p->keywords,p->lat, p->lon);
-		}
+		printf("Could not load POI icon\n");
+		return;
 	}
+
+	if (show && !poi_list)
+		get_pois();
+
+	pois_list_updated();
 }
 
 GtkListStore *
@@ -298,7 +245,7 @@ show_window6()
 }
 
 void
-set_poi(GtkWidget *dialog)
+insert_poi(GtkWidget *dialog)
 {
 	GtkComboBox *combo_box;
 	GtkTextView *text_view;
@@ -358,8 +305,7 @@ set_poi(GtkWidget *dialog)
 			rand1, rand2, lat, lon, visibility, category, subcategory, 
 			keyword, desc, price_range, extended_open);
 		  
-	printf("SQL: %s\n",sql);
-	printf("size of gdouble: %d", (int)sizeof(double));
+	printf("Inserting POI : %s\n", sql);
 
 	res = sql_execute(db, sql, NULL);
 	
@@ -373,8 +319,9 @@ set_poi(GtkWidget *dialog)
 	g_free(desc_raw);
 	g_free(sql);
 	gtk_widget_destroy(dialog);
-	
-	global_poi_cat = category;
+
+	// TODO : be smart about adding a single POI, instead of reloading all
+	get_pois();
 }
 
 void
@@ -415,20 +362,13 @@ update_poi(GtkWidget *dialog)
 	db = g_strconcat(foxtrotgps_dir, "/", POI_DB, NULL);	
 
 	sql = g_strdup_printf( 	
-			"UPDATE "
-				"poi "
-			"SET "
-				"lat=%f,"
-				"lon=%f,"
-				"keywords='%s',"
-				"desc='%s'"
-			"WHERE "
-				"idmd5='%s'" 
-			,
-			lat, lon, 
-			keyword, desc, idmd5);
+			"UPDATE poi "
+			"SET lat=%f, lon=%f, keywords='%s', desc='%s'"
+			"WHERE idmd5='%s'"
+			, lat, lon,	keyword, desc,
+			idmd5);
 
-	printf("SQL: %s\n",sql);
+	printf("*** Updating POI : %s\n", sql);
 
 	res = sql_execute(db, sql, NULL);
 	
@@ -443,6 +383,9 @@ update_poi(GtkWidget *dialog)
 	g_free(sql);
 	
 	gtk_widget_destroy(dialog);
+
+	// TODO : be smart about updating a single POI, instead of reloading all
+	get_pois();
 }
 
 void
@@ -457,25 +400,30 @@ delete_poi(poi_t *p)
 	db = g_strconcat(foxtrotgps_dir, "/", POI_DB, NULL);	
 	
 	sql = g_strdup_printf( 	
-			"DELETE FROM "
-				"poi "
-			"WHERE "
-				"idmd5='%s'" 
-			, p->idmd5);
+			"DELETE FROM poi "
+			"WHERE idmd5='%s'",
+			p->idmd5
+			);
 
-printf("SQL: %s\n",sql);
+	printf("*** Delete POI : %s\n",sql);
 
 	res = sql_execute(db, sql, NULL);
 
-	repaint_all();
+	// TODO : be smart about deleting a single POI, instead of reloading all
+	get_pois();
 }
 
 void
 get_pois()
 {
+	get_pois_for_bbox(-90.0, -180.0, 90.0, 180.0);
+}
+
+void
+get_pois_for_bbox(float lat1, float lon1, float lat2, float lon2)
+{
 	char sql[256];
 	char *db;
-	coord_t c1,c2;
 		
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 
@@ -485,42 +433,35 @@ get_pois()
 		g_slist_free(poi_list);
 	poi_list = NULL;
 	
-	if(global_poi_cat==0)
+	if (global_poi_cat==0)
 	{
 		g_snprintf(sql, 256, 
 				"SELECT * FROM poi "
 				"WHERE lat>%f AND lat<%f AND lon>%f AND lon<%f "
 				"LIMIT 1000;",
-				c1.rlat > c2.rlat ? c2.rlat : c1.rlat,
-				c1.rlat > c2.rlat ? c1.rlat : c2.rlat,
-				c1.rlon > c2.rlon ? c2.rlon : c1.rlon,
-				c1.rlon > c2.rlon ? c1.rlon : c2.rlon
+				lat1, lat2, lon1, lon2
 				);
-		printf("%s \n",sql);
+		printf("*** POIs get all categories : %s \n", sql);
 	}
-	else if(global_poi_cat>=1)
+	else if (global_poi_cat>=1)
 	{
-
 		g_snprintf(sql, 256, 
 				"SELECT * FROM poi "
 				"WHERE cat=%d AND lat>%f AND lat<%f AND lon>%f AND lon<%f "
 				"LIMIT 1000;",
 				global_poi_cat,
-				c1.rlat > c2.rlat ? c2.rlat : c1.rlat,
-				c1.rlat > c2.rlat ? c1.rlat : c2.rlat,
-				c1.rlon > c2.rlon ? c2.rlon : c1.rlon,
-				c1.rlon > c2.rlon ? c1.rlon : c2.rlon
+				lat1, lat2, lon1, lon2
 				);		
-		
+		printf("*** POIs get cat %d : %s \n", global_poi_cat, sql);
 	}
 
-	sql_execute(db, sql, sql_cb__poi_get);	
-	
-	global_show_pois = TRUE;
+	sql_execute(db, sql, sql_cb__poi_get);
+
+	pois_list_updated();
 }
 
 void
-show_poi_detail()
+create_pois_window(GSList *pois)
 {
 	GtkWidget *window, *widget;
 	GtkWidget *label;
@@ -532,6 +473,8 @@ show_poi_detail()
 	waypoint_t *wp = g_new0(waypoint_t, 1);
 	poi_t *p, *this_poi = NULL;
 	
+	printf("*** %s(): \n",__PRETTY_FUNCTION__);
+
 	GladeXML *gladexml = glade_xml_new (gladefile,
 					    "window5",
 					    GETTEXT_PACKAGE);
@@ -540,61 +483,43 @@ show_poi_detail()
 	g_signal_connect_swapped (window, "destroy",
 				  G_CALLBACK (g_object_unref), gladexml);
 	
-	printf("screen x,y: %d %d \n",mouse_x, mouse_y);
-	lat = pixel2lat(global_zoom, global_y+mouse_y);
-	lon = pixel2lon(global_zoom, global_x+mouse_x);
-	
-	lat_deg = RAD2DEG(lat);
-	lon_deg = RAD2DEG(lon);
-	printf ("##### Lonitude: %f %f - %f %f \n", lat, lon, lat_deg, lon_deg);
-	
 	if(gpsdata !=NULL && !global_myposition.lat && !global_myposition.lon)
 	{
-		distance = get_distance(gpsdata->fix.latitude, gpsdata->fix.longitude, lat_deg, lon_deg);
+		distance = get_distance(gpsdata->fix.latitude, gpsdata->fix.longitude, lat, lon);
 	}
 	else if(global_myposition.lat && global_myposition.lon)
 	{
-		distance = get_distance(global_myposition.lat, global_myposition.lon, lat_deg, lon_deg);
+		distance = get_distance(global_myposition.lat, global_myposition.lon, lat, lon);
 	}
 	
-	printf("*** %s(): \n",__PRETTY_FUNCTION__);
+	if (pois)
+	{
+		// TODO : foxtrotGPS supports displaying only one POI, so just take the first in the list for now
+		p = pois->data;
+		printf("FOUND POI: %f %f %s\n",p->lat, p->lon, my_strescape_back(p->keywords,NULL));
+		buffer = g_strdup_printf(
+			"<b>%s</b> ",
+			my_strescape_back(p->keywords,NULL));
+		buffer2 = g_strdup_printf("%s \n\nDistance: %.3fkm ",
+			my_strescape_back(p->desc,NULL), distance);
+
+		printf("%s %s \n",buffer, buffer2);
+
+		poi_found = TRUE;
+
+		wp->lat = p->lat;
+		wp->lon = p->lon;
+
+		this_poi = list->data;
+	}
+	else
+	{
+		// never reached
+		buffer = g_strdup("<b>No POI found</b>\n");
+	}
 	
 	label = lookup_widget(window,"label110");
-	
-	for(list = poi_list; list != NULL; list = list->next)
-	{
-		p = list->data;
-		printf("\n\nPIXEL POI: %d %d   \n\n",p->screen_x,p->screen_y);
-		
-		if(abs(p->screen_x - mouse_x) < 12 &&
-		   abs(p->screen_y - mouse_y) < 12 )
-		   
-		{
-			printf("FOUND POI X: %d %d %s\n",p->screen_x, mouse_x, 
-				my_strescape_back(p->keywords,NULL));
-			
-			buffer = g_strdup_printf( 
-				"<b>%s</b> ",
-				my_strescape_back(p->keywords,NULL));
-			buffer2 = g_strdup_printf("%s \n\nDistance: %.3fkm ",
-				my_strescape_back(p->desc,NULL), distance);
-
-			printf("%s %s \n",buffer, buffer2);
-
-			poi_found = TRUE;
-			
-			wp->lat = p->lat;
-			wp->lon = p->lon;
-			
-			this_poi = list->data;
-		}
-	}
-	
-	if(!poi_found)
-		buffer = g_strdup("<b>No POI found</b>\n");
-	
 	gtk_label_set_label(GTK_LABEL(label),buffer);
-	
 	label = lookup_widget(window,"label111");
 	gtk_label_set_label(GTK_LABEL(label), buffer2);
 
@@ -619,4 +544,33 @@ show_poi_detail()
 	}
 	
 	gtk_widget_show(window);
+}
+
+void
+pois_list_updated(void)
+{
+	GSList * list;
+
+	if (!poi_icon)
+		return;
+
+	// OGM IDs the image by pixbuf pointer, but also uses refcounting of the pixbuf,
+	// so we can reuse a single pixbuf as long as we remove all of them before
+	int i;
+	for (i = 0; i < num_pois_added; i++)
+	{
+		osm_gps_map_remove_image(OSM_GPS_MAP(mapwidget), poi_icon);
+	}
+
+	num_pois_added = 0;
+
+	if (global_show_pois)
+	{
+		for (list = poi_list; list != NULL; list = list->next)
+		{
+			poi_t *p = list->data;
+			osm_gps_map_add_image(OSM_GPS_MAP(mapwidget), p->lat, p->lon, poi_icon);
+			num_pois_added++;
+		}
+	}
 }

@@ -239,6 +239,12 @@ init()
 	lon = gconf_client_get_float(global_gconfclient, GCONF"/myposition_lon", NULL);
 	set_myposition(lat, lon);
 
+	gboolean show_pois;
+	show_pois = gconf_client_get_bool(global_gconfclient, GCONF"/show_pois", NULL);
+	global_poi_cat = gconf_client_get_int(global_gconfclient, GCONF"/poi_cat", NULL);
+	widget = lookup_widget(menu1, "item20");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(widget), show_pois);
+
 	float view_lat, view_lon;
 	int view_zoom;
 	view_lat = gconf_client_get_float(global_gconfclient, GCONF"/view_lat", NULL);
@@ -280,6 +286,9 @@ quit()
 	success = gconf_client_set_int(global_gconfclient, GCONF"/view_zoom", zoom,	error);
 
 	success = gconf_client_set_bool(global_gconfclient, GCONF"/autocenter", global_autocenter, error);
+
+	success = gconf_client_set_bool(global_gconfclient, GCONF"/show_pois", global_show_pois, error);
+	success = gconf_client_set_int(global_gconfclient, GCONF"/poi_cat", global_poi_cat, error);
 
 	gtk_main_quit();
 }

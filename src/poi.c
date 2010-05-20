@@ -467,11 +467,10 @@ create_pois_window(GSList *pois)
 	GtkWidget *label;
 	GSList *list;
 	gchar *buffer = NULL, *buffer2 = NULL;
-	gboolean poi_found = FALSE;
-	float lat, lon,lat_deg,lon_deg;
 	float distance=0;
-	waypoint_t *wp = g_new0(waypoint_t, 1);
 	poi_t *p, *this_poi = NULL;
+
+	waypoint_t *wp = g_new0(waypoint_t, 1);
 	
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 
@@ -483,43 +482,33 @@ create_pois_window(GSList *pois)
 	g_signal_connect_swapped (window, "destroy",
 				  G_CALLBACK (g_object_unref), gladexml);
 	
-	if(gpsdata !=NULL && !global_myposition.lat && !global_myposition.lon)
-	{
-		distance = get_distance(gpsdata->fix.latitude, gpsdata->fix.longitude, lat, lon);
-	}
-	else if(global_myposition.lat && global_myposition.lon)
-	{
-		distance = get_distance(global_myposition.lat, global_myposition.lon, lat, lon);
-	}
-	
 	if (pois)
 	{
 		// TODO : foxtrotGPS supports displaying only one POI, so just take the first in the list for now
 		p = pois->data;
+
 		printf("FOUND POI: %f %f %s\n",p->lat, p->lon, my_strescape_back(p->keywords,NULL));
-		buffer = g_strdup_printf(
-			"<b>%s</b> ",
-			my_strescape_back(p->keywords,NULL));
-		buffer2 = g_strdup_printf("%s \n\nDistance: %.3fkm ",
-			my_strescape_back(p->desc,NULL), distance);
 
-		printf("%s %s \n",buffer, buffer2);
+		if (gpsdata && gpsdata->valid)
+		{
+			distance = get_distance(gpsdata->fix.latitude, gpsdata->fix.longitude, p->lat, p->lon);
+		}
+		else if (global_myposition.lat != 0 || global_myposition.lon != 0)
+		{
+			distance = get_distance(global_myposition.lat, global_myposition.lon, p->lat, p->lon);
+		}
 
-		poi_found = TRUE;
+		buffer = g_strdup_printf("<b>%s</b> ", my_strescape_back(p->keywords,NULL));
+		buffer2 = g_strdup_printf("%s \n\nDistance: %.3fkm ", my_strescape_back(p->desc,NULL), distance);
 
 		wp->lat = p->lat;
 		wp->lon = p->lon;
 
 		this_poi = list->data;
 	}
-	else
-	{
-		// never reached
-		buffer = g_strdup("<b>No POI found</b>\n");
-	}
 	
 	label = lookup_widget(window,"label110");
-	gtk_label_set_label(GTK_LABEL(label),buffer);
+	gtk_label_set_label(GTK_LABEL(label), buffer);
 	label = lookup_widget(window,"label111");
 	gtk_label_set_label(GTK_LABEL(label), buffer2);
 

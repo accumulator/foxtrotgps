@@ -11,9 +11,6 @@ void
 get_photos();
 
 void
-paint_photos();
-
-void
 geo_photos_open_dialog_image_data();
 
 void

@@ -222,8 +222,6 @@ track_convert_to_ogm(GSList *foxtrot_track)
 		coord->rlat = tp->lat;
 		coord->rlon = tp->lon;
 
-		printf("*** trackpoint (%f,%f)\n", tp->lat, tp->lon);
-
 		ogm_track = g_slist_append(ogm_track, coord);
 	}
 
@@ -411,7 +409,6 @@ load_gpx_file_into_list(char *file)
 	xmlDoc *doc = NULL;
 	xmlNode *root_element = NULL;
 	
-	
 	LIBXML_TEST_VERSION
 	
 	doc = xmlReadFile(file, NULL, 0);
@@ -436,11 +433,14 @@ load_gpx_string_into_list(char *gpx_string)
 	xmlDoc *doc = NULL;
 	xmlNode *root_element = NULL;
 	
-	if(!gpx_string) return NULL;
+	if (!gpx_string)
+		return NULL;
 	
 	LIBXML_TEST_VERSION
 	
-	doc = xmlReadMemory(gpx_string, strlen(gpx_string), "noname.xml", NULL, 0);
+	xmlInitParser();
+
+	doc = xmlReadMemory(gpx_string, strlen(gpx_string), NULL, NULL, 0);
 	
 	if (doc == NULL) {
 		fprintf(stderr, "Failed to parse document\n");
@@ -490,43 +490,18 @@ parse_nodes(xmlNode *node)
 	return list;
 }
 
-
-void
-fetch_track(GtkWidget *widget, int service, char *start, char *end)
+gboolean
+process_fetched_track(gpointer data)
 {
-	char *url;
-	
-	dialog10 = widget;
-	printf("%s(): %s, %s\n",__PRETTY_FUNCTION__, start, end);
-	
-	url = g_strdup_printf("www.tangogps.org/friends/navtrack.php?service=%d&start=%s&end=%s",service,start,end);
-	
-	if (!g_thread_create(&fetch_track_thread, (void *)url, FALSE, NULL) != 0)
-		g_warning("### can't create route thread\n");
-
-}
-
-
-void *
-fetch_track_thread(void *ptr)
-{
-	postreply_t *reply = NULL;
-	char *url;
 	GtkWidget *range;
-	int track_zoom, width, height;
+	int track_zoom;
 	bbox_t bbox;
-	
-	width  = mapwidget->allocation.width;
-	height = mapwidget->allocation.height;
-	
-	url = ptr;
-	
-	printf("URL ROUTE %s \n", url);
-	
-	reply = mycurl__do_http_get(url, NULL); 
 
-	printf("HTTP-GET: size: %d, statuscode %d \n", (int)reply->size, (int)reply->status_code);
+	int width  = mapwidget->allocation.width;
+	int height = mapwidget->allocation.height;
 
+	postreply_t *reply = (postreply_t *)data;
+	
 	if (load_track_from_gpx_string(reply->data))
 	{
 		FILE *fp = NULL;
@@ -559,18 +534,14 @@ fetch_track_thread(void *ptr)
 		
 		track_zoom = get_zoom_covering(width, height, bbox.lat1, bbox.lon1, bbox.lat2, bbox.lon2);
 	
-		gdk_threads_enter();
-		{
-			if(loaded_track)
-				osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
-					RAD2DEG((bbox.lat1+bbox.lat2)/2), RAD2DEG((bbox.lon1+bbox.lon2)/2), track_zoom);
+		if(loaded_track)
+			osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
+				RAD2DEG((bbox.lat1+bbox.lat2)/2), RAD2DEG((bbox.lon1+bbox.lon2)/2), track_zoom);
 		
-			gtk_widget_hide(dialog10);
+		gtk_widget_hide(dialog10);
 			
-			range = lookup_widget(window1, "vscale1");
-			gtk_range_set_value(GTK_RANGE(range), (double) track_zoom);
-		}
-		gdk_threads_leave();
+		range = lookup_widget(window1, "vscale1");
+		gtk_range_set_value(GTK_RANGE(range), (double) track_zoom);
 	}
 	else
 	{
@@ -585,18 +556,54 @@ fetch_track_thread(void *ptr)
 		else
 			err_msg = g_strdup("<span color='#aa0000'><b>Oh! A Network Error</b></span>\nCheck the internet!");
 		
-		gdk_threads_enter();
-		{
-			GtkWidget *widget;
+		GtkWidget *widget;
 
-			widget = lookup_widget(dialog10, "label190");
-			gtk_label_set_label(GTK_LABEL(widget), err_msg);
-			
-			widget = lookup_widget(dialog10, "okbutton11");
-			gtk_widget_set_sensitive(widget, TRUE);			
-		}
-		gdk_threads_leave();
+		widget = lookup_widget(dialog10, "label190");
+		gtk_label_set_label(GTK_LABEL(widget), err_msg);
+
+		widget = lookup_widget(dialog10, "okbutton11");
+		gtk_widget_set_sensitive(widget, TRUE);
 	}
+
+	return FALSE;
+}
+
+void
+fetch_track(GtkWidget *widget, int service, char *start, char *end)
+{
+	char *url;
+
+	dialog10 = widget;
+	printf("%s(): %s, %s\n",__PRETTY_FUNCTION__, start, end);
+
+	url = g_strdup_printf("www.tangogps.org/friends/navtrack.php?service=%d&start=%s&end=%s",service,start,end);
+
+	if (!g_thread_create(&fetch_track_thread, (void *)url, FALSE, NULL) != 0)
+		g_warning("### can't create route thread\n");
+
+}
+
+
+void *
+fetch_track_thread(void *ptr)
+{
+	postreply_t *reply = NULL;
+	char *url;
+	url = ptr;
+
+	printf("URL ROUTE %s \n", url);
+
+	reply = mycurl__do_http_get(url, NULL);
+
+	if (reply == NULL)
+	{
+		printf("No reply from URL %s\n", url);
+		return;
+	}
+
+	printf("HTTP-GET: size: %d, statuscode %d \n", (int)reply->size, (int)reply->status_code);
+
+	g_timeout_add(1, process_fetched_track, reply);
 	
 	return NULL;
 }

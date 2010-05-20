@@ -96,7 +96,7 @@ on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer u
 	int item_x, item_y;
 	GSList *list;
 	GSList *friends_found = NULL;
-	gboolean photo_found = FALSE;
+	GSList *photos_found = NULL;
 	GSList *pois_found = NULL;
 
 	printf("* %s()\n", __PRETTY_FUNCTION__);
@@ -130,8 +130,7 @@ on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer u
 
 			if (abs(item_x - mouse_x) < ICON_SELECT_TRESHOLD && abs(item_y - mouse_y) < ICON_SELECT_TRESHOLD)
 			{
-				photo_found = TRUE;
-				break;
+				photos_found = g_slist_append(photos_found, p);
 			}
 		}
 	}
@@ -151,7 +150,7 @@ on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer u
 		}
 	}
 
-	if (!friends_found && !photo_found && !pois_found &&
+	if (!friends_found && !photos_found && !pois_found &&
 		!distance_mode && !pickpoint_mode)
 	{
 		gtk_widget_show(menu1);
@@ -170,8 +169,8 @@ on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer u
 		// provide a (list of) match(es) from here.
 		if (friends_found)
 			create_friends_window(friends_found);
-		if (photo_found)
-			on_item10_activate(NULL, NULL);
+		if (photos_found)
+			process_selected_photos(photos_found);
 		if (pois_found)
 			create_pois_window(pois_found);
 	}
@@ -1097,8 +1096,7 @@ on_drawingarea2_expose_event           (GtkWidget       *widget,
 
 
 void
-on_item10_activate                     (GtkMenuItem     *menuitem,
-                                        gpointer         user_data)
+process_selected_photos (GSList *photos)
 {
 	GtkWidget *label, *widget;
 	GtkWidget *drawingarea2;

@@ -318,6 +318,7 @@ tracks_on_file_button_release_event   (	GtkWidget       *widget,
 	
 	file = (char *) user_data;
 	
+	window12 = glade_xml_get_widget(gladexml, "window12");
 	gtk_widget_hide(window12);
 
 	vbox = lookup_widget(window12, "vbox39");		

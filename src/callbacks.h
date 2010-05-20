@@ -192,8 +192,7 @@ on_closebutton2_clicked                (GtkButton       *button,
                                         gpointer         user_data);
 
 void
-on_item10_activate                     (GtkMenuItem     *menuitem,
-                                        gpointer         user_data);
+process_selected_photos                (GSList *photos);
 
 void
 on_item11_activate                     (GtkMenuItem     *menuitem,

@@ -4,7 +4,6 @@
 
 #include "support.h"
 #include "callbacks.h"
-
 #include "globals.h"
 #include "poi.h"
 #include "converter.h"
@@ -47,12 +46,10 @@ static gboolean new_dialog = TRUE;
 		creator TEXT, bookmarked REAL, user_rating REAL, rating REAL, user_comment TEXT);"
 
 
-
 double
 parse_degrees(const char *s)
 {
 	float deg, min, sec;
-	
 	
 	if (3 == sscanf(s, "%f %f %f", &deg, &min, &sec))
 		return deg + min/60 + sec/3600;
@@ -73,7 +70,6 @@ parse_degrees(const char *s)
 
 	return atof(s);
 }
-
 
 static int
 sql_cb__poi_get(void *unused, int colc, char **colv, char **col_names)
@@ -97,12 +93,6 @@ sql_cb__poi_get(void *unused, int colc, char **colv, char **col_names)
 
 	return 0;
 }
-
-
-
-
-
-
 
 void
 paint_pois()
@@ -191,9 +181,6 @@ paint_pois()
 	}
 }
 
-
-
-
 GtkListStore *
 create_combobox_list_store(char *list)
 {
@@ -211,15 +198,12 @@ create_combobox_list_store(char *list)
 	
 	while(array[i])
 	{		
-		
-		
 		gtk_list_store_append (list_store, &iter);
 		gtk_list_store_set (list_store, &iter,
 				  COLUMN_STRING, array[i],
 				  COLUMN_INT, i,
 				  COLUMN_BOOLEAN,  FALSE,
 				  -1);
-		
 		i++;
 	}
 	
@@ -227,15 +211,9 @@ create_combobox_list_store(char *list)
 	return list_store;
 }	
 
-
-
 void
-on_combobox_subcat_changed                   (GtkComboBox     *combobox,
-                                        gpointer         user_data)
+on_combobox_subcat_changed (GtkComboBox *combobox, gpointer user_data)
 {
-	
-	
-	
 	GtkTreeIter iter;
 	gchar *str_data;
 	gint   int_data;
@@ -251,14 +229,13 @@ on_combobox_subcat_changed                   (GtkComboBox     *combobox,
 	printf("Entry: (%s,%d)\n", str_data, int_data);
 }
 
-
 void set_combobox_subcat(GtkWidget *widget, int choice)
 {
-	
 	GtkCellRenderer *renderer;
 	GtkWidget *vbox;
 	char *subcat_lists[15];
-		printf("*** %s(): \n",__PRETTY_FUNCTION__);
+
+	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 
 	subcat_lists[0] = "---"; 
 	subcat_lists[1] = "- Please choose -|Hotel|Motel|B&B|Hostel|Camping";
@@ -278,7 +255,6 @@ void set_combobox_subcat(GtkWidget *widget, int choice)
 
 	vbox = lookup_widget(widget, "vbox28");
 	list_store = create_combobox_list_store(subcat_lists[choice]);
-	
 	
 	if((!combobox_subcat || new_dialog ) && choice)
 	{
@@ -301,25 +277,19 @@ void set_combobox_subcat(GtkWidget *widget, int choice)
 		gtk_combo_box_set_model(GTK_COMBO_BOX(combobox_subcat), GTK_TREE_MODEL(list_store));
 		gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_subcat), 0);
 	}
-	
-
 }
-
 
 void
-on_combobox_cat_changed(GtkComboBox     *combobox)
+on_combobox_cat_changed (GtkComboBox *combobox)
 {
 	int choice;
-		printf("*** %s(): \n",__PRETTY_FUNCTION__);
-
 	
+	printf("*** %s(): \n",__PRETTY_FUNCTION__);
+
 	choice = gtk_combo_box_get_active(combobox);
 	
-	
 	set_combobox_subcat(GTK_WIDGET(combobox),choice);
-	
 }
-
 
 void
 show_window6()
@@ -341,7 +311,6 @@ show_window6()
 	gtk_widget_show(dialog);
 	new_dialog = TRUE;
 	
-	
 	lat = pixel2lat(global_zoom, global_y+mouse_y);
 	lon = pixel2lon(global_zoom, global_x+mouse_x);
 	lat_deg = RAD2DEG(lat);
@@ -354,13 +323,9 @@ show_window6()
 	g_sprintf(buf, "%f", lon_deg);
 	gtk_entry_set_text(GTK_ENTRY(entry15), buf);
 	
-	
 	combobox2 = lookup_widget(dialog, "combobox2");
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox2), 0);
-
 }
-
-
 
 void
 set_poi(GtkWidget *dialog)
@@ -411,11 +376,9 @@ set_poi(GtkWidget *dialog)
 	price_range = (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radiobutton))) ? 5 : price_range;
 	radiobutton = lookup_widget(dialog, "checkbutton10");
 	extended_open = (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radiobutton))) ? 1 : 0;
-
 	
 	rand1 = g_random_double_range (100000000,1000000000);
 	rand2 = g_random_double_range (100000000,1000000000);
-
 	
 	db = g_strconcat(foxtrotgps_dir, "/", POI_DB, NULL);	
 	
@@ -426,8 +389,8 @@ set_poi(GtkWidget *dialog)
 			rand1, rand2, lat_deg, lon_deg, visibility, category, subcategory, 
 			keyword, desc, price_range, extended_open);
 		  
-printf("SQL: %s\n",sql);
-printf("size of gdouble: %d", (int)sizeof(double));
+	printf("SQL: %s\n",sql);
+	printf("size of gdouble: %d", (int)sizeof(double));
 
 	res = sql_execute(db, sql, NULL);
 	
@@ -442,15 +405,12 @@ printf("size of gdouble: %d", (int)sizeof(double));
 	g_free(sql);
 	gtk_widget_destroy(dialog);
 	
-	
 	global_poi_cat = category;
 }
-
 
 void
 update_poi(GtkWidget *dialog)
 {
-
 	GtkTextView *text_view;
 	GtkTextBuffer *buffer;
 	GtkTextIter start, end;
@@ -460,14 +420,10 @@ update_poi(GtkWidget *dialog)
 	char *desc, *desc_raw, *keyword;
 	char *sql;
 	char *db;
-
-
 	double lat_deg, lon_deg;
 	int res;
-	
 
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-
 	
 	widget = lookup_widget(dialog, "label126");
 	idmd5 = gtk_label_get_text(GTK_LABEL(widget));
@@ -479,12 +435,6 @@ update_poi(GtkWidget *dialog)
 	
 	lon_deg = parse_degrees(gtk_entry_get_text(GTK_ENTRY(entry)));
 
-
-
-	
-
-
-
 	entry = lookup_widget(dialog, "entry19");
 	keyword_raw = gtk_entry_get_text(GTK_ENTRY(entry));
 	keyword = my_strescape(keyword_raw, NULL);
@@ -495,10 +445,7 @@ update_poi(GtkWidget *dialog)
 	desc_raw = gtk_text_buffer_get_text(buffer, &start, &end, TRUE);
 	desc = my_strescape(desc_raw, NULL);
 
-
 	db = g_strconcat(foxtrotgps_dir, "/", POI_DB, NULL);	
-	
-
 
 	sql = g_strdup_printf( 	
 			"UPDATE "
@@ -514,8 +461,7 @@ update_poi(GtkWidget *dialog)
 			lat_deg, lon_deg, 
 			keyword, desc, idmd5);
 
-
-printf("SQL: %s\n",sql);
+	printf("SQL: %s\n",sql);
 
 	res = sql_execute(db, sql, NULL);
 	
@@ -530,14 +476,7 @@ printf("SQL: %s\n",sql);
 	g_free(sql);
 	
 	gtk_widget_destroy(dialog);
-	
-	
-
 }
-
-
-
-
 
 void
 delete_poi(poi_t *p)
@@ -547,8 +486,6 @@ delete_poi(poi_t *p)
 	int res;
 
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-
-	
 
 	db = g_strconcat(foxtrotgps_dir, "/", POI_DB, NULL);	
 	
@@ -562,17 +499,9 @@ delete_poi(poi_t *p)
 printf("SQL: %s\n",sql);
 
 	res = sql_execute(db, sql, NULL);
-	
 
 	repaint_all();
-
-	
-	
 }
-
-
-
-
 
 void
 get_pois()
@@ -648,12 +577,9 @@ show_poi_detail()
 	lat = pixel2lat(global_zoom, global_y+mouse_y);
 	lon = pixel2lon(global_zoom, global_x+mouse_x);
 	
-
-	
 	lat_deg = RAD2DEG(lat);
 	lon_deg = RAD2DEG(lon);
 	printf ("##### Lonitude: %f %f - %f %f \n", lat, lon, lat_deg, lon_deg);
-	
 	
 	if(gpsdata !=NULL && !global_myposition.lat && !global_myposition.lon)
 	{
@@ -677,17 +603,17 @@ show_poi_detail()
 		   abs(p->screen_y - mouse_y) < 12 )
 		   
 		{
-			
 			printf("FOUND POI X: %d %d %s\n",p->screen_x, mouse_x, 
 				my_strescape_back(p->keywords,NULL));
-	
 			
 			buffer = g_strdup_printf( 
 				"<b>%s</b> ",
 				my_strescape_back(p->keywords,NULL));
 			buffer2 = g_strdup_printf("%s \n\nDistance: %.3fkm ",
 				my_strescape_back(p->desc,NULL), distance);
-printf("%s %s \n",buffer, buffer2);			
+
+			printf("%s %s \n",buffer, buffer2);
+
 			poi_found = TRUE;
 			
 			wp->lat = p->lat;
@@ -695,7 +621,6 @@ printf("%s %s \n",buffer, buffer2);
 			
 			this_poi = list->data;
 		}
-	
 	}
 	
 	if(!poi_found)
@@ -727,8 +652,6 @@ printf("%s %s \n",buffer, buffer2);
 	}
 	
 	gtk_widget_show(window);
-	
-
 }
 
 gchar *

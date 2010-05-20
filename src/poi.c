@@ -82,14 +82,14 @@ sql_cb__poi_get(void *unused, int colc, char **colv, char **col_names)
 
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 	
-	poi->idmd5		= g_strdup(colv[0]);
-	poi->lat_deg		= atof(colv[1]);
-	poi->lon_deg		= atof(colv[2]);
+	poi->idmd5			= g_strdup(colv[0]);
+	poi->lat			= atof(colv[1]);
+	poi->lon			= atof(colv[2]);
 	poi->visibility		= atoi(colv[3]);
 	poi->category		= atoi(colv[4]);
 	poi->subcategory	= atoi(colv[5]);
 	poi->keywords		= g_strdup(colv[6]);
-	poi->desc		= g_strdup(colv[7]);
+	poi->desc			= g_strdup(colv[7]);
 	poi->price_range	= atoi(colv[8]);
 	poi->extended_open	= atoi(colv[9]);
 	
@@ -141,8 +141,8 @@ paint_pois()
 		{
 			poi_t *p = list->data;
 		
-			lat = deg2rad(p->lat_deg);
-			lon = deg2rad(p->lon_deg);
+			lat = deg2rad(p->lat);
+			lon = deg2rad(p->lon);
 			
 			
 			
@@ -186,7 +186,7 @@ paint_pois()
 					x-12, y-12,
 					24,24);
 			
-			printf("POI: %s lat %f - lon %f\n",p->keywords,p->lat_deg, p->lon_deg);
+			printf("POI: %s lat %f - lon %f\n",p->keywords,p->lat, p->lon);
 		}
 	}
 }
@@ -690,8 +690,8 @@ show_poi_detail()
 printf("%s %s \n",buffer, buffer2);			
 			poi_found = TRUE;
 			
-			wp->lat = p->lat_deg;
-			wp->lon = p->lon_deg;
+			wp->lat = p->lat;
+			wp->lon = p->lon;
 			
 			this_poi = list->data;
 		}

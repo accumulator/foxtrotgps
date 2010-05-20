@@ -142,7 +142,7 @@ on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer u
 		{
 			poi_t *p = list->data;
 
-			osm_gps_map_geographic_to_screen(OSM_GPS_MAP(mapwidget), p->lat_deg, p->lon_deg, &item_x, &item_y);
+			osm_gps_map_geographic_to_screen(OSM_GPS_MAP(mapwidget), p->lat, p->lon, &item_x, &item_y);
 
 			if (abs(item_x - mouse_x) < ICON_SELECT_TRESHOLD && abs(item_y - mouse_y) < ICON_SELECT_TRESHOLD)
 			{
@@ -1791,10 +1791,10 @@ on_button33_clicked                    (GtkButton       *button,
 	
 	
 	widget = lookup_widget(window, "entry17");
-	gtk_entry_set_text(GTK_ENTRY(widget), g_strdup_printf("%f",p->lat_deg));
+	gtk_entry_set_text(GTK_ENTRY(widget), g_strdup_printf("%f",p->lat));
 	
 	widget = lookup_widget(window, "entry18");
-	gtk_entry_set_text(GTK_ENTRY(widget), g_strdup_printf("%f",p->lon_deg));
+	gtk_entry_set_text(GTK_ENTRY(widget), g_strdup_printf("%f",p->lon));
 
 	widget = lookup_widget(window, "entry19");
 	gtk_entry_set_text(GTK_ENTRY(widget), p->keywords);

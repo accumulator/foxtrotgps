@@ -71,8 +71,8 @@ typedef struct {
 
 typedef struct {
 	char *idmd5;
-	double lat_deg;
-	double lon_deg;
+	double lat;
+	double lon;
 	int visibility;
 	int category;
 	int subcategory;

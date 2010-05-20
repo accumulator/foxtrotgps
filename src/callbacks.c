@@ -1377,7 +1377,8 @@ on_okbutton5_clicked                   (GtkButton       *button,
 	global_poi_cat = gtk_combo_box_get_active(GTK_COMBO_BOX(combobox));
 
 	gtk_widget_hide(dialog);
-	
+
+	get_pois();
 }
 
 gboolean

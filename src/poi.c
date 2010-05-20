@@ -43,7 +43,7 @@ static gboolean new_dialog = TRUE;
 		creator TEXT, bookmarked REAL, user_rating REAL, rating REAL, user_comment TEXT);"
 
 
-double
+float
 parse_degrees(const char *s)
 {
 	float deg, min, sec;
@@ -65,7 +65,7 @@ parse_degrees(const char *s)
 	else if (1 == sscanf(s, "%f", &deg))
 		return deg;
 
-	return atof(s);
+	return (float) atof(s);
 }
 
 static int
@@ -295,7 +295,7 @@ show_window6()
 	GtkWidget *dialog;
 	GtkWidget *entry14, *entry15, *combobox2;
 
-	double lat, lon, lat_deg, lon_deg;
+	float lat, lon;
 	char buf[64];
 
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
@@ -308,16 +308,14 @@ show_window6()
 	gtk_widget_show(dialog);
 	new_dialog = TRUE;
 	
-	lat = pixel2lat(global_zoom, global_y+mouse_y);
-	lon = pixel2lon(global_zoom, global_x+mouse_x);
-	lat_deg = RAD2DEG(lat);
-	lon_deg = RAD2DEG(lon);
+	osm_gps_map_screen_to_geographic(OSM_GPS_MAP(mapwidget), mouse_x, mouse_y, &lat, &lon);
+
 	entry14 = lookup_widget(dialog, "entry14");
 	entry15 = lookup_widget(dialog, "entry15");
 	
-	g_sprintf(buf, "%f", lat_deg);
+	g_sprintf(buf, "%f", lat);
 	gtk_entry_set_text(GTK_ENTRY(entry14), buf);
-	g_sprintf(buf, "%f", lon_deg);
+	g_sprintf(buf, "%f", lon);
 	gtk_entry_set_text(GTK_ENTRY(entry15), buf);
 	
 	combobox2 = lookup_widget(dialog, "combobox2");
@@ -339,18 +337,17 @@ set_poi(GtkWidget *dialog)
 	char *db;
 	int visibility, price_range = 0, extended_open;
 	int category, subcategory;
-	double lat_deg, lon_deg;
+	float lat, lon;
 	int res;
 	double rand1, rand2;
 
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 
 	entry = lookup_widget(dialog, "entry14");
-	
-	lat_deg = parse_degrees(gtk_entry_get_text(GTK_ENTRY(entry)));
+	lat = parse_degrees(gtk_entry_get_text(GTK_ENTRY(entry)));
 	entry = lookup_widget(dialog, "entry15");
+	lon = parse_degrees(gtk_entry_get_text(GTK_ENTRY(entry)));
 	
-	lon_deg = parse_degrees(gtk_entry_get_text(GTK_ENTRY(entry)));
 	radiobutton = lookup_widget(dialog, "radiobutton11");
 	visibility = (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radiobutton))) ? 1 : 0;	
 	combo_box = GTK_COMBO_BOX(lookup_widget(dialog, "combobox2"));
@@ -383,7 +380,7 @@ set_poi(GtkWidget *dialog)
 			"INSERT INTO poi "
 			"(idmd5, lat, lon, visibility, cat, subcat, keywords, desc, price_range, extended_open) "
 			"VALUES ('%.0f%.0f',%f,%f,%d,%d,%d,'%s','%s',%d,%d)",
-			rand1, rand2, lat_deg, lon_deg, visibility, category, subcategory, 
+			rand1, rand2, lat, lon, visibility, category, subcategory, 
 			keyword, desc, price_range, extended_open);
 		  
 	printf("SQL: %s\n",sql);
@@ -417,7 +414,7 @@ update_poi(GtkWidget *dialog)
 	char *desc, *desc_raw, *keyword;
 	char *sql;
 	char *db;
-	double lat_deg, lon_deg;
+	float lat, lon;
 	int res;
 
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
@@ -426,11 +423,9 @@ update_poi(GtkWidget *dialog)
 	idmd5 = gtk_label_get_text(GTK_LABEL(widget));
 	
 	entry = lookup_widget(dialog, "entry17");
-	
-	lat_deg = parse_degrees(gtk_entry_get_text(GTK_ENTRY(entry)));
+	lat = parse_degrees(gtk_entry_get_text(GTK_ENTRY(entry)));
 	entry = lookup_widget(dialog, "entry18");
-	
-	lon_deg = parse_degrees(gtk_entry_get_text(GTK_ENTRY(entry)));
+	lon = parse_degrees(gtk_entry_get_text(GTK_ENTRY(entry)));
 
 	entry = lookup_widget(dialog, "entry19");
 	keyword_raw = gtk_entry_get_text(GTK_ENTRY(entry));
@@ -455,7 +450,7 @@ update_poi(GtkWidget *dialog)
 			"WHERE "
 				"idmd5='%s'" 
 			,
-			lat_deg, lon_deg, 
+			lat, lon, 
 			keyword, desc, idmd5);
 
 	printf("SQL: %s\n",sql);

@@ -1348,18 +1348,12 @@ on_okbutton4_clicked                   (GtkButton       *button,
 	repaint_all();
 }
 
-
 void
 on_cancelbutton5_clicked               (GtkButton       *button,
                                         gpointer         user_data)
 {
-	GtkWidget *dialog;
-	
-	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-	
-	dialog = lookup_widget(GTK_WIDGET(button), "dialog6");
+	GtkWidget *dialog = lookup_widget(GTK_WIDGET(button), "dialog6");
 	gtk_widget_hide(dialog);
-
 }
 
 /* called when pressing OK in POI select dialog */

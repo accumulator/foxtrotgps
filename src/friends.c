@@ -60,7 +60,6 @@ struct mem_struct {
 };
 
 static GdkPixbuf	*friend_icon = NULL;
-static GdkGC		*gc_map = NULL;
 static char			*db_ts_last_request_friends = NULL;
 static int			num_friends_added = 0;
 

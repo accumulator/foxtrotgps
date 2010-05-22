@@ -1,5 +1,3 @@
-
-
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -310,11 +308,24 @@ on_combobox1_changed                   (GtkComboBox     *combobox,
 	repo = global_curr_repo->data;
 	if (repo->type == REPO_TYPE_OSM_GPS_MAP)
 	{
+		// make sure the cache base is set up for internal osm-gps-map source
+		char *ogm_cache_dir = osm_gps_map_get_default_cache_directory();
+
+		printf("* setting OGM map source, base=%s cache=%s source=%d\n",
+				ogm_cache_dir, OSM_GPS_MAP_CACHE_AUTO, repo->ogm_source);
+
+		g_object_set(G_OBJECT(mapwidget), "tile-cache-base", ogm_cache_dir, NULL);
+		g_object_set(G_OBJECT(mapwidget), "tile-cache", OSM_GPS_MAP_CACHE_AUTO, NULL);
+		// set the source ID
 		g_object_set(G_OBJECT(mapwidget), "map-source", repo->ogm_source, NULL);
 	}
 	else
 	{
-		// TODO set uri and cache location from foxtrot map source
+		printf("* setting FoxtrotGPS map source, base=%s source=%s\n", repo->dir, repo->uri);
+
+		g_object_set(G_OBJECT(mapwidget), "tile-cache-base", repo->dir, NULL);
+		g_object_set(G_OBJECT(mapwidget), "tile-cache", "", NULL);
+		g_object_set(G_OBJECT(mapwidget), "repo-uri", repo->uri, NULL);
 	}
 }
 

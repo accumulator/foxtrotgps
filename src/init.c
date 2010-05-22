@@ -41,46 +41,46 @@ pre_init()
 
 	global_home_dir = getenv("HOME");
 
-	global_gconfclient	= gconf_client_get_default();
-	global_curr_reponame	= gconf_client_get_string(global_gconfclient, GCONF"/repo_name",err);
+	global_gconfclient = gconf_client_get_default();
 
+	global_curr_reponame = gconf_client_get_string(
+			global_gconfclient, GCONF"/repo_name",err);
 
 	if(global_curr_reponame == NULL)
 	{
 		printf("gconf repo_name not set\n");
 		global_curr_reponame = g_strdup("OSM");
 	}
+
 	gconf_get_repolist();	
 	repoconfig__set_current_list_pointer();
 	
 	global_detail_zoom = gconf_client_get_int (
-				global_gconfclient,
-				GCONF"/global_detail_zoom",
-				err);
+			global_gconfclient, GCONF"/global_detail_zoom", err);
 
-	global_server = gconf_client_get_string (global_gconfclient,
-						 GCONF "/gpsd_host",
-						 err);
+	global_server = gconf_client_get_string (
+			global_gconfclient, GCONF"/gpsd_host", err);
+
 	if (global_server == NULL)
 	{
 		printf("gconf GPSD address not set\n");
 		global_server	= g_strdup("127.0.0.1");
 	}
 
-	global_port = gconf_client_get_string (global_gconfclient,
-					       GCONF "/gpsd_port",
-					       err);
+	global_port = gconf_client_get_string (
+			global_gconfclient, GCONF "/gpsd_port", err);
+
 	if (global_port == NULL)
 	{
 		printf("gconf GPSD port not set\n");
 		global_port	= g_strdup("2947");
 	}
 
-	if(gconf_client_get_bool(global_gconfclient, GCONF"/started_before", err))	
+	if(gconf_client_get_bool(global_gconfclient, GCONF"/started_before", err))
+	{
 		global_auto_download = gconf_client_get_bool(
-					global_gconfclient, 
-					GCONF"/auto_download",
-					err);
+				global_gconfclient, GCONF"/auto_download", err);
+	}
 	else
 	{
 		gconf_client_set_bool(global_gconfclient, GCONF"/started_before", TRUE, err);
@@ -167,15 +167,8 @@ init()
 	
 	widget = lookup_widget(window1, "checkbutton2");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), global_auto_download);
-
-	
-	
-	
-	
 	
 	gconf_fftimer_running = gconf_client_get_bool(global_gconfclient, GCONF"/fftimer_running",&err);
-	
-	
 	global_ffupdate_interval_minutes = gconf_client_get_float(global_gconfclient, GCONF"/ffupdate_interval_minutes",&err);
 	
 	if(!global_ffupdate_interval_minutes)
@@ -191,14 +184,11 @@ init()
 	widget = lookup_widget(window1, "entry16");
 	gtk_entry_set_text( GTK_ENTRY(widget), buffer );
 	
-
-	
 	if(gconf_fftimer_running)
 	{
 		widget = lookup_widget(menu1, "item19");
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(widget), TRUE);
 	}
-		
 	
 	widget = lookup_widget(window1, "label117");
 #ifdef VERSION
@@ -305,10 +295,8 @@ gconf_get_repolist()
 	printf("* %s()\n", __PRETTY_FUNCTION__);
 
 	// read user defined repositories
-	repo_list = gconf_client_get_list(	global_gconfclient, 
-						GCONF"/repos",
-						GCONF_VALUE_STRING,
-						error);
+	repo_list = gconf_client_get_list(
+			global_gconfclient, GCONF"/repos", GCONF_VALUE_STRING, error);
 	
 	if (repo_list)
 	{
@@ -423,8 +411,7 @@ repoconfig__set_current_list_pointer()
 	
 	for(list = global_repo_list; list != NULL; list = list->next)
 	{
-		repo_t *repo;
-		repo	= list->data;
+		repo_t *repo = list->data;
 		
 		reponame = g_strdup(repo->name);
 		

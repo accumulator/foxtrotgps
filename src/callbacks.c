@@ -448,23 +448,18 @@ void
 on_checkbutton2_toggled                (GtkToggleButton *togglebutton,
                                         gpointer         user_data)
 {
-	gboolean	toggled;
+	gboolean auto_download;
 	gboolean success = FALSE;
 	GError **error = NULL;	
 	
 	toggled = gtk_toggle_button_get_active(togglebutton);
-	global_auto_download = toggled;
+	global_auto_download = auto_download;
 	
 	success = gconf_client_set_bool(
-				global_gconfclient, 
-				GCONF"/auto_download",
-				global_auto_download,
-				error);
+			global_gconfclient, GCONF"/auto_download", auto_download, error);
 	
-	/* TODO propagate this setting to osm-gps-map */
-
+	g_object_set(G_OBJECT(mapwidget), "auto-download", auto_download, NULL);
 }
-
 
 void
 on_button9_clicked                     (GtkButton       *button,

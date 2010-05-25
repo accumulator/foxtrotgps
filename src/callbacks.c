@@ -452,7 +452,7 @@ on_checkbutton2_toggled                (GtkToggleButton *togglebutton,
 	gboolean success = FALSE;
 	GError **error = NULL;	
 	
-	toggled = gtk_toggle_button_get_active(togglebutton);
+	auto_download = gtk_toggle_button_get_active(togglebutton);
 	global_auto_download = auto_download;
 	
 	success = gconf_client_set_bool(

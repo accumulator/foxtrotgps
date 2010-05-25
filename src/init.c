@@ -240,9 +240,6 @@ init()
 
 	osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget), view_lat, view_lon, view_zoom);
 
-	widget = lookup_widget(window1, "vscale1");
-	gtk_range_set_value(GTK_RANGE(widget), (double) view_zoom);
-
 	global_autocenter = gconf_client_get_bool(global_gconfclient, GCONF"/autocenter", NULL);
 	if (global_autocenter) {
 		GtkToggleToolButton * ttbutton;

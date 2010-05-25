@@ -737,3 +737,6 @@ activate_larger_map_details (GtkMenuItem *larger_item, GtkMenuItem *more_item);
 
 void
 on_tiles_queued_changed (GtkWidget *widget, GParamSpec *paramSpec);
+
+void
+on_zoom_changed (GtkWidget *widget, GParamSpec *paramSpec);

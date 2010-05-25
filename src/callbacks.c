@@ -187,10 +187,6 @@ on_toolbar_button_zoom_in_clicked      (GtkButton       *button,
                                         gpointer         user_data)
 {
 	osm_gps_map_zoom_in(OSM_GPS_MAP(mapwidget));
-	int zoom;
-	g_object_get(G_OBJECT(mapwidget), "zoom", &zoom, NULL);
-	GtkWidget *range = lookup_widget(window1, "vscale1");
-	gtk_range_set_value(GTK_RANGE(range), (double)zoom);
 }
 
 
@@ -244,10 +240,6 @@ on_toolbar_button_zoom_out_clicked     (GtkButton       *button,
                                         gpointer         user_data)
 {
 	osm_gps_map_zoom_out(OSM_GPS_MAP(mapwidget));
-	int zoom;
-	g_object_get(G_OBJECT(mapwidget), "zoom", &zoom, NULL);
-	GtkWidget *range = lookup_widget(window1, "vscale1");
-	gtk_range_set_value(GTK_RANGE(range), (double)zoom);
 }
 
 gboolean
@@ -3061,4 +3053,14 @@ on_tiles_queued_changed (GtkWidget *widget, GParamSpec *paramSpec)
 	gint tiles_queued;
 	g_object_get(G_OBJECT(widget), "tiles-queued", &tiles_queued, NULL);
 	printf("* TILES QUEUED: %d\n", tiles_queued);
+}
+
+void
+on_zoom_changed (GtkWidget *widget, GParamSpec *paramSpec)
+{
+	gint zoom;
+	g_object_get(G_OBJECT(widget), "zoom", &zoom, NULL);
+
+	GtkWidget *vscale = lookup_widget(window1, "vscale1");
+	gtk_range_set_value(GTK_RANGE(vscale), (double)zoom);
 }

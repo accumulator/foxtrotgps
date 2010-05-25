@@ -333,9 +333,6 @@ tracks_on_file_button_release_event   (	GtkWidget       *widget,
 
 		osm_gps_map_set_mapcenter(OSM_GPS_MAP(mapwidget),
 			RAD2DEG((bbox.lat1+bbox.lat2)/2), RAD2DEG((bbox.lon1+bbox.lon2)/2), track_zoom);
-
-		range = lookup_widget(window1, "vscale1");
-		gtk_range_set_value(GTK_RANGE(range), (double) track_zoom);
 	}
 	
 	return FALSE;	
@@ -540,9 +537,6 @@ process_fetched_track(gpointer data)
 				RAD2DEG((bbox.lat1+bbox.lat2)/2), RAD2DEG((bbox.lon1+bbox.lon2)/2), track_zoom);
 		
 		gtk_widget_hide(dialog10);
-			
-		range = lookup_widget(window1, "vscale1");
-		gtk_range_set_value(GTK_RANGE(range), (double) track_zoom);
 	}
 	else
 	{

@@ -771,6 +771,8 @@ create_mapwidget(void)
 						G_CALLBACK (on_map_button_release_event), NULL);
     g_signal_connect (G_OBJECT (widget), "notify::tiles-queued",
 						G_CALLBACK(on_tiles_queued_changed), NULL);
+    g_signal_connect (G_OBJECT (widget), "notify::zoom",
+						G_CALLBACK(on_zoom_changed), NULL);
 
     osm_gps_map_set_keyboard_shortcut(map, OSM_GPS_MAP_KEY_FULLSCREEN, GDK_F11);
     osm_gps_map_set_keyboard_shortcut(map, OSM_GPS_MAP_KEY_UP, GDK_Up);

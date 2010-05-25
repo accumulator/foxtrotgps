@@ -99,7 +99,7 @@ main (int argc, char *argv[])
 
 	glade_set_custom_handler(custom_widget_handler, NULL);
 
-	gladexml = glade_xml_new (PACKAGE_DATA_DIR "/" PACKAGE "/" PACKAGE ".glade", NULL, GETTEXT_PACKAGE);
+	gladexml = glade_xml_new (gladefile, NULL, GETTEXT_PACKAGE);
 	if (!gladexml)
 	{
 		/* Developers may run into this if they're naively

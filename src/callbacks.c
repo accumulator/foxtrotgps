@@ -533,7 +533,6 @@ on_button11_clicked                    (GtkButton       *button,
 		error);
 }
 
-
 void
 on_item4_activate                      (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
@@ -2693,7 +2692,7 @@ on_item23_button_release_event         (GtkWidget       *widget,
 	GtkWidget *label, *button, *entry, *cbox;
 	
 	if (!dialog10)
-		dialog10 = create_dialog10();	
+		dialog10 = glade_xml_get_widget (gladexml, "dialog10");
 
 	gtk_widget_show(dialog10);
 	

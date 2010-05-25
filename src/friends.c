@@ -497,7 +497,12 @@ create_friends_window (GSList *friends)
 
 	printf("*** %s(): \n",__PRETTY_FUNCTION__);
 
-	window = create_window8();
+	gladexml = glade_xml_new (gladefile, "window8", GETTEXT_PACKAGE);
+	glade_xml_signal_autoconnect (gladexml);
+	window = glade_xml_get_widget (gladexml, "window8");
+	g_signal_connect_swapped (window, "destroy",
+				  G_CALLBACK (g_object_unref), gladexml);
+
 	widget = lookup_widget(window, "vbox35");
 	gtk_widget_show (window);
 
@@ -530,6 +535,7 @@ create_friends_window (GSList *friends)
 void
 on_msg_friend_clicked(GtkButton *button, gpointer user_data)
 {
+	GladeXML *gladexml;
 	GtkWidget *widget, *window;
 	char *label_txt;
 	char *to;
@@ -542,7 +548,12 @@ on_msg_friend_clicked(GtkButton *button, gpointer user_data)
 	widget = lookup_widget(GTK_WIDGET(button), "window8");
 	gtk_widget_destroy(widget);
 	
-	window = create_dialog9();
+	gladexml = glade_xml_new (gladefile, "dialog9", GETTEXT_PACKAGE);
+	glade_xml_signal_autoconnect (gladexml);
+	window = glade_xml_get_widget (gladexml, "dialog9");
+	g_signal_connect_swapped (window, "destroy",
+				  G_CALLBACK (g_object_unref), gladexml);
+
 	gtk_widget_show(window);
 
 	widget = lookup_widget(window, "label188");	

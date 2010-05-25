@@ -60,4 +60,5 @@ foxtrotgps_LDADD =  \
 	$(LIBEXIF_LIBS) \
 	$(LIBXML_LIBS) \
 	$(LIBGPS_LIBS) \
-	$(OSMGPSMAP_LIBS)
+	$(OSMGPSMAP_LIBS) \
+	-lm

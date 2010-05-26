@@ -152,9 +152,7 @@ on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer u
 		do_pickpoint();
 	else
 	{
-		// TODO move these functions to their modules (they're not event handlers anyway),
-		// and don't iterate over the lists again in these functions, but instead
-		// provide a (list of) match(es) from here.
+		// TODO don't show more than one popup if different kinds of objects are found.
 		if (friends_found)
 			create_friends_window(friends_found);
 		if (photos_found)

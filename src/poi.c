@@ -465,7 +465,6 @@ create_pois_window(GSList *pois)
 {
 	GtkWidget *window, *widget;
 	GtkWidget *label;
-	GSList *list;
 	gchar *buffer = NULL, *buffer2 = NULL;
 	float distance=0;
 	poi_t *p, *this_poi = NULL;
@@ -504,7 +503,7 @@ create_pois_window(GSList *pois)
 		wp->lat = p->lat;
 		wp->lon = p->lon;
 
-		this_poi = list->data;
+		this_poi = p;
 	}
 	
 	label = lookup_widget(window,"label110");

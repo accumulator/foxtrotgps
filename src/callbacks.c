@@ -3052,6 +3052,9 @@ on_tiles_queued_changed (GtkWidget *widget, GParamSpec *paramSpec)
 {
 	gint tiles_queued;
 	g_object_get(G_OBJECT(widget), "tiles-queued", &tiles_queued, NULL);
+
+	global_tiles_in_dl_queue = tiles_queued;
+
 	printf("* TILES QUEUED: %d\n", tiles_queued);
 }
 

@@ -418,18 +418,16 @@ repoconfig__set_current_list_pointer()
 			global_curr_repo = list;
 	}
 
-	if(!global_curr_repo)
+	// still undefined? Take first in repo list
+	if (!global_curr_repo)
 	{
-		printf("\n#\n#\n#  ERROR: repository %s is broken \n#\n#\n", global_curr_reponame);
-		
-		printf("Resetting repo_name and exiting now.\n\n");
-		printf("If problem persists after restart, \n");
-		printf("execute in a terminal: gconftool-2 -u /apps/foxtrotgps/repos");
-		unused = system("gconftool-2 -u /apps/foxtrotgps/repo_name");
-		exit(EXIT_FAILURE);		
+		printf("Selecting default repository because no tile repository configured, " \
+				"or configured repository not found\n");
+		global_curr_repo = global_repo_list;
+		repo_t *repo = global_curr_repo->data;
+		global_curr_reponame = g_strdup(repo->name);
 	}
 }
-
 
 void
 repoconfig__create_dropdown()

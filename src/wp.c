@@ -42,7 +42,7 @@ set_current_wp(float lat, float lon)
 		if(!wp_icon)
 		{
 			wp_icon = gdk_pixbuf_new_from_file_at_size (
-				PACKAGE_PIXMAPS_DIR "/foxtrotgps-wp.png", 36, 36, &error);
+				PACKAGE_PIXMAPS_DIR "/" PACKAGE "-wp.png", 36, 36, &error);
 			if (error)
 			{
 				g_print ("%s(): loading pixbuf failure. %s\n", __FUNCTION__, error->message);
@@ -184,7 +184,7 @@ set_myposition(float lat, float lon)
 		if(!myposition_icon)
 		{
 			myposition_icon = gdk_pixbuf_new_from_file_at_size (
-				PACKAGE_PIXMAPS_DIR "/foxtrotgps-myposition.png", 36, 36, &error);
+				PACKAGE_PIXMAPS_DIR "/" PACKAGE "-myposition.png", 36, 36, &error);
 			if (error)
 			{
 				g_print ("%s(): loading pixbuf failure. %s\n", __FUNCTION__, error->message);

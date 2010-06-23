@@ -3,7 +3,7 @@
 <!--Generated with glade3 3.4.5 on Mon May 31 00:53:06 2010 -->
 <glade-interface>
   <widget class="GtkWindow" id="window1">
-    <property name="title" translatable="yes">FoxtrotGPS</property>
+    <property name="title" translatable="yes">@PACKAGE_NAME@</property>
     <property name="default_width">700</property>
     <property name="default_height">480</property>
     <signal name="delete_event" handler="on_window1_delete_event"/>
@@ -321,9 +321,12 @@
                                                   <widget class="GtkLabel" id="label32">
                                                     <property name="visible">True</property>
                                                     <property name="xalign">0</property>
-                                                    <property name="xpad">12</property>
                                                     <property name="label" translatable="yes">Speed</property>
                                                   </widget>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">False</property>
+                                                  </packing>
                                                 </child>
                                                 <child>
                                                   <widget class="GtkLabel" id="label38">
@@ -334,6 +337,8 @@
                                                     <property name="use_markup">True</property>
                                                   </widget>
                                                   <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">False</property>
                                                     <property name="position">1</property>
                                                   </packing>
                                                 </child>
@@ -349,6 +354,7 @@
                                                 <child>
                                                   <widget class="GtkLabel" id="label66">
                                                     <property name="visible">True</property>
+                                                    <property name="xalign">0</property>
                                                     <property name="label" translatable="yes">0</property>
                                                     <property name="use_markup">True</property>
                                                   </widget>
@@ -357,22 +363,27 @@
                                                     <property name="right_attach">4</property>
                                                     <property name="top_attach">1</property>
                                                     <property name="bottom_attach">2</property>
+                                                    <property name="y_options"></property>
                                                   </packing>
                                                 </child>
                                                 <child>
                                                   <widget class="GtkLabel" id="label70">
                                                     <property name="visible">True</property>
+                                                    <property name="xalign">0</property>
                                                     <property name="label" translatable="yes">0</property>
                                                     <property name="use_markup">True</property>
                                                   </widget>
                                                   <packing>
                                                     <property name="left_attach">3</property>
                                                     <property name="right_attach">4</property>
+                                                    <property name="x_options">GTK_FILL</property>
+                                                    <property name="y_options"></property>
                                                   </packing>
                                                 </child>
                                                 <child>
                                                   <widget class="GtkLabel" id="label65">
                                                     <property name="visible">True</property>
+                                                    <property name="xalign">0</property>
                                                     <property name="label" translatable="yes">Time</property>
                                                   </widget>
                                                   <packing>
@@ -380,32 +391,40 @@
                                                     <property name="right_attach">3</property>
                                                     <property name="top_attach">1</property>
                                                     <property name="bottom_attach">2</property>
+                                                    <property name="x_options">GTK_FILL</property>
                                                   </packing>
                                                 </child>
                                                 <child>
                                                   <widget class="GtkLabel" id="label69">
                                                     <property name="visible">True</property>
+                                                    <property name="xalign">0</property>
                                                     <property name="label" translatable="yes">Max</property>
                                                   </widget>
                                                   <packing>
                                                     <property name="left_attach">2</property>
                                                     <property name="right_attach">3</property>
+                                                    <property name="x_options">GTK_FILL</property>
+                                                    <property name="y_options"></property>
                                                   </packing>
                                                 </child>
                                                 <child>
                                                   <widget class="GtkLabel" id="label68">
                                                     <property name="visible">True</property>
+                                                    <property name="xalign">0</property>
                                                     <property name="label" translatable="yes">0</property>
                                                     <property name="use_markup">True</property>
                                                   </widget>
                                                   <packing>
                                                     <property name="left_attach">1</property>
                                                     <property name="right_attach">2</property>
+                                                    <property name="x_options">GTK_FILL</property>
+                                                    <property name="y_options"></property>
                                                   </packing>
                                                 </child>
                                                 <child>
                                                   <widget class="GtkLabel" id="label45">
                                                     <property name="visible">True</property>
+                                                    <property name="xalign">0</property>
                                                     <property name="label" translatable="yes">0</property>
                                                     <property name="use_markup">True</property>
                                                   </widget>
@@ -414,22 +433,31 @@
                                                     <property name="right_attach">2</property>
                                                     <property name="top_attach">1</property>
                                                     <property name="bottom_attach">2</property>
+                                                    <property name="y_options"></property>
                                                   </packing>
                                                 </child>
                                                 <child>
                                                   <widget class="GtkLabel" id="label67">
                                                     <property name="visible">True</property>
+                                                    <property name="xalign">0</property>
                                                     <property name="label" translatable="yes">Average</property>
                                                   </widget>
+                                                  <packing>
+                                                    <property name="x_options">GTK_FILL</property>
+                                                    <property name="y_options"></property>
+                                                  </packing>
                                                 </child>
                                                 <child>
                                                   <widget class="GtkLabel" id="label28">
                                                     <property name="visible">True</property>
+                                                    <property name="xalign">0</property>
                                                     <property name="label" translatable="yes">Trip</property>
                                                   </widget>
                                                   <packing>
                                                     <property name="top_attach">1</property>
                                                     <property name="bottom_attach">2</property>
+                                                    <property name="x_options">GTK_FILL</property>
+                                                    <property name="y_options"></property>
                                                   </packing>
                                                 </child>
                                               </widget>
@@ -441,6 +469,7 @@
                                               <widget class="GtkHBox" id="hbox5">
                                                 <property name="height_request">55</property>
                                                 <property name="visible">True</property>
+                                                <property name="spacing">16</property>
                                                 <child>
                                                   <widget class="GtkButton" id="button15">
                                                     <property name="width_request">130</property>
@@ -451,6 +480,10 @@
                                                     <property name="response_id">0</property>
                                                     <signal name="clicked" handler="on_button15_clicked"/>
                                                   </widget>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">False</property>
+                                                  </packing>
                                                 </child>
                                                 <child>
                                                   <widget class="GtkButton" id="button8">
@@ -464,6 +497,8 @@
                                                     <signal name="clicked" handler="on_button8_clicked"/>
                                                   </widget>
                                                   <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">False</property>
                                                     <property name="position">1</property>
                                                   </packing>
                                                 </child>
@@ -1421,7 +1456,7 @@ Before first use register them by clicking on the button below.</property>
                         <child>
                           <widget class="GtkLabel" id="label74">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">&lt;big&gt;&lt;b&gt;Tracks&lt;/b&gt;&lt;/big&gt;    &lt;small&gt;[3/4]&lt;/small&gt;</property>
+                            <property name="label" translatable="yes">&lt;big&gt;&lt;b&gt;Tracks&lt;/b&gt;&lt;/big&gt;   &lt;small&gt;[3/4]&lt;/small&gt;</property>
                             <property name="use_markup">True</property>
                           </widget>
                           <packing>
@@ -1467,8 +1502,7 @@ Before first use register them by clicking on the button below.</property>
                                     <property name="xalign">0.0099999997764825821</property>
                                     <property name="yalign">0</property>
                                     <property name="ypad">4</property>
-                                    <property name="label" translatable="yes">&lt;small&gt;&lt;i&gt;FoxtrotGPS Version:
-Developer: Marcus Bauer &amp;amp; Community&lt;/i&gt;&lt;/small&gt;</property>
+                                    <property name="label" translatable="yes">&lt;small&gt;&lt;i&gt;@PACKAGE_STRING@&lt;/i&gt;&lt;/small&gt;</property>
                                     <property name="use_markup">True</property>
                                   </widget>
                                   <packing>
@@ -1599,7 +1633,7 @@ download of missing tiles into cache</property>
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
-                                                    <property name="label" translatable="yes">New</property>
+                                                    <property name="label" translatable="yes">New...</property>
                                                     <property name="response_id">0</property>
                                                     <signal name="clicked" handler="on_button7_clicked"/>
                                                   </widget>
@@ -1612,7 +1646,7 @@ download of missing tiles into cache</property>
                                                   <widget class="GtkLabel" id="label140">
                                                     <property name="height_request">50</property>
                                                     <property name="visible">True</property>
-                                                    <property name="label" translatable="yes">    </property>
+                                                    <property name="label">    </property>
                                                   </widget>
                                                   <packing>
                                                     <property name="expand">False</property>
@@ -1808,7 +1842,7 @@ download of missing tiles into cache</property>
                                                 <property name="visible">True</property>
                                                 <property name="xalign">0</property>
                                                 <property name="ypad">2</property>
-                                                <property name="label" translatable="yes">&lt;i&gt;Lat &amp;amp; Lon&lt;/i&gt;</property>
+                                                <property name="label" translatable="yes">&lt;i&gt;Lat &amp;amp; Lon:&lt;/i&gt;</property>
                                                 <property name="use_markup">True</property>
                                               </widget>
                                               <packing>
@@ -1820,6 +1854,7 @@ download of missing tiles into cache</property>
                                             <child>
                                               <widget class="GtkHBox" id="hbox24">
                                                 <property name="visible">True</property>
+                                                <property name="border_width">5</property>
                                                 <child>
                                                   <widget class="GtkRadioButton" id="radiobutton19">
                                                     <property name="visible">True</property>
@@ -2151,14 +2186,6 @@ Set GPSD Host IP
               </widget>
             </child>
             <child>
-              <widget class="GtkMenuItem" id="item22">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">create way</property>
-                <property name="use_underline">True</property>
-                <signal name="activate" handler="on_item22_button_release_event"/>
-              </widget>
-            </child>
-            <child>
               <widget class="GtkMenuItem" id="item17">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">set WP</property>
@@ -2433,7 +2460,7 @@ Set GPSD Host IP
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_cancelbutton1_clicked"/>
@@ -2447,7 +2474,7 @@ Set GPSD Host IP
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
                 <property name="tooltip" translatable="yes">All fields must be filled in</property>
-                <property name="label" translatable="yes">gtk-ok</property>
+                <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_okbutton1_clicked"/>
@@ -2599,7 +2626,7 @@ Set GPSD Host IP
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_cancelbutton7_clicked"/>
@@ -2612,7 +2639,7 @@ Set GPSD Host IP
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-ok</property>
+                <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_okbutton7_clicked"/>
@@ -2687,8 +2714,8 @@ next point</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="label" translatable="yes">Set point
-as my position</property>
+                    <property name="label" translatable="yes">Set point as
+my position</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_button52_clicked"/>
                   </widget>
@@ -2780,7 +2807,7 @@ as my position</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_cancelbutton2_clicked"/>
@@ -2792,7 +2819,7 @@ as my position</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-ok</property>
+                <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_okbutton2_clicked"/>
@@ -2869,7 +2896,7 @@ as my position</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_button37_clicked"/>
@@ -2935,7 +2962,7 @@ as my position</property>
                           <widget class="GtkRadioButton" id="radiobutton2">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="label" translatable="yes">+1 zoom level</property>
+                            <property name="label" translatable="yes">+ 1 zoom level</property>
                             <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                           </widget>
@@ -2948,7 +2975,7 @@ as my position</property>
                           <widget class="GtkRadioButton" id="radiobutton3">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="label" translatable="yes">+2 zoom levels</property>
+                            <property name="label" translatable="yes">+ 2 zoom levels</property>
                             <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">radiobutton2</property>
@@ -2963,7 +2990,7 @@ as my position</property>
                           <widget class="GtkRadioButton" id="radiobutton4">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="label" translatable="yes">+3 zoom levels</property>
+                            <property name="label" translatable="yes">+ 3 zoom levels</property>
                             <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">radiobutton2</property>
@@ -2978,7 +3005,7 @@ as my position</property>
                           <widget class="GtkRadioButton" id="radiobutton5">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="label" translatable="yes">+4 zoom levels</property>
+                            <property name="label" translatable="yes">+ 4 zoom levels (~25MB)</property>
                             <property name="response_id">0</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
@@ -2994,7 +3021,7 @@ as my position</property>
                           <widget class="GtkRadioButton" id="radiobutton6">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="label" translatable="yes">+5 zoom levels</property>
+                            <property name="label" translatable="yes">+ 5 zoom levels (~100MB)</property>
                             <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">radiobutton2</property>
@@ -3009,7 +3036,7 @@ as my position</property>
                           <widget class="GtkRadioButton" id="radiobutton7">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="label" translatable="yes">+6 zoom levels</property>
+                            <property name="label" translatable="yes">+ 6 zoom levels (~400MB)</property>
                             <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">radiobutton2</property>
@@ -3054,7 +3081,7 @@ as my position</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_cancelbutton3_clicked"/>
@@ -3066,7 +3093,7 @@ as my position</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-ok</property>
+                <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_okbutton3_clicked"/>
@@ -3384,9 +3411,9 @@ Medical
 Cafe / Pub / Nightlife
 Place of Worship
 Public Transportation
-Restaurant
+Restaurant &amp; Food
 Services
-Sights / Leisure
+Sights &amp; Leisure
 Shopping
 Sport
 My Personal Places</property>
@@ -3406,7 +3433,7 @@ My Personal Places</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_cancelbutton5_clicked"/>
@@ -3418,7 +3445,7 @@ My Personal Places</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-ok</property>
+                <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_okbutton5_clicked"/>
@@ -3472,7 +3499,7 @@ delete this Point of Interest?</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_cancelbutton6_clicked"/>
@@ -3483,7 +3510,7 @@ delete this Point of Interest?</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-ok</property>
+                <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
               </widget>
@@ -3750,14 +3777,15 @@ Businesses
 Car
 Cultural
 Medical
-Nightlife
+Cafe / Pub / Nightlife
 Place of Worship
 Public Transportation
 Restaurant &amp; Food
 Services
 Sights &amp; Leisure
 Shopping
-Sport</property>
+Sport
+My Personal Places</property>
                         <signal name="changed" handler="on_combobox2_changed"/>
                       </widget>
                       <packing>
@@ -3840,7 +3868,7 @@ Sport</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="border_width">7</property>
-                    <property name="label" translatable="yes">gtk-cancel</property>
+                    <property name="label">gtk-cancel</property>
                     <property name="use_stock">True</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_cancelbutton5a_clicked"/>
@@ -3861,7 +3889,7 @@ Sport</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="border_width">7</property>
-                    <property name="label" translatable="yes">gtk-ok</property>
+                    <property name="label">gtk-ok</property>
                     <property name="use_stock">True</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_okbutton5a_clicked"/>
@@ -4214,7 +4242,7 @@ My Personal Places</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="border_width">7</property>
-                    <property name="label" translatable="yes">gtk-cancel</property>
+                    <property name="label">gtk-cancel</property>
                     <property name="use_stock">True</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_cancelbutton4_clicked"/>
@@ -4235,7 +4263,7 @@ My Personal Places</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="border_width">7</property>
-                    <property name="label" translatable="yes">gtk-ok</property>
+                    <property name="label">gtk-ok</property>
                     <property name="use_stock">True</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_okbutton4_clicked"/>
@@ -4475,7 +4503,6 @@ gnuite.com</property>
                   <widget class="GtkLabel" id="label194">
                     <property name="height_request">8</property>
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">	</property>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
@@ -4517,7 +4544,7 @@ gnuite.com</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_cancelbutton10_clicked"/>
@@ -4529,7 +4556,7 @@ gnuite.com</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-ok</property>
+                <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_okbutton11_clicked"/>
@@ -4679,7 +4706,7 @@ gnuite.com</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_cancelbutton9_clicked"/>
@@ -4691,7 +4718,7 @@ gnuite.com</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-ok</property>
+                <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
               </widget>
@@ -4903,7 +4930,7 @@ gnuite.com</property>
                     <property name="can_focus">True</property>
                     <property name="has_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="label" translatable="yes">gtk-open</property>
+                    <property name="label">gtk-open</property>
                     <property name="use_stock">True</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_button39_clicked"/>
@@ -4922,7 +4949,7 @@ gnuite.com</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="label" translatable="yes">gtk-open</property>
+                    <property name="label">gtk-open</property>
                     <property name="use_stock">True</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_button40_clicked"/>
@@ -5094,7 +5121,7 @@ gnuite.com</property>
                   <widget class="GtkCheckButton" id="checkbutton14">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="label" translatable="yes">add photos to the FoxtrotGPS database</property>
+                    <property name="label" translatable="yes">add photos to the @PACKAGE_NAME@ database</property>
                     <property name="response_id">0</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
@@ -5137,7 +5164,7 @@ gnuite.com</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_cancelbutton8_clicked"/>
@@ -5150,7 +5177,7 @@ gnuite.com</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-ok</property>
+                <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_okbutton8_clicked"/>
@@ -5224,7 +5251,7 @@ gnuite.com</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-close</property>
+                <property name="label">gtk-close</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_closebutton2_clicked"/>
@@ -5263,7 +5290,7 @@ gnuite.com</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="label" translatable="yes">gtk-goto-first</property>
+                    <property name="label">gtk-goto-first</property>
                     <property name="use_stock">True</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_button47_clicked"/>
@@ -5274,7 +5301,7 @@ gnuite.com</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="label" translatable="yes">gtk-go-back</property>
+                    <property name="label">gtk-go-back</property>
                     <property name="use_stock">True</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_button45_clicked"/>
@@ -5288,7 +5315,7 @@ gnuite.com</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="label" translatable="yes">gtk-zoom-in</property>
+                    <property name="label">gtk-zoom-in</property>
                     <property name="use_stock">True</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_button50_clicked"/>
@@ -5303,7 +5330,7 @@ gnuite.com</property>
                     <property name="can_focus">True</property>
                     <property name="has_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="label" translatable="yes">gtk-go-forward</property>
+                    <property name="label">gtk-go-forward</property>
                     <property name="use_stock">True</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_button46_clicked"/>
@@ -5317,7 +5344,7 @@ gnuite.com</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="label" translatable="yes">gtk-goto-last</property>
+                    <property name="label">gtk-goto-last</property>
                     <property name="use_stock">True</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_button48_clicked"/>
@@ -5383,7 +5410,7 @@ gnuite.com</property>
                     <child>
                       <widget class="GtkLabel" id="label171">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">      </property>
+                        <property name="label">      </property>
                         <property name="use_markup">True</property>
                       </widget>
                       <packing>
@@ -5413,7 +5440,7 @@ gnuite.com</property>
                       <widget class="GtkLabel" id="label163">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">      </property>
+                        <property name="label">      </property>
                         <property name="use_markup">True</property>
                       </widget>
                       <packing>
@@ -5568,7 +5595,7 @@ gnuite.com</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_button49_clicked"/>
@@ -5580,7 +5607,7 @@ gnuite.com</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-ok</property>
+                <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_okbutton9_clicked"/>

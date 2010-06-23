@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([foxtrotgps], [0.99.3], [foss-gps@lists.osgeo.org])
-AM_INIT_AUTOMAKE([-Wall -Werror])
+AC_INIT([FoxtrotGPS], [0.99.4], [foss-gps@lists.osgeo.org])
+AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability])
 AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([config.h])
 AM_MAINTAINER_MODE
@@ -37,4 +37,5 @@ po/Makefile.in
 src/Makefile
 pixmaps/Makefile
 data/Makefile
+data/foxtrotgps.glade
 ])

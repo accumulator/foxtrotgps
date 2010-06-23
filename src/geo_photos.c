@@ -26,17 +26,6 @@
 
 #define PHOTO_DB "geophoto.db"
 
-
-void geocode_set_photodir (char *dirname,   GtkWidget *widget);
-void geocode_set_trackname(char *trackname, GtkWidget *widget);
-char     *get_basename(char *file);
-GList   *get_entries_from_dir(char *dirname);
-gboolean  file_type_test(const char *file, char *type);
-void update_gps_time_label();
-gpointer geocode_thread(gpointer user_data);
-void photos_list_updated(void);
-void prepare_perl();
-
 static GdkPixbuf *photo_icon = NULL;
 static int num_photos_added = 0;
 
@@ -44,12 +33,29 @@ GList *geocode_photo_list;
 GtkWidget *dialog_image_data = NULL;
 GtkWidget *dialog_photo_correlate = NULL;
 GtkWidget *dialog_geocode_result = NULL;
+
 char *geocode_photodir	= NULL;
 char *geocode_trackname	= NULL;
 int geocode_correction = 0;
 int geocode_timezone = 0;
 gboolean add_to_database = TRUE;
 struct tm tm_photo;
+
+
+void geocode_set_photodir (char *dirname,   GtkWidget *widget);
+void geocode_set_trackname(char *trackname, GtkWidget *widget);
+
+char     *get_basename(char *file);
+GList   *get_entries_from_dir(char *dirname);
+gboolean  file_type_test(const char *file, char *type);
+
+void update_gps_time_label();
+gpointer geocode_thread(gpointer user_data);
+void photos_list_updated(void);
+void prepare_perl();
+
+
+
 
 
 static int
@@ -69,6 +75,12 @@ sql_cb__photo(void *unused, int colc, char **colv, char **col_names)
 
 	return 0;
 }
+
+
+
+
+
+
 
 void
 get_photos_for_bbox(float lat1, float lon1, float lat2, float lon2)
@@ -193,7 +205,7 @@ geo_photos_geocode_track_select_dialog (GtkButton       *button,
 
 	filter = gtk_file_filter_new ();
 	gtk_file_filter_add_pattern (filter, "*.log");
-	gtk_file_filter_set_name (filter, "FoxtrotGPS log files (*.log)");
+	gtk_file_filter_set_name (filter, PACKAGE_NAME " log files (*.log)");
 	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(widget), filter);
 
 	gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(widget), filter);
@@ -582,7 +594,7 @@ geo_photo_close_dialog_photo_correlate()
 	gtk_widget_show(dialog_geocode_result);
 	gtk_widget_hide(dialog_photo_correlate);
 
-	command_line = g_strdup_printf("/tmp/foxtrotgps_geocode.pl '%s' '%s' '%d' '%d' '%d'", 
+	command_line = g_strdup_printf("/tmp/" PACKAGE "_geocode.pl '%s' '%s' '%d' '%d' '%d'", 
 					geocode_trackname, 
 					geocode_photodir,
 					geocode_timezone,
@@ -659,7 +671,7 @@ printf("commandline in thread: %s\n", command_line);
 	
 	if(!res)
 	{
-		fprintf (stderr, "Error running foxtrotgps_geocode.pl: %s\n", err->message);
+		fprintf (stderr, "Error running " PACKAGE "_geocode.pl: %s\n", err->message);
 		g_error_free (err);
 	}
 	
@@ -726,7 +738,7 @@ set_photos_show(gboolean show)
 	if(!photo_icon)
 	{
 		photo_icon = gdk_pixbuf_new_from_file_at_size (
-			PACKAGE_PIXMAPS_DIR "/foxtrotgps-photo.png", 24,24,
+			PACKAGE_PIXMAPS_DIR "/" PACKAGE "-photo.png", 24,24,
 			&error);
 		// minimum refcount of one, keeps it allocated, despite pois_list_updated()
 		// TODO we need to unref it somewhere too, or does it get automatically unreffed at mainloop exit?
@@ -795,7 +807,7 @@ command = g_strdup(
 "$correction    = $ARGV[3];\n"
 "$do_insert2db  = $ARGV[4];\n"
 "\n"
-"$db = \"~/.foxtrotgps/geophoto.db\";\n"
+"$db = \"~/." PACKAGE "/geophoto.db\";\n"
 "\n"
 "#===================  MAIN  ====================\n"
 "\n"
@@ -899,7 +911,7 @@ command = g_strdup(
 "	}\n"
 "	else\n"
 "	{\n"
-"		print STDERR \"Not adding to FoxtrotGPS database\\n\";\n"
+"		print STDERR \"Not adding to " PACKAGE_NAME " database\\n\";\n"
 "	}\n"
 "\n"
 "}\n"
@@ -1078,13 +1090,13 @@ command = g_strdup(
 }
 
 
-fp = fopen("/tmp/foxtrotgps_geocode.pl", "w+");
+fp = fopen("/tmp/" PACKAGE "_geocode.pl", "w+");
 if (fp==0) 
 	printf("could not open tmp\n");	
 
 fprintf(fp, "%s", command);
 fclose(fp);
 
-unused = system ("chmod 700 /tmp/foxtrotgps_geocode.pl");
+unused = system ("chmod 700 /tmp/" PACKAGE "_geocode.pl");
 
 }

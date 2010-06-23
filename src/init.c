@@ -1,3 +1,5 @@
+
+
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -41,10 +43,9 @@ pre_init()
 
 	global_home_dir = getenv("HOME");
 
-	global_gconfclient = gconf_client_get_default();
+	global_gconfclient	= gconf_client_get_default();
+	global_curr_reponame	= gconf_client_get_string(global_gconfclient, GCONF"/repo_name",err);
 
-	global_curr_reponame = gconf_client_get_string(
-			global_gconfclient, GCONF"/repo_name",err);
 
 	if(global_curr_reponame == NULL)
 	{
@@ -102,7 +103,8 @@ init()
 	gboolean gconf_fftimer_running;
 	char *str = NULL;
 	
-	foxtrotgps_dir = g_strconcat(global_home_dir, "/.foxtrotgps", NULL);
+	
+	foxtrotgps_dir = g_strconcat(global_home_dir, "/." PACKAGE, NULL);
 	g_mkdir(foxtrotgps_dir, 0700);
 
 	repoconfig__create_dropdown();
@@ -189,11 +191,8 @@ init()
 		widget = lookup_widget(menu1, "item19");
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(widget), TRUE);
 	}
+		
 	
-	widget = lookup_widget(window1, "label117");
-#ifdef VERSION
-	gtk_label_set_label(GTK_LABEL(widget), "<i><small>FoxtrotGPS version: " VERSION "\nDeveloper: Marcus Bauer &amp; community</small></i>");
-#endif
 
 	str = gconf_client_get_string(global_gconfclient, GCONF"/gpsd_host",&err);
 	widget = lookup_widget(window1, "entry3");
@@ -214,7 +213,7 @@ init()
 	
 	timer = g_timeout_add (1000,cb_gps_timer,data);
 	
-	gtk_window_set_icon_from_file(GTK_WINDOW(window1), PACKAGE_PIXMAPS_DIR "/" PNAME ".png" ,&err);
+	gtk_window_set_icon_from_file(GTK_WINDOW(window1), PACKAGE_PIXMAPS_DIR "/" PACKAGE ".png" ,&err);
 	if (err)
 	{
 		fprintf (stderr, "Failed to load pixbuf file:  %s\n", err->message);
@@ -355,11 +354,13 @@ gconf_get_repolist()
 	printf("*** global repo list length = %d\n", g_slist_length(global_repo_list));
 
 	return global_repo_list;	
+					
 }
 
 void
 gconf_set_repolist()
 {
+	
 	GSList	*list;
 	GSList	*gconf_list = NULL;
 	GError **error = NULL;
@@ -395,6 +396,7 @@ gconf_set_repolist()
 						error);
 	
 	printf("*** %s(): %i \n",__PRETTY_FUNCTION__, success);
+
 }
 
 
@@ -402,6 +404,8 @@ gconf_set_repolist()
 void
 repoconfig__set_current_list_pointer()
 {
+	
+	
 	GSList		*list;
 	const gchar	*reponame;
 	int unused;

@@ -845,7 +845,7 @@ create_msg_box(msg_t *m)
 	
 	if(m->incoming)
 	{
-		button = gtk_button_new_with_mnemonic (_("  Reply  "));
+		button = gtk_button_new_with_mnemonic (_("Reply"));
 		gtk_widget_show (button);
 		gtk_box_pack_start (GTK_BOX (vbox), button, FALSE, FALSE, 2);
 		
@@ -853,7 +853,7 @@ create_msg_box(msg_t *m)
 					G_CALLBACK (on_msg_friend_clicked),
 					(gpointer) m->from);
 					
-		button = gtk_button_new_with_mnemonic (_("  Go To  "));
+		button = gtk_button_new_with_mnemonic (_("Go To"));
 		gtk_widget_show (button);
 		gtk_box_pack_start (GTK_BOX (vbox), button, FALSE, FALSE, 2);
 		
@@ -891,7 +891,7 @@ set_friends_show(gboolean show)
 	if(!friend_icon)
 	{
 		friend_icon = gdk_pixbuf_new_from_file_at_size (
-			PACKAGE_PIXMAPS_DIR "/foxtrotgps-friend.png", 24,24,
+			PACKAGE_PIXMAPS_DIR "/" PACKAGE "-friend.png", 24,24,
 			&error);
 		// minimum refcount of one, keeps it allocated, despite friends_list_updated()
 		// TODO we need to unref it somewhere too, or does it get automatically unreffed at mainloop exit?

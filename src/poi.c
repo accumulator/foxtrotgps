@@ -1,9 +1,11 @@
+
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
 
 #include "support.h"
 #include "callbacks.h"
+
 #include "globals.h"
 #include "poi.h"
 #include "converter.h"
@@ -68,6 +70,12 @@ sql_cb__poi_get(void *unused, int colc, char **colv, char **col_names)
 	return 0;
 }
 
+
+
+
+
+
+
 void
 set_pois_show(gboolean show)
 {
@@ -81,7 +89,7 @@ set_pois_show(gboolean show)
 	if(!poi_icon)
 	{
 		poi_icon = gdk_pixbuf_new_from_file_at_size (
-			PACKAGE_PIXMAPS_DIR "/foxtrotgps-poi.png", 24,24,
+			PACKAGE_PIXMAPS_DIR "/" PACKAGE "-poi.png", 24,24,
 			&error);
 		// minimum refcount of one, keeps it allocated, despite pois_list_updated()
 		// TODO we need to unref it somewhere too, or does it get automatically unreffed at mainloop exit?
@@ -117,12 +125,15 @@ create_combobox_list_store(char *list)
 	
 	while(array[i])
 	{		
+		
+		
 		gtk_list_store_append (list_store, &iter);
 		gtk_list_store_set (list_store, &iter,
 				  COLUMN_STRING, array[i],
 				  COLUMN_INT, i,
 				  COLUMN_BOOLEAN,  FALSE,
 				  -1);
+		
 		i++;
 	}
 	
@@ -130,9 +141,14 @@ create_combobox_list_store(char *list)
 	return list_store;
 }	
 
+
+
 void
 on_combobox_subcat_changed (GtkComboBox *combobox, gpointer user_data)
 {
+	
+	
+	
 	GtkTreeIter iter;
 	gchar *str_data;
 	gint   int_data;
@@ -148,8 +164,10 @@ on_combobox_subcat_changed (GtkComboBox *combobox, gpointer user_data)
 	printf("Entry: (%s,%d)\n", str_data, int_data);
 }
 
+
 void set_combobox_subcat(GtkWidget *widget, int choice)
 {
+	
 	GtkCellRenderer *renderer;
 	GtkWidget *vbox;
 	char *subcat_lists[15];
@@ -174,6 +192,7 @@ void set_combobox_subcat(GtkWidget *widget, int choice)
 
 	vbox = lookup_widget(widget, "vbox28");
 	list_store = create_combobox_list_store(subcat_lists[choice]);
+	
 	
 	if((!combobox_subcat || new_dialog ) && choice)
 	{

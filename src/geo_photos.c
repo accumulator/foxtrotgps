@@ -3,6 +3,8 @@
 #  include <config.h>
 #endif
 
+#define _XOPEN_SOURCE
+
 #include "globals.h"
 #include "geo_photos.h"
 #include "converter.h"
@@ -109,7 +111,8 @@ geo_photos_open_dialog_photo_correlate()
 
 	if(!dialog_photo_correlate)
 	{
-		dialog_photo_correlate = create_dialog_geocode();
+		dialog_photo_correlate =
+			glade_xml_get_widget (gladexml, "dialog_geocode");
 		
 		
 		tmp   = gconf_client_get_int(global_gconfclient, GCONF"/geocode_timezone", NULL);
@@ -139,7 +142,8 @@ geo_photos_open_dialog_image_data()
 
 	if(!dialog_image_data)
 	{
-		dialog_image_data = create_dialog_image_data();
+		dialog_image_data = glade_xml_get_widget (gladexml,
+							  "dialog_image_data");
 		gtk_widget_show(dialog_image_data);
 		
 		combobox = lookup_widget(dialog_image_data, "combobox7");
@@ -189,7 +193,7 @@ geo_photos_geocode_track_select_dialog (GtkButton       *button,
 
 	filter = gtk_file_filter_new ();
 	gtk_file_filter_add_pattern (filter, "*.log");
-	gtk_file_filter_set_name (filter, "foxtrotGPS log files (*.log)");
+	gtk_file_filter_set_name (filter, "FoxtrotGPS log files (*.log)");
 	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(widget), filter);
 
 	gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(widget), filter);
@@ -565,10 +569,15 @@ void
 geo_photo_close_dialog_photo_correlate()
 {
 	gchar *command_line;
+	GtkWidget *label;
 
 	prepare_perl();
 	
-	dialog_geocode_result = create_dialog_geocode_result();
+	dialog_geocode_result = glade_xml_get_widget (gladexml,
+						      "dialog_geocode_result");
+
+	label = lookup_widget(dialog_geocode_result, "label177");
+	gtk_label_set_text(GTK_LABEL(label), _("Working...."));
 
 	gtk_widget_show(dialog_geocode_result);
 	gtk_widget_hide(dialog_photo_correlate);
@@ -761,7 +770,7 @@ command = g_strdup(
 "# (C)2008 Marcus Bauer, License: GPLv2, marus.bauer@gmail.com\n"
 "\n"
 "#\n"
-"# helper for foxtrotGPS to geocode photos\n"
+"# helper for FoxtrotGPS to geocode photos\n"
 "#\n"
 "\n"
 "# needs: gpscorrelate, sqlite3, jhead\n"
@@ -890,7 +899,7 @@ command = g_strdup(
 "	}\n"
 "	else\n"
 "	{\n"
-"		print STDERR \"Not adding to foxtrotGPS database\\n\";\n"
+"		print STDERR \"Not adding to FoxtrotGPS database\\n\";\n"
 "	}\n"
 "\n"
 "}\n"
@@ -984,10 +993,10 @@ command = g_strdup(
 "\n"
 "\n"
 "($lat_half, $lat_deg, $lat_min, $lat_sec) =\n"
-"	$lat_string =~ /^GPS Latitude : (N|S) +(\\d+)d (\\d+)m +(\\d+\\.\\d+)s$/;\n"
+"	$lat_string =~ /^GPS Latitude : (N|S) +(\\d+)d +(\\d+)m +(\\d+\\.\\d+)s$/;\n"
 "\n"
 "($lon_half, $lon_deg, $lon_min, $lon_sec) =\n"
-"	$lon_string =~ /^GPS Longitude: (E|W) +(\\d+)d (\\d+)m +(\\d+\\.\\d+)s$/;\n"
+"	$lon_string =~ /^GPS Longitude: (E|W) +(\\d+)d +(\\d+)m +(\\d+\\.\\d+)s$/;\n"
 "\n"
 "$lat = $lat_deg + $lat_min/60 + $lat_sec/3600;\n"
 "$lat = ($lat_half eq \"N\") ? $lat : -$lat;\n"

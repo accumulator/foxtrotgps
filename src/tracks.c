@@ -49,12 +49,16 @@ track_log()
 	time_t time_sec;
 	struct tm *ts;
 	
+	
 	if(gpsdata->valid)
 	{
+		
 		time_sec = (time_t)gpsdata->fix.time;
 		ts = localtime(&time_sec);
 		
+		
 		strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", ts);
+		
 		
 		sprintf(data, "%f,%f,%.1f,%.1f,%.1f,%.1f,%s\n",
 				gpsdata->fix.latitude,
@@ -81,10 +85,16 @@ track_log_open()
 	
 	label76 = GTK_LABEL(lookup_widget(window1, "label76"));
 	
+	
 	time_epoch_sec = time(NULL);
 	tm_struct = localtime(&time_epoch_sec);
+	
+	
+	
 
 	strftime(buffer, sizeof(buffer), "%Y%m%d_%H%M%S.log", tm_struct);
+	
+
 	
 	filename = g_strconcat(global_track_dir, buffer,NULL);
 	
@@ -110,6 +120,7 @@ track_log_open()
 	g_free(filename);
 }
 
+
 void
 track_log_close()
 {
@@ -129,6 +140,9 @@ track_log_close()
 	}
 }
 
+
+
+
 void
 tracks_open_tracks_dialog()
 {
@@ -139,6 +153,7 @@ tracks_open_tracks_dialog()
 	GList *list = NULL;
 
 	GtkWidget *label, *vbox, *eventbox;
+	
 
 	dir = g_dir_open(global_track_dir, 0, &err);
 	
@@ -149,10 +164,14 @@ tracks_open_tracks_dialog()
 		return;
 	}
 	
+	
+	
 	window12 = glade_xml_get_widget(gladexml, "window12");
 	gtk_widget_show(window12);
 	
 	vbox = lookup_widget(window12, "vbox39");		
+	
+	
 	
 	file = g_dir_read_name(dir);
 
@@ -170,10 +189,12 @@ tracks_open_tracks_dialog()
 	{
 		char *file = list->data;
 		
+		
 		printf("%s \n", file);
 		eventbox = gtk_event_box_new ();
 		gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK);
 		gtk_widget_show (eventbox);
+		
 
 		gtk_box_pack_start (GTK_BOX (vbox), eventbox, FALSE, FALSE, 0);
 		
@@ -308,7 +329,7 @@ tracks_on_file_button_release_event   (	GtkWidget       *widget,
                                         GdkEventButton  *event,
                                         gpointer         user_data)
 {
-	GtkWidget *range, *vbox;
+	GtkWidget *range;
 	int track_zoom, width, height;
 	char *file;
 	bbox_t bbox;
@@ -318,13 +339,28 @@ tracks_on_file_button_release_event   (	GtkWidget       *widget,
 	
 	file = (char *) user_data;
 	
-	window12 = glade_xml_get_widget(gladexml, "window12");
-	gtk_widget_hide(window12);
+	if (widget && window12) {
+		/* Note that this function is also called from
+		   geo_photos_geocode_track_select_dialog(),
+		   not just as a GTK+ callback!
 
-	vbox = lookup_widget(window12, "vbox39");		
-	gtk_container_foreach (GTK_CONTAINER (vbox),
-			       (GtkCallback) gtk_widget_destroy,
-			       NULL);
+		   In this case, all arguments except for user_data
+		   are NULL and we have not been called as a result of
+		   anything actually involving window12, and we should
+		   avoid messing with it. In fact, we *must* avoid it:
+		   the window12 object may not even exist, since it's
+		   created only on demand.
+		*/
+
+		GtkWidget *vbox;
+
+		gtk_widget_hide(window12);
+
+		vbox = lookup_widget(window12, "vbox39");		
+		gtk_container_foreach (GTK_CONTAINER (vbox),
+				       (GtkCallback) gtk_widget_destroy,
+				       NULL);
+	}
 
 	if (load_track_from_file(file)) {
 		bbox = get_track_bbox(loaded_track);
@@ -383,9 +419,12 @@ load_log_file_into_list(char *file)
 	{
 		trackpoint_t *tp = g_new0(trackpoint_t,1);
 		
+		
 		arr = g_strsplit(line, ",", 2);
-		if (arr[0] == NULL || arr[1] == NULL)
-			continue;
+		
+		
+		if (arr[0] == NULL || arr[1] == NULL) continue;
+
 		
 		lat = atof(arr[0]);
 		lon = atof(arr[1]);
@@ -406,6 +445,7 @@ load_gpx_file_into_list(char *file)
 	GSList *list = NULL;
 	xmlDoc *doc = NULL;
 	xmlNode *root_element = NULL;
+	
 	
 	LIBXML_TEST_VERSION
 	
@@ -431,8 +471,7 @@ load_gpx_string_into_list(char *gpx_string)
 	xmlDoc *doc = NULL;
 	xmlNode *root_element = NULL;
 	
-	if (!gpx_string)
-		return NULL;
+	if(!gpx_string) return NULL;
 	
 	LIBXML_TEST_VERSION
 	
@@ -459,6 +498,7 @@ parse_nodes(xmlNode *node)
 {
 	xmlNode *cur_node = NULL;
 	GSList *list = NULL;
+
 
 	for (cur_node = node; cur_node; cur_node = cur_node->next)
 	{
@@ -508,6 +548,7 @@ process_fetched_track(gpointer data)
 		gchar buffer[256];
 		gchar *filename = NULL;
 		
+		
 		time_epoch_sec = time(NULL);
 		tm_struct = localtime(&time_epoch_sec);
 		strftime(buffer, sizeof(buffer), "nav%Y%m%d_%H%M%S.gpx", tm_struct);
@@ -528,6 +569,7 @@ process_fetched_track(gpointer data)
 		
 		g_free(filename);
 		
+		
 		bbox = get_track_bbox(loaded_track);
 		
 		track_zoom = get_zoom_covering(width, height, bbox.lat1, bbox.lon1, bbox.lat2, bbox.lon2);
@@ -542,12 +584,20 @@ process_fetched_track(gpointer data)
 	{
 		const char *err_msg;
 		
+		
+		
 		if(reply->status_code == 200)
 			err_msg = g_strdup("<span color='#aa0000'><b>Oops! No Route found</b></span>\nTry with another Start/End");
+		
+		
 		else if(reply->status_code == 203)
 			err_msg = g_strdup(reply->data);
+		
+		
 		else if (reply->status_code)
 			err_msg = g_strdup("<span color='#aa0000'><b>Duh! A Server Error</b></span>\nMaybe try later again...");
+		
+		
 		else
 			err_msg = g_strdup("<span color='#aa0000'><b>Oh! A Network Error</b></span>\nCheck the internet!");
 		

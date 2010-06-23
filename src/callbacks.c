@@ -876,26 +876,26 @@ on_item8_activate                      (GtkMenuItem     *menuitem,
 {
 	GtkWidget *dialog;
 	
-	dialog = glade_xml_get_widget (gladexml, "download_maps_dialog");
+	dialog = glade_xml_get_widget (gladexml, "dialog4");
 	gtk_widget_show(dialog);
 }
 
 void
-on_download_maps_cancelbutton_clicked (GtkButton *button, gpointer user_data)
+on_cancelbutton3_clicked (GtkButton *button, gpointer user_data)
 {
-	GtkWidget *dialog = lookup_widget(GTK_WIDGET(button), "download_maps_dialog");
+	GtkWidget *dialog = lookup_widget(GTK_WIDGET(button), "dialog4");
 	gtk_widget_hide(dialog);
 }
 
 void
-on_download_maps_okbutton_clicked (GtkButton *button, gpointer user_data)
+on_okbutton3_clicked (GtkButton *button, gpointer user_data)
 {
 	GtkWidget *dialog;
 	GtkToggleButton *z1, *z2, *z3, *z4, *z5, *z6;
 	int zoom_end = 1;
 	int zoom;
 
-	dialog = lookup_widget(GTK_WIDGET(button), "download_maps_dialog");
+	dialog = lookup_widget(GTK_WIDGET(button), "dialog4");
 	z1 = (GtkToggleButton *)lookup_widget(dialog, "radiobutton2");
 	z2 = (GtkToggleButton *)lookup_widget(dialog, "radiobutton3");
 	z3 = (GtkToggleButton *)lookup_widget(dialog, "radiobutton4");
@@ -1098,6 +1098,7 @@ void
 on_button21_clicked                    (GtkButton       *button,
                                         gpointer         user_data)
 {
+	GladeXML *gladexml;
 	GtkWidget *widget;
 	GtkWidget *drawingarea;
 
@@ -1111,7 +1112,12 @@ on_button21_clicked                    (GtkButton       *button,
 printf("*** %s(): \n",__PRETTY_FUNCTION__);
 
 	
-	widget = create_win13_biggeo();
+	gladexml = glade_xml_new (gladefile, "win13_biggeo", GETTEXT_PACKAGE);
+	glade_xml_signal_autoconnect (gladexml);
+	widget = glade_xml_get_widget (gladexml, "win13_biggeo");
+	g_signal_connect_swapped (widget, "destroy",
+				  G_CALLBACK (g_object_unref), gladexml);
+
 	gtk_widget_show(widget);
 	
 	drawingarea = lookup_widget(widget, "drawingarea3");
@@ -2264,7 +2270,7 @@ on_eventbox2_button_release_event      (GtkWidget       *widget,
 	
 	window = lookup_widget(widget, "win13_biggeo");
 	
-	gtk_widget_hide(window);
+	gtk_widget_destroy(window);
 	
   return FALSE;
 }

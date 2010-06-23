@@ -1,3 +1,7 @@
+
+
+
+
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -74,32 +78,34 @@ main (int argc, char *argv[])
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 #endif
+
 	
 	gtk_set_locale ();
 	
-	if (!g_thread_supported())
-		g_thread_init (NULL);
+	if (!g_thread_supported ()) g_thread_init (NULL);
+	gdk_threads_init ();
+	gdk_threads_enter ();
 	
-	gdk_threads_init();
-	gdk_threads_enter();
 	
-	gtk_init(&argc, &argv);
-	
+	gtk_init (&argc, &argv);
+
 	if (!g_option_context_parse (option_context, &argc, &argv, &error))
 	{
 		g_print ("option parsing failed: %s\n", error->message);
 		return 1;
 	}
 	
-	setlocale(LC_NUMERIC, "C");
+	setlocale (LC_NUMERIC, "C");
 	
-	add_pixmap_directory(PACKAGE_DATA_DIR "/" PACKAGE "/pixmaps");
+	add_pixmap_directory (PACKAGE_DATA_DIR "/" PACKAGE "/pixmaps");
 	
-	glade_init ();
+	
+        glade_init ();
 
 	glade_set_custom_handler(custom_widget_handler, NULL);
+        
+        gladexml = glade_xml_new (gladefile, NULL, GETTEXT_PACKAGE);
 
-	gladexml = glade_xml_new (gladefile, NULL, GETTEXT_PACKAGE);
 	if (!gladexml)
 	{
 		/* Developers may run into this if they're naively
@@ -122,7 +128,8 @@ main (int argc, char *argv[])
 			   "%s does not not appear to be properly installed."),
 			 PACKAGE, PACKAGE);
 	}
-	glade_xml_signal_autoconnect (gladexml);
+
+        glade_xml_signal_autoconnect (gladexml);
 
 	pre_init();
 	window1 = glade_xml_get_widget (gladexml, "window1");
@@ -175,9 +182,9 @@ main (int argc, char *argv[])
 	}
 
 	window2 = glade_xml_get_widget (gladexml, "window2");
-	window3 = create_window3();
-
+	window3 = glade_xml_get_widget (gladexml, "window3");
 	menu1 = glade_xml_get_widget (gladexml, "menu1");
+	
 	
 	init();
 	

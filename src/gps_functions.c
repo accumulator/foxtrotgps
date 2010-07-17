@@ -14,7 +14,6 @@
 #include <string.h>
 #include <math.h>
 
-#include <gps.h>
 #include <osm-gps-map.h>
 
 #include "gps_functions.h"
@@ -27,13 +26,23 @@
 #define BUFSIZE 512
 char * distance2scale(float distance, float *factor);
 void * get_gps_thread(void *ptr);
+gboolean cb_gps_timer();
 
+gint timer;
 
-static GIOChannel *gpsd_io_channel =NULL;
-static struct gps_data_t *libgps_gpsdata = NULL;
+void
+gps_provider_init()
+{
+	_gps_provider_init();
+	timer = g_timeout_add(1000, cb_gps_timer, NULL);
+}
 
-static guint sid1,  sid3; 
-guint watchdog;
+void
+gps_provider_close()
+{
+	_gps_provider_close();
+	// clear timer?
+}
 
 gboolean
 cb_gps_timer()
@@ -44,9 +53,6 @@ cb_gps_timer()
 	static double trip_time_accumulated = 0;
 	static gboolean trip_counter_got_stopped = FALSE;
 	
-	if(!gpsdata  || global_reconnect_gpsd)
-		get_gps();
-
 	if(gpsdata)
 	{
 		trackpoint_t *tp = g_new0(trackpoint_t,1);
@@ -189,21 +195,6 @@ cb_gps_timer()
 	
 	return TRUE; 
 }
-
-gboolean
-reset_gpsd_io()
-{
-	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-	
-	global_reconnect_gpsd = TRUE;
-	g_source_remove(watchdog);
-
-	g_source_remove(sid1); 
-	g_source_remove(sid3); 
-	
-	return FALSE;	
-}
-
 
 void
 osd_speed(gboolean force_redraw)
@@ -518,101 +509,3 @@ set_label()
 	}
 }
 
-
-
-
-
-static gboolean
-cb_gpsd_io_error(GIOChannel *src, GIOCondition condition, gpointer data)
-{
-	printf("*** %s(): \n",__PRETTY_FUNCTION__);
-	g_free(gpsdata);
-	gpsdata = NULL;
-	g_source_remove(sid1); 
-	g_source_remove(sid3); 
-	gps_close(libgps_gpsdata);
-	libgps_gpsdata = NULL;
-	
-	
-	return FALSE; 
-}
-
-
-
-static gboolean
-cb_gpsd_data(GIOChannel *src, GIOCondition condition, gpointer data)
-{
-	int ret;
-
-	ret = gps_poll(libgps_gpsdata);
-	if (ret == 0)
-	{
-		gpsdata->satellites_used = libgps_gpsdata->satellites_used;
-		gpsdata->hdop = libgps_gpsdata->dop.hdop;
-		gpsdata->fix.time = libgps_gpsdata->fix.time;
-		if (isnan(gpsdata->fix.time))
-		{
-			gpsdata->fix.time = (time_t) 0;
-		}
-		gpsdata->valid = (libgps_gpsdata->status != STATUS_NO_FIX);
-		if (gpsdata->valid)
-		{
-			gpsdata->seen_valid = TRUE;
-			gpsdata->fix.latitude = libgps_gpsdata->fix.latitude;
-			gpsdata->fix.longitude = libgps_gpsdata->fix.longitude;
-			gpsdata->fix.speed = libgps_gpsdata->fix.speed;
-			gpsdata->fix.heading = libgps_gpsdata->fix.track;
-			gpsdata->fix.altitude = libgps_gpsdata->fix.altitude;
-		}
-		
-		g_source_remove(watchdog);
-		watchdog = g_timeout_add_seconds_full(G_PRIORITY_DEFAULT_IDLE,60,reset_gpsd_io,NULL,NULL);
-	}
-	else
-	{
-		printf("gps_poll returned %d\n", ret);
-	}
-	return TRUE;
-}
-
-
-void 
-get_gps()
-{
-	g_thread_create(&get_gps_thread, NULL, FALSE, NULL);
-}
-
-void *
-get_gps_thread(void *ptr)
-{
-	libgps_gpsdata = gps_open(global_server, global_port);
-	if (libgps_gpsdata)
-	{
-		fprintf(stderr, "connection to gpsd SUCCEEDED \n");
-		
-		global_reconnect_gpsd = FALSE;
-		
-		if(!gpsdata)
-		{
-			gpsdata = g_new0(tangogps_gps_data_t,1);
-		}
-		
-	
-		gps_stream(libgps_gpsdata, WATCH_ENABLE | POLL_NONBLOCK, NULL);
-		
-		watchdog = g_timeout_add_seconds_full(G_PRIORITY_DEFAULT_IDLE,60,reset_gpsd_io,NULL,NULL);
-		
-		
-		gpsd_io_channel = g_io_channel_unix_new(libgps_gpsdata->gps_fd);
-		g_io_channel_set_flags(gpsd_io_channel, G_IO_FLAG_NONBLOCK, NULL);
-		
-		
-		sid1 = g_io_add_watch_full(gpsd_io_channel, G_PRIORITY_HIGH_IDLE+200, G_IO_ERR | G_IO_HUP, cb_gpsd_io_error, NULL, NULL);
-		
-		
-		sid3 = g_io_add_watch_full(gpsd_io_channel, G_PRIORITY_HIGH_IDLE+200, G_IO_IN | G_IO_PRI, cb_gpsd_data, NULL, NULL);
-	
-	}
-	
-	return NULL;
-}

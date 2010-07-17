@@ -467,7 +467,7 @@ on_button9_clicked                     (GtkButton       *button,
 	global_server	= g_strdup(server);
 	global_port	= g_strdup(port);
 	
-	global_reconnect_gpsd = TRUE;
+	gps_provider_init();
 }
 
 

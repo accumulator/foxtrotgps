@@ -8,6 +8,8 @@
 #include <gconf/gconf-client.h>
 #include <osm-gps-map.h>
 
+#include "gps/provider.h"
+
 #define MSG_SEND_URL "http://tangogps.org/friends/msg_send.php"
 
 #define GCONF "/apps/" PACKAGE
@@ -84,26 +86,6 @@ typedef struct {
 	GtkWidget *widget;
 } poi_t;
 
-typedef struct {
-	double time;		/* Time of update, seconds since Unix epoch */
-	int    mode;		/* Mode of fix */
-	double latitude;	/* Latitude in degrees (valid if mode >= 2) */
-	double longitude;	/* Longitude in degrees (valid if mode >= 2) */
-	double altitude;	/* Altitude in meters (valid if mode == 3) */
-	double heading;
-	double speed;		/* Speed over ground, meters/sec */
-	double bearing;		/* in radian, calculated by tangogps */
-} tangogps_gps_fix_t;
-
-typedef struct {
-	tangogps_gps_fix_t fix;
-	int satellites_used;
-	int satellites_inview;
-	double hdop;
-	gboolean valid;
-	gboolean seen_valid; /* ever had a valid fix? */
-} tangogps_gps_data_t;
-
 extern GdkPixmap 	*pixmap;
 
 extern const char	*gladefile;
@@ -155,7 +137,6 @@ extern gboolean		global_landscape;
 extern gboolean		global_auto_download;
 extern gboolean		global_mapmode;
 extern gboolean		global_autocenter;
-extern gboolean		global_reconnect_gpsd;
 extern int			global_tiles_in_dl_queue;
 
 extern gboolean		global_show_pois;

@@ -25,8 +25,9 @@ _gps_provider_init()
 	//g_signal_connect(control, "error-verbose", G_CALLBACK(cb_error), NULL);
 	g_signal_connect(device, "changed", G_CALLBACK(cb_changed), NULL);
 
-	location_gpsd_control_start(control);
+	gpsdata = g_new0(tangogps_gps_data_t,1);
 
+	location_gpsd_control_start(control);
 }
 
 void
@@ -41,6 +42,9 @@ _gps_provider_close()
 	if (control)
 		g_object_unref(control);
 	control = NULL;
+    if (gpsdata)
+            g_free(gpsdata);
+    gpsdata = NULL;
 }
 
 static void cb_changed(LocationGPSDevice *device, gpointer user_data)

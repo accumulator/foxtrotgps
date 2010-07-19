@@ -54,22 +54,38 @@ static void cb_changed(LocationGPSDevice *device, gpointer user_data)
 	if (!device)
 		return;
 
+	gpsdata->valid = FALSE;
+
 	if (device->fix)
 	{
+		gpsdata->valid = TRUE;
+		gpsdata->seen_valid = TRUE;
+
 		if (device->fix->fields & LOCATION_GPS_DEVICE_LATLONG_SET)
 		{
 			gpsdata->fix.latitude = device->fix->latitude;
 			gpsdata->fix.longitude = device->fix->longitude;
-			g_debug("lat = %f, long = %f", device->fix->latitude, device->fix->longitude);
+			printf("** lat, lon = %f, %f\n", device->fix->latitude, device->fix->longitude);
 		}
-
 		if (device->fix->fields & LOCATION_GPS_DEVICE_ALTITUDE_SET)
 		{
 			gpsdata->fix.altitude = device->fix->altitude;
-			g_debug("alt = %f", device->fix->altitude);
+			printf("** alt = %f\n", device->fix->altitude);
 		}
-		g_debug("horizontal accuracy: %f meters", device->fix->eph/100);
+		if (device->fix->fields & LOCATION_GPS_DEVICE_TIME_SET)
+		{
+			gpsdata->fix.time = (time_t) device->fix->time;
+			printf("** time = %f\n", device->fix->time);
+		}
+		if (device->fix->fields & LOCATION_GPS_DEVICE_TRACK_SET)
+		{
+			gpsdata->fix.bearing = device->fix->track;
+			printf("** track/bearing = %f\n", device->fix->track);
+		}
+
+		gpsdata->hdop = device->fix->eph/100;
 	}
 
-	g_debug("Satellites in view: %d, in use: %d", device->satellites_in_view, device->satellites_in_use);
+	gpsdata->satellites_inview = device->satellites_in_view;
+	gpsdata->satellites_used = device->satellites_in_use;
 }

@@ -11,10 +11,10 @@ dist_doc_DATA = \
 	NEWS\
 	TODO
 
-bzr_dirstate = $(wildcard .bzr/checkout/dirstate)
+git_index = $(wildcard .git/index)
 
-ChangeLog: $(bzr_dirstate)
-	bzr log --verbose > $@.tmp && mv $@.tmp $@
+ChangeLog: $(git_index)
+	git log > $@.tmp && mv $@.tmp $@
 
 # Copy all the spec files. Of cource, only one is actually used.
 dist-hook:

@@ -34,6 +34,7 @@ create_mapwidget(void)
 			"map-source", OSM_GPS_MAP_SOURCE_OPENSTREETMAP,
 			"tile-cache", OSM_GPS_MAP_CACHE_AUTO,
 			"proxy-uri", g_getenv("http_proxy"),
+			"record-trip-history", FALSE,
 			NULL);
 
 	OsmGpsMap *map = OSM_GPS_MAP(widget);

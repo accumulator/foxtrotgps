@@ -10,6 +10,8 @@ extern tangogps_gps_data_t *gpsdata;
 LocationGPSDControl *control = NULL;
 LocationGPSDevice *device = NULL;
 
+gboolean had_first_fix;
+
 void
 _gps_provider_init()
 {
@@ -28,6 +30,8 @@ _gps_provider_init()
 	gpsdata = g_new0(tangogps_gps_data_t,1);
 
 	location_gpsd_control_start(control);
+
+	had_first_fix = FALSE;
 }
 
 void
@@ -58,14 +62,21 @@ static void cb_changed(LocationGPSDevice *device, gpointer user_data)
 
 	if (device->fix)
 	{
-		gpsdata->valid = TRUE;
-		gpsdata->seen_valid = TRUE;
-
 		if (device->fix->fields & LOCATION_GPS_DEVICE_LATLONG_SET)
 		{
+			if (!had_first_fix)
+			{
+				had_first_fix = TRUE;
+				// skip first fix, is often bogus
+				return;
+			}
+
 			gpsdata->fix.latitude = device->fix->latitude;
 			gpsdata->fix.longitude = device->fix->longitude;
 			printf("** lat, lon = %f, %f\n", device->fix->latitude, device->fix->longitude);
+
+			gpsdata->valid = TRUE;
+			gpsdata->seen_valid = TRUE;
 		}
 		if (device->fix->fields & LOCATION_GPS_DEVICE_ALTITUDE_SET)
 		{

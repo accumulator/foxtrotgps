@@ -38,7 +38,7 @@ static gboolean pickpoint_mode = FALSE;
 static int	pickpoint;
 static int	msg_timer = 0;
 static gboolean msg_pane_visible=TRUE;
-static gboolean maximized = FALSE;
+static int maximized = 0;
 static int local_x = 0;
 static int local_y = 0;
 static int drag_started = 0;
@@ -167,16 +167,26 @@ on_map_button_release_event(GtkWidget *widget, GdkEventButton *event, gpointer u
 void
 on_button1_clicked                     (GtkButton       *button,
                                         gpointer         user_data)
-{	
-	if(!maximized)
-	{		
-		gtk_window_fullscreen(GTK_WINDOW(window1));
-		maximized = TRUE;
-	}
-	else
+{
+	GtkWidget *widget;
+
+	switch (maximized)
 	{
+	case 0:
+		gtk_window_fullscreen(GTK_WINDOW(window1));
+		maximized = 1;
+		break;
+	case 1:
+		widget = lookup_widget(window1, "eventbox5");
+		gtk_widget_set_visible(widget, FALSE);
+		maximized = 2;
+		break;
+	default:
+	case 2:
+		widget = lookup_widget(window1, "eventbox5");
+		gtk_widget_set_visible(widget, TRUE);
 		gtk_window_unfullscreen(GTK_WINDOW(window1));
-		maximized = FALSE;
+		maximized = 0;
 	}
 }
 

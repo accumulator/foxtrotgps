@@ -3014,13 +3014,14 @@ activate_more_map_details (GtkMenuItem *menu_item, gpointer user_data)
 
 	}
 
+	g_object_set(G_OBJECT(mapwidget), "double-pixel", FALSE, NULL);
+
 	success = gconf_client_set_int(
 				global_gconfclient, 
 				GCONF"/global_detail_zoom",
 				global_detail_zoom,
 				&error);
 
-	repaint_all ();
 }
 
 void
@@ -3033,13 +3034,13 @@ activate_larger_map_details (GtkMenuItem *larger_item, GtkMenuItem *more_item)
 
 	global_detail_zoom++;
 
+	g_object_set(G_OBJECT(mapwidget), "double-pixel", TRUE, NULL);
+
 	success = gconf_client_set_int(
 				global_gconfclient, 
 				GCONF"/global_detail_zoom",
 				global_detail_zoom,
 				&error);
-
-	repaint_all ();
 }
 
 void
